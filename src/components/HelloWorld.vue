@@ -11,7 +11,7 @@
 
       <h1 class="text-h2 font-weight-bold">Vuetify</h1>
 
-      <div class="py-14" />
+      <!-- <div class="py-14"> -->
 
       <v-row class="d-flex align-center justify-center">
         <v-col cols="auto">

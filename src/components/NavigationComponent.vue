@@ -23,12 +23,29 @@
             </router-link>
         </v-list>
         </v-navigation-drawer>
+        <v-form @submit.prevent="onLogoutButtonClick">
+            <v-btn type="submit">Logout</v-btn>
+        </v-form>
     </v-card>
 </template>
 
 <script>
     import { RouterLink, RouterView } from 'vue-router'
-    export default {  }
+    export default { 
+        data() {
+            return {
+
+            }
+        },
+        methods: {
+            onLogoutButtonClick() {
+                this.$store.dispatch('authM/onLogout').then(() => {
+                        //location.reload()
+                        this.$router.push({ name: 'login' })
+                    })
+            }
+        }
+     }
 </script>
 
 <style>

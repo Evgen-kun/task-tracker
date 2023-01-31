@@ -23,7 +23,6 @@
       <v-list-item class="w-100">
         <template v-slot:prepend>
           <v-avatar
-            color="grey-darken-3"
             :image=image
           ></v-avatar>
         </template>

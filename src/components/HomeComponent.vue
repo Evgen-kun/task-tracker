@@ -12,11 +12,12 @@
       <h1 class="text-h2 font-weight-bold">Vuetify</h1> -->
 
       <TaskComponent
-        v-for="task in tasks"
+        v-for="(task, i) in tasks"
+        v-bind:key="i"
         v-bind:title="task.title"
         v-bind:body="task.body"
         v-bind:author="task.author"
-        v-bind:image="task.image">
+        v-bind:image="task.authorPicture">
       </TaskComponent>
       
     </v-responsive>
@@ -24,32 +25,13 @@
 </template>
 
 <script>
+import store from '@/plugins/store';
 import { mapGetters } from 'vuex';
 import TaskComponent from './TaskComponent.vue';
 
 export default {
   data() {
     return {
-      /*tasksEx: [
-        {
-          title: "Test 1",
-          body: "Task Test 1",
-          author: "admin",
-          image: "https://randomuser.me/api/portraits/men/87.jpg"
-        },
-        {
-          title: "Test 2",
-          body: "Task Test 2",
-          author: "admin",
-          image: "https://randomuser.me/api/portraits/men/88.jpg"
-        },
-        {
-          title: "Test 3",
-          body: "Task Test 3",
-          author: "admin",
-          image: "https://randomuser.me/api/portraits/men/89.jpg"
-        }
-      ],*/
       //tasks: [],
     }
   },
@@ -63,6 +45,10 @@ export default {
   },
   components: {
     TaskComponent
+  },
+  async created() {
+    const userUID = store.getters['authM/getUserUID'];
+    await store.dispatch('taskM/query', { userUID });
   }
 }
   //

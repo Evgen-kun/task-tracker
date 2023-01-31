@@ -1,19 +1,19 @@
 <template>
   <v-container class="home">
     <v-responsive class="d-flex align-center text-center fill-height">
-      <HelloWorld />
+      <HomeComponent />
     </v-responsive>
   </v-container>
 </template>
 
 <script>
 // @ is an alias to /src
-import HelloWorld from "@/components/HelloWorld.vue";
+import HomeComponent from "@/components/HomeComponent.vue";
 
 export default {
   name: "HomeView",
   components: {
-    HelloWorld,
+    HomeComponent,
   },
 };
 </script>

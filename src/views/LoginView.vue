@@ -1,83 +1,108 @@
 <template>
+  <v-card
+    :loading="loading"
+    class="mx-auto mt-10 bg-form"
+    max-width="350"
+    title="Вход в аккаунт"
+  >
     <v-form v-model="valid" @submit.prevent="onSubmit">
       <v-container>
-        <v-row>
-          <v-col
-            cols="12"
-            md="4"
-          >
-            <v-text-field
-              v-model="login"
-              :rules="loginRules"
-              :counter="10"
-              label="Login"
-              required
-            ></v-text-field>
-          </v-col>
-        </v-row>
+        <v-text-field
+          v-model="login"
+          :rules="loginRules"
+          :counter="15"
+          label="Логин"
+          required
+        ></v-text-field>
+            
+        <v-text-field
+          v-model="password"
+          :append-icon="showPass ? 'mdi-eye' : 'mdi-eye-off'"
+          :rules="[passwordRules.required, passwordRules.min]"
+          :type="showPass ? 'text' : 'password'"
+          name="pass"
+          label="Пароль"
+          hint="Минимум 3 символа"
+          counter
+          @click:append="showPass = !showPass"
+        ></v-text-field>
 
-        <v-row>
-          <v-col
-          cols="12"
-          sm="4"
+        <v-btn 
+          block 
+          type="submit" 
+          color="info" 
+          rounded="lg" 
+          :loading="loading"
+          :disabled="!valid || loading"
         >
-          <v-text-field
-            v-model="password"
-            :append-icon="show1 ? 'mdi-eye' : 'mdi-eye-off'"
-            :rules="[passwordRules.required, passwordRules.min]"
-            :type="show1 ? 'text' : 'password'"
-            name="pass"
-            label="Password"
-            hint="At least 3 characters"
-            counter
-            @click:append="show1 = !show1"
-          ></v-text-field>
-        </v-col>
-        </v-row>
-        <v-row>
-            <v-col
-            cols="12"
-            sm="4"
-            >
-                <v-btn variant="tonal" type="submit">Button</v-btn>
-            </v-col>
-        </v-row>
+          Войти
+        </v-btn>
+
+        <v-snackbar
+          v-model="snackbar"
+          :timeout="timeout"
+          color="info"
+          rounded="pill"
+        >
+          {{ text }}
+        </v-snackbar>
       </v-container>
     </v-form>
-  </template>
+  </v-card>
+</template>
 
 <script>
     import { RouterLink, RouterView } from 'vue-router'
     export default {
-        name: "login",
+        //name: "login",
         data() {
             return {
+                showPass: false,
                 login: '',
                 password: '',
                 valid: false,
                 loginRules: [
-                    v => !!v || 'Login is required',
-                    v => v.length <= 10 || 'Login must be less than 10 characters',
+                    v => !!v || 'Требуется логин',
+                    v => v.length <= 15 || 'Логин должен быть меньше 15 символов',
                 ],
                 passwordRules: {
-                    required: value => !!value || 'Required.',
-                    min: v => v.length >= 3 || 'Min 3 characters',
+                    required: value => !!value || 'Необходим',
+                    min: v => v.length >= 3 || 'Минимум 3 символа',
                     emailMatch: () => (`The email and password you entered don't match`),
                 },
+                loading: false,
+                snackbar: false,
+                text: "",
+                timeout: 2000,
             }
         },
         methods: {
-            onSubmit() {
-                console.log("Yes");
-                console.log(this.login);
-                console.log(this.password);
-                this.$store.dispatch('authM/onLogin', {
+            async validate () {
+              const { valid } = await this.$refs.form.validate();
+              this.valid = valid;
+              //if (valid) alert('Отлично! Ошибок нет');
+            },
+            async onSubmit() {
+              //await this.validate();
+              if(this.valid) {
+                this.loading = true;
+                try {
+                  await this.$store.dispatch('authM/onLogin', {
                     login: this.login,
                     password: this.password
-                }).then(() => {
-                    this.$router.push({ name: 'home' })
-                })
-            }
-        }
+                  });
+                  await this.$router.push({ name: 'home' });
+                  //console.log("router push => home");
+                  location.reload();
+                } catch (err) {
+                  console.log(err);
+                  this.text = 'Неизвестное имя или пароль';
+                  this.snackbar = true;
+                }
+                this.loading = false;
+              }
+              console.log('Есть ошибки');
+            },
+        },
     }
 </script>

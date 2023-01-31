@@ -5,6 +5,7 @@ import vuetify from 'vite-plugin-vuetify'
 // Utilities
 import { defineConfig } from 'vite'
 import { fileURLToPath, URL } from 'node:url'
+import pluginRewriteAll from 'vite-plugin-rewrite-all';
 
 // https://vitejs.dev/config/
 export default defineConfig({
@@ -14,6 +15,7 @@ export default defineConfig({
     vuetify({
       autoImport: true,
     }),
+    pluginRewriteAll(),
   ],
   define: { 'process.env': {} },
   resolve: {
@@ -31,6 +33,7 @@ export default defineConfig({
     ],
   },
   server: {
+    //origin: 'http://127.0.0.1:8080',
     port: 3000,
   },
 })

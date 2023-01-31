@@ -1,7 +1,7 @@
 <template>
   <v-app>
+    <NavigationComponent />
     <v-main>
-      <NavigationComponent />
       <router-view />
     </v-main>
   </v-app>
@@ -9,7 +9,7 @@
 
 <script setup>
   import { RouterLink, RouterView } from 'vue-router'
-  //import HelloWorld from '@/components/HelloWorld.vue'
+  //import HomeComponent from '@/components/HomeComponent.vue'
   import NavigationComponent from '@/components/NavigationComponent.vue'
 </script>
 

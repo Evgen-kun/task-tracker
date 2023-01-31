@@ -2,19 +2,14 @@ import { createRouter, createWebHistory } from "vue-router";
 import HomeView from "../../views/HomeView.vue";
 import LoginView from "../../views/LoginView.vue";
 
-/**
- * Проверяем что есть токен
- * @type {boolean}
- */
-const isAuthorized = localStorage.hasOwnProperty('token');
 
 const authGuard = function(to, from, next) {
-  if (!isAuthorized) next({ name: 'login' });
+  if (!localStorage.hasOwnProperty('token')) next({ name: 'login' });
   else next();
 }
 
 const managerAuthGuard = function(to, from, next) {
-  if (!isAuthorized) next({ name: 'login' });
+  if (!localStorage.hasOwnProperty('token')) next({ name: 'login' });
   //else if (localStorage.getItem('userRole') !== 'Moderator') next({ name: 'home' });
   else next();
 }

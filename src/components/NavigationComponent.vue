@@ -1,14 +1,13 @@
 <template>
-    <v-card>
-        <v-navigation-drawer
+    <v-navigation-drawer
         expand-on-hover
         rail
         >
         <v-list>
             <v-list-item
-            prepend-avatar="https://randomuser.me/api/portraits/women/85.jpg"
-            title="Sandra Adams"
-            subtitle="sandra_a88@gmailcom"
+            :prepend-avatar=avatar
+            :title=name
+            :subtitle=email
             ></v-list-item>
         </v-list>
 
@@ -21,30 +20,38 @@
             <router-link to="/about">
                 <v-list-item prepend-icon="mdi-account-multiple" title="About" value="shared"></v-list-item>
             </router-link>
+            <v-list-item v-if="isAuth" prepend-icon="mdi-logout" title="Logout" value="logout" v-on:click="onLogoutButtonClick"></v-list-item>
         </v-list>
-        </v-navigation-drawer>
-        <v-form @submit.prevent="onLogoutButtonClick">
-            <v-btn type="submit">Logout</v-btn>
-        </v-form>
-    </v-card>
+    </v-navigation-drawer>
 </template>
 
 <script>
-    import { RouterLink, RouterView } from 'vue-router'
+import store from '@/plugins/store';
+import { mapGetters } from 'vuex';
+import { RouterLink, RouterView } from 'vue-router'
     export default { 
         data() {
             return {
-
+                
             }
         },
         methods: {
-            onLogoutButtonClick() {
-                this.$store.dispatch('authM/onLogout').then(() => {
-                        //location.reload()
-                        this.$router.push({ name: 'login' })
-                    })
-            }
-        }
+            async onLogoutButtonClick() {
+                await this.$store.dispatch('authM/onLogout');
+                //await this.$router.push({ name: 'login' });
+                location.reload();
+            },
+        },
+        computed: {
+            isAuth() {
+                return localStorage.hasOwnProperty('token');
+            },
+            ...mapGetters('authM', {
+                name: 'getUserName',
+                email: 'getUserEmail',
+                avatar: 'getUserPicture',
+            }),
+        },
      }
 </script>
 

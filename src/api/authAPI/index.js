@@ -1,4 +1,4 @@
-import { LoginAPIInstance, DefaultAPIInstance } from "@/api";
+import { LoginAPIInstance, DefaultAPIInstance, QueryAPIInstance } from "@/api";
 
 export const AuthAPI = {
     /**
@@ -25,6 +25,27 @@ export const AuthAPI = {
      */
     logout() {
         const url = 'http://localhost/drupal/web/user/logout';
-        return DefaultAPIInstance.get(url);
-    }
+        //console.log("logout отработал " + name);
+        return LoginAPIInstance.get(url);
+    },
+
+    /**
+     * 
+     * @param {Number} userPictureID
+     * @returns {Promise<AxiosResponse<any>>}
+     */
+    getUserPicture(userPictureID) {
+        const url = `http://localhost/drupal/web/jsonapi/file/file/${userPictureID}?fields[file--file]=uri`;
+        return QueryAPIInstance.get(url);
+    },
+
+    /**
+     * 
+     * @param {Number} userID 
+     * @returns {Promise<AxiosResponse<any>>}
+     */
+    getUserData(userID) {
+        const url = `http://localhost/drupal/web/jsonapi/user/user?filter[drupal_internal__uid]=${userID}&fields[user--user]=id,name,mail,user_picture`;
+        return QueryAPIInstance.get(url);
+    },
 }

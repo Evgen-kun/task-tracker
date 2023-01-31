@@ -12,8 +12,17 @@ export const LoginAPIInstance = axios.create(loginConfig);
 const defaultConfig = {
     baseURL: process.env.VUE_APP_BASE_URL,
     Headers: {
-        'Content-Type': 'text/html'
+        'Content-Type': 'application/x-www-form-urlencoded'
     }
 }
 
 export const DefaultAPIInstance = axios.create(defaultConfig);
+
+const queryConfig = {
+    baseURL: process.env.VUE_APP_BASE_URL,
+    Headers: {
+        'Content-Type': 'application/json'
+    }
+}
+
+export const QueryAPIInstance = axios.create(queryConfig);

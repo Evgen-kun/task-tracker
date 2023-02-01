@@ -1,5 +1,19 @@
 <template>
   <v-container class="about">
-    <h1 class="text-h2 font-weight-bold">This is an about page</h1>
+    <v-responsive class="d-flex align-center text-center fill-height">
+      <TasksFromMeComponent />
+    </v-responsive>
   </v-container>
 </template>
+
+<script>
+// @ is an alias to /src
+import TasksFromMeComponent from "@/components/TasksFromMeComponent.vue";
+
+export default {
+  name: "AboutView",
+  components: {
+    TasksFromMeComponent,
+  },
+};
+</script>

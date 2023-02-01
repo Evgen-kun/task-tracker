@@ -16,8 +16,10 @@
         v-bind:key="i"
         v-bind:title="task.title"
         v-bind:body="task.body"
-        v-bind:author="task.author"
-        v-bind:image="task.authorPicture">
+        v-bind:user="task.author"
+        v-bind:image="task.authorPicture"
+        v-bind:subtitle="subtitle"
+        v-bind:btn-text="btnText">
       </TaskComponent>
       
     </v-responsive>
@@ -33,6 +35,8 @@ export default {
   data() {
     return {
       //tasks: [],
+      subtitle: "Назначил задачу",
+      btnText: "Добавить ответ",
     }
   },
   methods: {

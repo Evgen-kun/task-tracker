@@ -27,13 +27,13 @@
           ></v-avatar>
         </template>
 
-        <v-list-item-title>{{ author }}</v-list-item-title>
+        <v-list-item-title>{{ user }}</v-list-item-title>
 
-        <v-list-item-subtitle>Назначил задачу</v-list-item-subtitle>
+        <v-list-item-subtitle>{{ subtitle }}</v-list-item-subtitle>
 
         <template v-slot:append>
           <div class="justify-self-end">
-            <v-btn>Добавить ответ</v-btn>
+            <v-btn>{{ btnText }}</v-btn>
           </div>
         </template>
       </v-list-item>
@@ -51,8 +51,10 @@
         props: {
             title: String,
             body: String,
-            author: String,
+            user: String,
             image: Image,
+            subtitle: String,
+            btnText: String,
         },
         methods: {
             

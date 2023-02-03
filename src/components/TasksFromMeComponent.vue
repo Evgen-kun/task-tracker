@@ -1,6 +1,9 @@
 <template>
     <v-container class="fill-height">
       <v-responsive class="d-flex align-center text-center fill-height">
+
+        <!-- <EditorComponent /> -->
+        <CreateTaskComponent />
   
         <TaskComponent
           v-for="(task, i) in tasks"
@@ -20,6 +23,8 @@
 <script>
   import store from '@/plugins/store';
   import { mapGetters } from 'vuex';
+  import EditorComponent from './EditorComponent.vue';
+  import CreateTaskComponent from './CreateTaskComponent.vue';
   import TaskComponent from './TaskComponent.vue';
   
   export default {
@@ -39,8 +44,10 @@
       }),
     },
     components: {
-      TaskComponent
-    },
+    TaskComponent,
+    EditorComponent,
+    CreateTaskComponent
+},
     async created() {
       const userUID = store.getters['authM/getUserUID'];
       await store.dispatch('taskM/queryTasksFromMe', { userUID });

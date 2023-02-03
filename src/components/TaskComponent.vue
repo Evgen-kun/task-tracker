@@ -3,7 +3,8 @@
     class="mx-auto mt-8"
     color="#26c6da"
     theme="dark"
-    max-width="400"
+    max-width="550"
+    rounded="xl"
     prepend-icon="mdi-alert-octagon-outline"
   >
 

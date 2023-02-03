@@ -23,6 +23,15 @@ export const AuthAPI = {
      * 
      * @returns {Promise<AxiosResponse<any>>}
      */
+    getToken() {
+        const url = `http://localhost/drupal/web/session/token`;
+        return LoginAPIInstance.get(url);
+    },
+
+    /**
+     * 
+     * @returns {Promise<AxiosResponse<any>>}
+     */
     logout() {
         const url = 'http://localhost/drupal/web/user/logout';
         //console.log("logout отработал " + name);

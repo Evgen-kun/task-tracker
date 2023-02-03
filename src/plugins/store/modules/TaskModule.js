@@ -1,4 +1,5 @@
 import { QueryAPIInstance } from "@/api";
+import { AuthAPI } from "@/api/authAPI";
 import { QueryAPI } from "@/api/jsonAPI";
 
 export const TaskModule = {
@@ -8,12 +9,14 @@ export const TaskModule = {
         return {
             tasks: [],
             tasksFromMe: [],
+            users: [],
         }
     },
 
     getters: {
         getUserTasks: (state) => state.tasks,
         getTasksFromMe: (state) => state.tasksFromMe,
+        getUsers: (state) => state.users,
     },
 
     mutations: {
@@ -24,6 +27,10 @@ export const TaskModule = {
 
         setTasksFromMe(state, tasks) {
             state.tasksFromMe = tasks;
+        },
+
+        setUsers(state, users) {
+            state.users = users;
         },
 
         addUserTask(state, task) {
@@ -42,6 +49,10 @@ export const TaskModule = {
 
         deleteTasksFromMe(state) {
             state.tasksFromMe = null;
+        },
+
+        deleteUsers(state) {
+            state.users = null;
         },
 
         deleteUserTask(state, taskID) {
@@ -126,6 +137,31 @@ export const TaskModule = {
             });
 
             commit('setTasksFromMe', tasks);
+        },
+
+        async getUsers({ commit }) {
+            const res = await QueryAPI.getUsers();
+            console.log(res);
+
+            const users = [];
+            //console.log(res.data.data.length);
+            res.data.data.forEach((item) => {
+                if(item.id == "52a3ddd5-2b1f-4b48-b600-14507b648d69" || item.id == "6da4f1c5-7607-4047-a6d0-011ba3e0c6cb") { return; }
+                const user = {};
+                user.id = item.id;
+                user.name = `${item.attributes.display_name} (${item.attributes.drupal_internal__uid})`;
+                users.push(user);
+            });
+
+            console.log(users);
+            commit('setUsers', users);
+        },
+
+        async createNewTask({ commit }, { title, body, executorUID }) {
+            const token = await AuthAPI.getToken();
+            console.log('X Token: ' + token);
+            const res = await QueryAPI.createTask(title, body, executorUID, token);
+            console.log(res);
         },
 
     }

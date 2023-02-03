@@ -26,3 +26,13 @@ const queryConfig = {
 }
 
 export const QueryAPIInstance = axios.create(queryConfig);
+
+const postQueryConfig = {
+    baseURL: process.env.VUE_APP_BASE_URL,
+    Headers: {
+        'Accept': 'application/vnd.api+json',
+        'Content-Type': 'application/vnd.api+json',
+    }
+}
+
+export const PostQueryAPIInstance = axios.create(postQueryConfig);

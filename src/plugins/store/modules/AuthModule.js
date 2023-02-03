@@ -8,6 +8,7 @@ export const AuthModule = {
             credentials: {
                 //isAuthorized: localStorage.hasOwnProperty('token'),
                 token: localStorage.getItem('token') || null,
+                basicToken: localStorage.getItem('basicToken') || null,
                 userUID: localStorage.getItem('userUID') || null,
                 userID: localStorage.getItem('userID') || null,
                 userName: localStorage.getItem('userName') || null,
@@ -20,6 +21,7 @@ export const AuthModule = {
 
     getters: {
         getToken: (state) => state.credentials.token,
+        getBasicToken: (state) => state.credentials.basicToken,
         getUserUID: (state) => state.credentials.userUID,
         getUserID: (state) => state.credentials.userID,
         getUserName: (state) => state.credentials.userName,
@@ -32,6 +34,11 @@ export const AuthModule = {
         setToken(state, token) {
             state.credentials.token = token;
             localStorage.setItem('token', token);
+        },
+
+        setBasicToken(state, basicToken) {
+            state.credentials.basicToken = basicToken;
+            localStorage.setItem('basicToken', basicToken);
         },
 
         /*setUser(state, userUID, userID, userName, userEmail, userPicture) {
@@ -77,6 +84,11 @@ export const AuthModule = {
         deleteToken(state) {
             state.credentials.token = null;
             localStorage.removeItem('token');
+        },
+
+        deleteBasicToken(state) {
+            state.credentials.basicToken = null;
+            localStorage.removeItem('basicToken');
         },
 
         /*deleteUser(state) {
@@ -129,7 +141,13 @@ export const AuthModule = {
             const userPictureData = await AuthAPI.getUserPicture(userPictureID);
             const userPicture = userPictureData.data.data.attributes.uri.url;
 
-            commit('setToken', "res.statusCode");
+            const token = await AuthAPI.getToken();
+            console.log("X token: " + token.data);
+
+            const basicToken = btoa(userName + ":" + password);
+
+            commit('setToken', token.data);
+            commit('setBasicToken', basicToken);
             //commit('setUser', userUID, userID, userName, userEmail, userPicture);
             commit('setUserUID', userUID);
             commit('setUserID', userID);
@@ -139,7 +157,7 @@ export const AuthModule = {
             console.log(login + " залогинен, id: " + res.headers.link.split(';')[0].substr(-2, 1));
             //commit('setUserRole', res.userRole);
             //DefaultAPIInstance.defaults.headers['Authorization'] = `Basic ${(String(login) + String(password)).toString('base64')}`;
-            //DefaultAPIInstance.defaults.headers['Cookie'] = `${res.headers['set-cookie']}`;
+            //DefaultAPIInstance.defaults.headers['X-CSRF-Token'] = `${res.headers['set-cookie']}`;
             
         },
 
@@ -147,6 +165,7 @@ export const AuthModule = {
             const res = await AuthAPI.logout();
 
             commit('deleteToken');
+            commit('deleteBasicToken');
             commit('deleteUserUID');
             commit('deleteUserID');
             commit('deleteUserName');

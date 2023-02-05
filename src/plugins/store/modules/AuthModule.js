@@ -14,7 +14,7 @@ export const AuthModule = {
                 userName: localStorage.getItem('userName') || null,
                 userEmail: localStorage.getItem('userEmail') || null,
                 userPicture: localStorage.getItem('userPicture') || '/drupal/web/sites/default/files/inline-images/anonym.png',
-                //userRole: localStorage.getItem('userRole') || 'anonymous'
+                //userRole: localStorage.getItem('userRole') || null,
             }
         }
     },
@@ -146,6 +146,17 @@ export const AuthModule = {
 
             const basicToken = btoa(userName + ":" + password);
 
+            /*const users = await AuthAPI.getUsersREST();
+            console.log(users.data);
+            var userRole = null;
+            for(let i = 0; i < users.data.length; i++) {
+                if(users.data[i].uuid[0].value == userUID) {
+                    userRole = users.data[i].roles[0].target_id;
+                    break;
+                }
+            }
+            console.log(userRole);*/
+
             commit('setToken', token.data);
             commit('setBasicToken', basicToken);
             //commit('setUser', userUID, userID, userName, userEmail, userPicture);
@@ -155,7 +166,7 @@ export const AuthModule = {
             commit('setUserEmail', userEmail);
             commit('setUserPicture', userPicture);
             console.log(login + " залогинен, id: " + res.headers.link.split(';')[0].substr(-2, 1));
-            //commit('setUserRole', res.userRole);
+            //commit('setUserRole', userRole);
             //DefaultAPIInstance.defaults.headers['Authorization'] = `Basic ${(String(login) + String(password)).toString('base64')}`;
             //DefaultAPIInstance.defaults.headers['X-CSRF-Token'] = `${res.headers['set-cookie']}`;
             

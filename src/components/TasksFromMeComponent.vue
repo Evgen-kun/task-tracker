@@ -8,9 +8,11 @@
         <TaskComponent
           v-for="(task, i) in tasks"
           v-bind:key="i"
+          v-bind:taskID="task.id"
           v-bind:title="task.title"
           v-bind:body="task.body"
           v-bind:user="task.executor"
+          v-bind:userUID="task.executorUID"
           v-bind:image="task.executorPicture"
           v-bind:subtitle="subtitle"
           v-bind:btn-text="btnText">

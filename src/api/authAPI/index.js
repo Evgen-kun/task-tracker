@@ -32,6 +32,15 @@ export const AuthAPI = {
      * 
      * @returns {Promise<AxiosResponse<any>>}
      */
+    getUsersREST() {
+        const url = `http://localhost/drupal/web/all_users`;
+        return LoginAPIInstance.get(url);
+    },
+
+    /**
+     * 
+     * @returns {Promise<AxiosResponse<any>>}
+     */
     logout() {
         const url = 'http://localhost/drupal/web/user/logout';
         //console.log("logout отработал " + name);

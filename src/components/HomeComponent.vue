@@ -14,6 +14,7 @@
       <TaskComponent
         v-for="(task, i) in tasks"
         v-bind:key="i"
+        v-bind:taskID="task.id"
         v-bind:title="task.title"
         v-bind:body="task.body"
         v-bind:user="task.author"

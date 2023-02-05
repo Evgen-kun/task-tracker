@@ -2,7 +2,7 @@
   <v-app>
     <NavigationComponent />
     <v-main>
-      <router-view />
+      <router-view :key="$route.path"/>
     </v-main>
   </v-app>
 </template>

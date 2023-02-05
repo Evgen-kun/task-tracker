@@ -10,7 +10,7 @@ const authGuard = function(to, from, next) {
 
 const managerAuthGuard = function(to, from, next) {
   if (!localStorage.hasOwnProperty('token')) next({ name: 'login' });
-  //else if (localStorage.getItem('userRole') !== 'Moderator') next({ name: 'home' });
+  //else if (localStorage.getItem('userRole') == 'developer') next({ name: 'home' });
   else next();
 }
 

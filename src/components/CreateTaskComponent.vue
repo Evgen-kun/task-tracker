@@ -14,7 +14,7 @@
       <div v-show="show">
         <v-divider></v-divider>
         <v-card-text>
-            <v-form v-model="valid" @submit.prevent="createTask">
+            <v-form ref="createTaskForm" @submit.prevent="createTask">
                 <v-container>
                     <v-text-field
                         label="Заголовок*"
@@ -58,7 +58,6 @@ import { mapGetters } from 'vuex';
     export default {
         data() {
             return {
-                valid: false,
                 title: "Создать задачу",
                 show: false,
                 taskTitle: "",
@@ -82,13 +81,14 @@ import { mapGetters } from 'vuex';
         },
         methods: {
             async createTask() {
-                if(this.valid) {
-                    //console.log(this.taskTitle);
-                    //console.log(this.text);
-                    //console.log(this.executor);
+                const { valid } = await this.$refs.createTaskForm.validate();
+
+                if(valid) {
                     await store.dispatch('taskM/createNewTask', { title: this.taskTitle, body: this.text, executorUID: this.executor});
+                    this.$refs.createTaskForm.reset();
+                    this.$refs.createTaskForm.resetValidation();
                 }
-                else alert("NOT validate");
+                //else alert("NOT validate");
             },
         },
         computed: {

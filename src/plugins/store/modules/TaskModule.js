@@ -1,5 +1,3 @@
-import { QueryAPIInstance } from "@/api";
-import { AuthAPI } from "@/api/authAPI";
 import { QueryAPI } from "@/api/jsonAPI";
 
 export const TaskModule = {
@@ -42,6 +40,12 @@ export const TaskModule = {
             state.tasksFromMe.push(task);
         },
 
+        editTaskFromMe(state, newTask) {
+            state.tasksFromMe.forEach((task, i) => {
+                if (task.id == newTask.id) state.tasksFromMe[i] = newTask;
+            });
+        },
+
         deleteTasks(state) {
             state.tasks = null;
             //localStorage.removeItem('tasks');
@@ -56,14 +60,14 @@ export const TaskModule = {
         },
 
         deleteUserTask(state, taskID) {
-            state.tasks.forEach(function(task, i) {
+            state.tasks.forEach((task, i) => {
                 if (task.id == taskID) state.tasks.splice(i, 1);
             });
             //localStorage.setItem('tasks', state.tasks);
         },
 
         deleteTaskFromMe(state, taskID) {
-            state.tasksFromMe.forEach(function(task, i) {
+            state.tasksFromMe.forEach((task, i) => {
                 if (task.id == taskID) state.tasksFromMe.splice(i, 1);
             });
         },
@@ -80,7 +84,7 @@ export const TaskModule = {
                 const task = {};
                 task.id = item.id;
                 task.title = item.attributes.title;
-                task.body = item.attributes.body.processed.replace(/(<p>|<\/p>)/g, '');
+                task.body = (item.attributes.body !== null)? item.attributes.body.processed.replace(/(<p>|<\/p>)/g, '') : null;
                 task.authorUID = item.relationships.uid.data.id;
 
                 res.data.included.forEach((itemInc, j) => {
@@ -101,6 +105,7 @@ export const TaskModule = {
                 tasks.push(task);
             });
 
+            console.log(tasks);
             commit('setTasks', tasks);
         },
 
@@ -114,7 +119,7 @@ export const TaskModule = {
                 const task = {};
                 task.id = item.id;
                 task.title = item.attributes.title;
-                task.body = item.attributes.body.processed.replace(/(<p>|<\/p>)/g, '');
+                task.body = (item.attributes.body !== null)? item.attributes.body.processed.replace(/(<p>|<\/p>)/g, '') : null;
                 task.executorUID = item.relationships.field_ispolnitel.data.id;
 
                 res.data.included.forEach((itemInc, j) => {
@@ -158,10 +163,45 @@ export const TaskModule = {
         },
 
         async createNewTask({ commit }, { title, body, executorUID }) {
-            const token = await AuthAPI.getToken();
-            console.log('X Token: ' + token);
-            const res = await QueryAPI.createTask(title, body, executorUID, token);
+            const res = await QueryAPI.createTask(title, body, executorUID);
             console.log(res);
+
+            const task = {};
+            task.id = res.data.data.id;
+            task.title = res.data.data.attributes.title;
+            task.body = (res.data.data.attributes.body !== null)? res.data.data.attributes.body.processed.replace(/(<p>|<\/p>)/g, '') : null;
+            task.executorUID = res.data.data.relationships.field_ispolnitel.data.id;
+            const json = await QueryAPI.getUserData(res.data.data.relationships.field_ispolnitel.data.id);
+            task.executor = json.data.data.attributes.display_name;
+            task.executorPicture = json.data.included[0].attributes.uri.url;
+
+            console.log(task);
+            commit('addTaskFromMe', task);
+        },
+
+        async editTask({ commit }, { id, title, body, executorUID }) {
+            const res = await QueryAPI.editTask(id, title, body, executorUID);
+            console.log(res);
+
+            const task = {};
+            task.id = id;
+            task.title = res.data.data.attributes.title;
+            task.body = (res.data.data.attributes.body !== null)? res.data.data.attributes.body.processed.replace(/(<p>|<\/p>)/g, '') : null;
+            task.executorUID = res.data.data.relationships.field_ispolnitel.data.id;
+            const json = await QueryAPI.getUserData(res.data.data.relationships.field_ispolnitel.data.id);
+            task.executor = json.data.data.attributes.display_name;
+            task.executorPicture = json.data.included[0].attributes.uri.url;
+
+            console.log(task);
+            commit('editTaskFromMe', task);
+        },
+
+        async deleteTask({ commit }, { id }) {
+            console.log("Task id: " + id);
+            const res = await QueryAPI.deleteTask(id);
+            console.log(res);
+
+            commit('deleteTaskFromMe', id);
         },
 
     }

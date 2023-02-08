@@ -20,7 +20,11 @@
         v-bind:user="task.author"
         v-bind:image="task.authorPicture"
         v-bind:subtitle="subtitle"
-        v-bind:btn-text="btnText">
+        v-bind:btn-text="btnText"
+        
+        v-bind:propLastAnsTitle="task.ans.title"
+        v-bind:propLastAnsText="task.ans.body"
+        v-bind:propLastAnsFiles="task.ans.files">
       </TaskComponent>
       
     </v-responsive>
@@ -53,6 +57,7 @@ export default {
   },
   async created() {
     const userUID = store.getters['authM/getUserUID'];
+    console.log(store.getters['authM/getToken']);
     await store.dispatch('taskM/query', { userUID });
   }
 }

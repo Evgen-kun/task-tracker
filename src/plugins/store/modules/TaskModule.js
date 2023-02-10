@@ -41,7 +41,7 @@ export const TaskModule = {
 
         addAnswer(state, taskWithAnswer) {
             state.tasks.forEach((task, i) => {
-                if (task.id == taskWithAnswer.id) state.tasks[i] = taskWithAnswer;
+                if (task.id === taskWithAnswer.id) state.tasks[i] = taskWithAnswer;
             });
         },
 
@@ -51,7 +51,7 @@ export const TaskModule = {
 
         editTaskFromMe(state, newTask) {
             state.tasksFromMe.forEach((task, i) => {
-                if (task.id == newTask.id) state.tasksFromMe[i] = newTask;
+                if (task.id === newTask.id) state.tasksFromMe[i] = newTask;
             });
         },
 
@@ -70,14 +70,14 @@ export const TaskModule = {
 
         deleteUserTask(state, taskID) {
             state.tasks.forEach((task, i) => {
-                if (task.id == taskID) state.tasks.splice(i, 1);
+                if (task.id === taskID) state.tasks.splice(i, 1);
             });
             //localStorage.setItem('tasks', state.tasks);
         },
 
         deleteTaskFromMe(state, taskID) {
             state.tasksFromMe.forEach((task, i) => {
-                if (task.id == taskID) state.tasksFromMe.splice(i, 1);
+                if (task.id === taskID) state.tasksFromMe.splice(i, 1);
             });
         },
     },
@@ -99,8 +99,8 @@ export const TaskModule = {
                 task.authorUID = item.relationships.uid.data.id;
 
                 res.data.included.forEach((itemInc, j) => {
-                    if(itemInc.type == 'user--user') {
-                        if(itemInc.id == task.authorUID) { 
+                    if(itemInc.type === 'user--user') {
+                        if(itemInc.id === task.authorUID) {
                             task.author = itemInc.attributes.display_name;
                             task.authorPictureID = itemInc.relationships.user_picture.data.id;
                         }
@@ -108,39 +108,40 @@ export const TaskModule = {
                 });
 
                 res.data.included.forEach((itemInc, j) => {
-                    if(itemInc.type == 'file--file') {
-                        if(itemInc.id == task.authorPictureID) task.authorPicture = itemInc.attributes.uri.url;
+                    if(itemInc.type === 'file--file') {
+                        if(itemInc.id === task.authorPictureID) task.authorPicture = itemInc.attributes.uri.url;
                     }
                 });
 
-                task.ans = {};
+                task.answers = [];
                 var maxCID = -1;
                 comments.data.data.forEach((com) => {
-                    if((com.relationships.entity_id.data.id == task.id) && (maxCID < com.attributes.drupal_internal__cid)) { 
-                        task.ans.id = com.id;
-                        task.ans.title = com.attributes.subject;
-                        task.ans.body = com.attributes.comment_body.processed.replace(/(<p>|<\/p>)/g, '');
-                        task.ans.filesID = [];
-                        task.ans.files = [];
+                    if((com.relationships.entity_id.data.id === task.id) && (maxCID < com.attributes.drupal_internal__cid)) {
+                        task.answers[0] = {};
+                        task.answers[0].id = com.id;
+                        task.answers[0].title = com.attributes.subject;
+                        task.answers[0].body = com.attributes.comment_body.processed.replace(/(<p>|<\/p>)/g, '');
+                        task.answers[0].filesID = [];
+                        task.answers[0].files = [];
                         console.log(com.relationships.field_file.data);
-                        if(com.relationships.field_file.data.length != 0) {
+                        if(com.relationships.field_file.data.length !== 0) {
                             com.relationships.field_file.data.forEach((file) => {
-                                task.ans.filesID.push(file.id);
+                                task.answers[0].filesID.push(file.id);
                             });
                         }
                         maxCID = com.attributes.drupal_internal__cid;
-                    } 
+                    }
                     else { return; }
 
                     if(comments.data.hasOwnProperty('included')) {
                         comments.data.included.forEach((itemInc) => {
-                            if(task.ans.filesID.includes(itemInc.id)) {
+                            if(task.answers[0].filesID.includes(itemInc.id)) {
                                 const file = {
                                     id: itemInc.id,
                                     name: itemInc.attributes.filename,
                                     links: itemInc.attributes.uri
                                 };
-                                task.ans.files.push(file);
+                                task.answers[0].files.push(file);
                             }
                             else { return; }
                         });
@@ -156,7 +157,9 @@ export const TaskModule = {
 
         async queryTasksFromMe({ commit }, { userUID }) {
             const res = await QueryAPI.getMyTasks(userUID);
+            const comments = await AnsQueryAPI.getAnswers();
             console.log(res);
+            console.log(comments);
 
             const tasks = [];
             res.data.data.forEach((item, i) => {
@@ -168,8 +171,8 @@ export const TaskModule = {
                 task.executorUID = item.relationships.field_ispolnitel.data.id;
 
                 res.data.included.forEach((itemInc, j) => {
-                    if(itemInc.type == 'user--user') {
-                        if(itemInc.id == task.executorUID) { 
+                    if(itemInc.type === 'user--user') {
+                        if(itemInc.id === task.executorUID) {
                             task.executor = itemInc.attributes.display_name;
                             task.executorPictureID = itemInc.relationships.user_picture.data.id;
                         }
@@ -177,8 +180,44 @@ export const TaskModule = {
                 });
 
                 res.data.included.forEach((itemInc, j) => {
-                    if(itemInc.type == 'file--file') {
-                        if(itemInc.id == task.executorPictureID) task.executorPicture = itemInc.attributes.uri.url;
+                    if(itemInc.type === 'file--file') {
+                        if(itemInc.id === task.executorPictureID) task.executorPicture = itemInc.attributes.uri.url;
+                    }
+                });
+
+                task.answers = [];
+                var j = -1;
+                comments.data.data.forEach((com) => {
+                    if(com.relationships.entity_id.data.id === task.id) {
+                        j += 1;
+                        task.answers[j] = {};
+                        task.answers[j].id = com.id;
+                        task.answers[j].title = com.attributes.subject;
+                        task.answers[j].body = com.attributes.comment_body.processed.replace(/(<p>|<\/p>)/g, '');
+                        task.answers[j].filesID = [];
+                        task.answers[j].files = [];
+                        console.log(com.relationships.field_file.data);
+                        if(com.relationships.field_file.data.length !== 0) {
+                            com.relationships.field_file.data.forEach((file) => {
+                                task.answers[j].filesID.push(file.id);
+                            });
+                        }
+                    }
+                    else { return; }
+
+                    if(comments.data.hasOwnProperty('included')) {
+                        comments.data.included.forEach((itemInc) => {
+                            if(task.answers[j].filesID.includes(itemInc.id)) {
+                                const file = {
+                                    id: itemInc.id,
+                                    name: itemInc.attributes.filename,
+                                    link: itemInc.attributes.uri.url
+                                };
+                                console.log('links: ' + file.link);
+                                task.answers[j].files.push(file);
+                            }
+                            else { return; }
+                        });
                     }
                 });
 
@@ -196,7 +235,7 @@ export const TaskModule = {
             const users = [];
             //console.log(res.data.data.length);
             res.data.data.forEach((item) => {
-                if(item.id == "52a3ddd5-2b1f-4b48-b600-14507b648d69" || item.id == "6da4f1c5-7607-4047-a6d0-011ba3e0c6cb") { return; }
+                if(item.id === "52a3ddd5-2b1f-4b48-b600-14507b648d69" || item.id === "6da4f1c5-7607-4047-a6d0-011ba3e0c6cb") { return; }
                 const user = {};
                 user.id = item.id;
                 user.name = `${item.attributes.display_name} (${item.attributes.drupal_internal__uid})`;
@@ -224,15 +263,20 @@ export const TaskModule = {
             commit('addTaskFromMe', task);
         },
 
-        async editTask({ commit }, { id, title, body, executorUID }) {
+        async editTask({ commit, getters }, { id, title, body, executorUID }) {
             const res = await QueryAPI.editTask(id, title, body, executorUID);
             console.log(res);
 
-            const task = {};
-            task.id = id;
+            const task = getters.getTaskFromMeByID(id);
             task.title = res.data.data.attributes.title;
             task.body = (res.data.data.attributes.body !== null)? res.data.data.attributes.body.processed.replace(/(<p>|<\/p>)/g, '') : null;
             task.executorUID = res.data.data.relationships.field_ispolnitel.data.id;
+
+            /*const task = {};
+            task.id = id;
+            task.title = res.data.data.attributes.title;
+            task.body = (res.data.data.attributes.body !== null)? res.data.data.attributes.body.processed.replace(/(<p>|<\/p>)/g, '') : null;
+            task.executorUID = res.data.data.relationships.field_ispolnitel.data.id;*/
             const json = await QueryAPI.getUserData(res.data.data.relationships.field_ispolnitel.data.id);
             task.executor = json.data.data.attributes.display_name;
             task.executorPicture = json.data.included[0].attributes.uri.url;
@@ -257,13 +301,13 @@ export const TaskModule = {
             const task = getters.getUserTaskByID(taskUID);
 
             task.ans = {};
-            
+
             task.ans.id = res.data.data.id;
             task.ans.title = res.data.data.attributes.subject;
             task.ans.body = res.data.data.attributes.comment_body.processed.replace(/(<p>|<\/p>)/g, '');
             task.ans.filesID = [];
             task.ans.files = files;
-            if(res.data.data.relationships.field_file.data.length != 0) {
+            if(res.data.data.relationships.field_file.data.length !== 0) {
                 res.data.data.relationships.field_file.data.forEach((file) => {
                     task.ans.filesID.push(file.id);
                 });

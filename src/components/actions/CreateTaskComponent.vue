@@ -6,9 +6,11 @@
     rounded="xl"
   >
 
-    <v-card-title @click="show = !show">
-        {{ title }}
-    </v-card-title>
+    <div @click="show = !show" style="cursor: pointer;">
+        <v-card-title>
+            {{ title }}
+        </v-card-title>
+    </div>
 
     <v-expand-transition>
       <div v-show="show">
@@ -40,7 +42,7 @@
                     ></v-autocomplete>
 
                     <small>*обязательное поле</small>
-                    <v-btn block type="submit" rounded="lg">Создать</v-btn>
+                    <v-btn block type="submit" color="black" rounded="lg">Создать</v-btn>
                 </v-container>
             </v-form>
         </v-card-text>

@@ -14,8 +14,8 @@
           v-bind:user="task.executor"
           v-bind:userUID="task.executorUID"
           v-bind:image="task.executorPicture"
-          v-bind:subtitle="subtitle"
-          v-bind:btn-text="btnText">
+          v-bind:answers="task.answers"
+          v-bind:subtitle="subtitle">
         </TaskComponent>
         
       </v-responsive>
@@ -25,8 +25,8 @@
 <script>
   import store from '@/plugins/store';
   import { mapGetters } from 'vuex';
-  import EditorComponent from './EditorComponent.vue';
-  import CreateTaskComponent from './CreateTaskComponent.vue';
+  //import EditorComponent from './EditorComponent.vue';
+  import CreateTaskComponent from './actions/CreateTaskComponent.vue';
   import TaskComponent from './TaskComponent.vue';
   
   export default {
@@ -47,7 +47,7 @@
     },
     components: {
     TaskComponent,
-    EditorComponent,
+    //EditorComponent,
     CreateTaskComponent
 },
     async created() {

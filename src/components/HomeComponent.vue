@@ -19,14 +19,10 @@
         v-bind:body="task.body"
         v-bind:user="task.author"
         v-bind:image="task.authorPicture"
-        v-bind:subtitle="subtitle"
-        v-bind:btn-text="btnText"
-        
-        v-bind:propLastAnsTitle="task.ans.title"
-        v-bind:propLastAnsText="task.ans.body"
-        v-bind:propLastAnsFiles="task.ans.files">
+        v-bind:answers="task.answers"
+        v-bind:subtitle="subtitle">
       </TaskComponent>
-      
+
     </v-responsive>
   </v-container>
 </template>

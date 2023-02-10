@@ -7,8 +7,8 @@ export const AnsQueryAPI = {
      * @param {string} userUID
      * @returns {Promise<AxiosResponse<any>>}
      */
-    getAnswers(userUID) {
-        const url = `http://localhost/drupal/web/jsonapi/node/task?include=uid.user_picture&filter[field_ispolnitel.id]=${userUID}&fields[node--task]=id,title,body,uid&fields[user--user]=id,display_name,user_picture&fields[file--file]=id,uid,uri`;
+    getAnswers() {
+        const url = `http://localhost/drupal/web/jsonapi/comment/answer?include=field_file`;
         return QueryAPIInstance.get(url);
     },
 
@@ -68,8 +68,23 @@ export const AnsQueryAPI = {
         return PostQueryAPIInstance.post(url, data);
     },
 
-    async createFile() {
-
+    async createFile(fileName, fileBody) {
+        const url = `http://localhost/drupal/web/jsonapi/file/file`;
+        const data = {
+            data: {
+                type: "file--file",
+                meta: {
+                    description: ""
+                }
+            }
+        };
+        const data1 = Buffer.from(fileBody, 'binary');
+        PostQueryAPIInstance.defaults.headers['Accept'] = 'application/vnd.api+json';
+        PostQueryAPIInstance.defaults.headers['Content-Type'] = 'application/octet-stream';
+        PostQueryAPIInstance.defaults.headers['Content-Disposition'] = 'file; filename="' + fileName + '"';
+        PostQueryAPIInstance.defaults.headers['Authorization'] = `Basic ${await store.getters['authM/getBasicToken']}`;
+        PostQueryAPIInstance.defaults.headers['X-CSRF-Token'] = await store.getters['authM/getToken'];
+        return PostQueryAPIInstance.post(url, data1);
     },
 
 }

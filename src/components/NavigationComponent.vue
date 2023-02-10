@@ -1,6 +1,13 @@
 <template>
+    <v-app-bar
+        color="primary"
+        title="Task Tracker"
+        density="compact"
+      ><v-spacer></v-spacer></v-app-bar>
+
     <v-navigation-drawer
         expand-on-hover
+        permanent
         rail
         >
         <v-list>
@@ -32,7 +39,7 @@ import { RouterLink, RouterView } from 'vue-router'
     export default { 
         data() {
             return {
-                
+                drawer: false,
             }
         },
         methods: {

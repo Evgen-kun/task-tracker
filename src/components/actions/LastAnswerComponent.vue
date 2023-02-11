@@ -9,6 +9,11 @@
 
             <v-textarea label="Описание" v-model="lastAnsText"></v-textarea>
 
+            <v-text-field
+                v-model="select"
+                label="Прогресс выполнения"
+            ></v-text-field>
+
             <v-file-input
                 v-if="lastAnsFiles.length !== 0"
                 v-model="lastAnsFiles"
@@ -39,16 +44,23 @@
     export default {
         data() {
             return {
-                lastAnsTitle: (this.answers.length !== 0)? this.answers[0].title : null,
-                lastAnsText: (this.answers.length !== 0)? this.answers[0].body : null,
-                lastAnsFiles: (this.answers.length !== 0)? this.answers[0].files : [],
+
             }
         },
         props: {
-            answers: Array,
+            title: String,
+            body: String,
+            files: Array,
+            taskProgress: String,
         },
         methods: {
             
+        },
+        computed: {
+            select() { return this.taskProgress },
+            lastAnsTitle() { return this.title; },
+            lastAnsText() { return this.body; },
+            lastAnsFiles() { return this.files; },
         },
     }
 </script>

@@ -1,15 +1,23 @@
 <template>
     <v-card
     class="mx-auto mt-8"
-    color="#26c6da"
+    :color="color.get(taskStatus)"
     theme="dark"
     max-width="550"
     rounded="xl"
-    prepend-icon="mdi-alert-octagon-outline"
+    :prepend-icon="icon"
   >
 
     <template v-slot:prepend>
-      <v-icon size="x-large"></v-icon>
+      <v-progress-circular
+        v-if="(taskProgress.slice(0, -1) !== '0') && (taskProgress.slice(0, -1) !== '100')"
+        :rotate="360"
+        :width="7"
+        :model-value="Number(taskProgress.slice(0, -1))"
+        color="wight"
+      >
+      </v-progress-circular>
+      <v-icon v-else size="x-large"></v-icon>
     </template>
 
     <v-card-text class="text-h4 py-2">
@@ -84,7 +92,12 @@
       <div v-show="showLastAns">
         <v-divider></v-divider>
         <v-card-text>
-            <LastAnswerComponent :answers="answers"/>
+            <LastAnswerComponent 
+              v-bind:title="lastAnswer.title"
+              v-bind:body="lastAnswer.body"
+              v-bind:files="lastAnswer.files"
+              v-bind:taskProgress="taskProgress"
+            ></LastAnswerComponent>
         </v-card-text>
       </div>
     </v-expand-transition>
@@ -94,10 +107,11 @@
         <v-divider></v-divider>
           <ShowAnswerComponent
             v-for="(answer, i) in answers"
-            v-bind:key="i"
+            v-bind:key="answer.id"
             v-bind:i="i"
             v-bind:title="answer.title"
             v-bind:body="answer.body"
+            v-bind:progress="answer.progress"
             v-bind:files="answer.files"
           >
           </ShowAnswerComponent>
@@ -110,6 +124,7 @@
         <v-card-text>
             <EditTaskComponent
             v-bind:taskID="taskID"
+            v-bind:taskStatus="taskStatus"
             v-bind:title="title"
             v-bind:body="body"
             v-bind:userUID="userUID"
@@ -135,6 +150,7 @@ import ShowAnswerComponent from './actions/ShowAnswerComponent.vue';
 import CreateAnswerComponent from './actions/CreateAnswerComponent.vue';
 import EditTaskComponent from './actions/EditTaskComponent.vue';
 import LastAnswerComponent from './actions/LastAnswerComponent.vue';
+import { mapGetters } from 'vuex';
 
     export default {
         data() {
@@ -143,6 +159,15 @@ import LastAnswerComponent from './actions/LastAnswerComponent.vue';
               showCreateAns: false,
               showAnswers: false,
               showLastAns: false,
+
+              color: new Map([
+                ['Выполнено', '#009400'], 
+                ['Не выполнено', '#3055db'],
+                ['Выполняется', '#26c6da'],
+                ['Не определено', '#c7c9c8'],
+              ]),
+
+              //progress: Number(this.taskProgress.slice(0, -1)),
             }
         },
         props: {
@@ -154,9 +179,22 @@ import LastAnswerComponent from './actions/LastAnswerComponent.vue';
             image: Image,
             subtitle: String,
             answers: Array,
+            taskStatus: String,
+            taskProgress: String,
         },
         methods: {
             
+        },
+        computed: {
+            icon() {
+              const progress = Number(this.taskProgress.slice(0, -1));
+              if(progress === 100) return "mdi-check-circle-outline";
+              if(progress === 0) return "mdi-alert-octagon-outline";
+            },
+            lastAnswer() {
+              if(this.answers.length !== 0) return this.answers[this.answers.length - 1];
+              else return { title: null, body: null, files: [] };
+            },
         },
         components: {
             ShowAnswerComponent,

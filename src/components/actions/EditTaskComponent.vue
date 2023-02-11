@@ -24,6 +24,13 @@
                 required
             ></v-autocomplete>
 
+            <v-select
+                v-model="select"
+                :items="[...statuses.values()]"
+                label="Статус задачи"
+                single-line
+            ></v-select>
+
             <small>*обязательное поле</small><br>
             <v-btn type="submit" rounded="pill" variant="elevated">Применить</v-btn>
             <v-btn type="button" rounded="pill" variant="elevated" @click="deleteTask">Удалить</v-btn>
@@ -41,6 +48,7 @@ import { mapGetters } from 'vuex';
                 taskTitle: this.title,
                 text: this.body,
                 executorUID: this.userUID,
+                select: this.taskStatus,
 
                 titleRules: [
                   v => !!v || 'Требуется заголовок',
@@ -56,6 +64,7 @@ import { mapGetters } from 'vuex';
         },
         props: {
             taskID: String,
+            taskStatus: String,
             title: String,
             body: String,
             userUID: String,
@@ -65,7 +74,13 @@ import { mapGetters } from 'vuex';
               const { valid } = await this.$refs.taskForm.validate();
 
               if(valid) {
-                    await store.dispatch('taskM/editTask', {id: this.taskID, title: this.taskTitle, body: this.text, executorUID: this.executorUID});
+                    await store.dispatch('taskM/editTask', {
+                        id: this.taskID, 
+                        title: this.taskTitle, 
+                        body: this.text, 
+                        executorUID: this.executorUID, 
+                        status: this.select
+                    });
                 }
                 //else alert("NOT validate");
             },
@@ -79,6 +94,7 @@ import { mapGetters } from 'vuex';
         computed: {
             ...mapGetters('taskM', {
                 users: 'getUsers',
+                statuses: 'getStatuses',
             }),
         },
     }

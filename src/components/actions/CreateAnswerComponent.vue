@@ -13,6 +13,14 @@
 
             <v-textarea label="Описание" v-model="ansText" :rules="textAnsRules" required clearable></v-textarea>
 
+            <v-select
+                v-model="select"
+                :items="[...progress.values()]"
+                label="Прогресс выполнения"
+                single-line
+                required
+            ></v-select>
+
             <v-file-input
                 v-model="files"
                 placeholder="Загрузите ваш ответ"
@@ -45,12 +53,14 @@
 
 <script>
 import store from '@/plugins/store';
+import { mapGetters } from 'vuex';
 
     export default {
         data() {
             return {
                 ansTitle: "",
                 ansText: "",
+                select: "0%",
                 files: [],
 
                 titleRules: [
@@ -71,7 +81,13 @@ import store from '@/plugins/store';
               const { valid } = await this.$refs.ansForm.validate();
 
               if(valid) {
-                    await store.dispatch('taskM/createAnswer', {title: this.ansTitle, body: this.ansText, taskUID: this.taskID, files: this.files});
+                    await store.dispatch('taskM/createAnswer', {
+                        title: this.ansTitle, 
+                        body: this.ansText, 
+                        taskUID: this.taskID, 
+                        progress: this.select, 
+                        files: this.files
+                    });
                 }
                 else alert("Ans is NOT validate");
                 console.log(this.files);
@@ -81,6 +97,11 @@ import store from '@/plugins/store';
               this.files = [];
               this.$refs.ansForm.resetValidation();
             },
+        },
+        computed: {
+            ...mapGetters('taskM', {
+                progress: 'getProgress',
+            }),
         },
     }
 </script>

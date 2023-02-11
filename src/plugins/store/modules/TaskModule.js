@@ -9,6 +9,8 @@ export const TaskModule = {
             tasks: [],
             tasksFromMe: [],
             users: [],
+            statuses: new Map(),
+            progress: new Map(),
         }
     },
 
@@ -18,6 +20,8 @@ export const TaskModule = {
         getTasksFromMe: (state) => state.tasksFromMe,
         getTaskFromMeByID: (state) => (id) => { return state.tasksFromMe.find(task => task.id === id) },
         getUsers: (state) => state.users,
+        getStatuses: (state) => state.statuses,
+        getProgress: (state) => state.progress,
     },
 
     mutations: {
@@ -32,6 +36,14 @@ export const TaskModule = {
 
         setUsers(state, users) {
             state.users = users;
+        },
+
+        setStatuses(state, statuses) {
+            state.statuses = statuses;
+        },
+
+        setProgress(state, progress) {
+            state.progress = progress;
         },
 
         addUserTask(state, task) {
@@ -68,6 +80,14 @@ export const TaskModule = {
             state.users = null;
         },
 
+        deleteStatuses(state) {
+            state.statuses = null;
+        },
+
+        deleteProgress(state) {
+            state.progress = null;
+        },
+
         deleteUserTask(state, taskID) {
             state.tasks.forEach((task, i) => {
                 if (task.id === taskID) state.tasks.splice(i, 1);
@@ -83,7 +103,7 @@ export const TaskModule = {
     },
 
     actions: {
-        async query({ commit }, { userUID }) {
+        async query({ commit, getters }, { userUID }) {
             const res = await QueryAPI.getTasks(userUID);
             const comments = await AnsQueryAPI.getMyAnswers(userUID);
             console.log(res);
@@ -97,6 +117,8 @@ export const TaskModule = {
                 task.title = item.attributes.title;
                 task.body = (item.attributes.body !== null)? item.attributes.body.processed.replace(/(<p>|<\/p>)/g, '') : null;
                 task.authorUID = item.relationships.uid.data.id;
+                task.status = getters.getStatuses.get(item.relationships.field_status.data.id) ?? 'Не определено';
+                task.progress = '0%';
 
                 res.data.included.forEach((itemInc, j) => {
                     if(itemInc.type === 'user--user') {
@@ -116,11 +138,14 @@ export const TaskModule = {
                 task.answers = [];
                 var maxCID = -1;
                 comments.data.data.forEach((com) => {
-                    if((com.relationships.entity_id.data.id === task.id) && (maxCID < com.attributes.drupal_internal__cid)) {
+                    if((com.relationships.entity_id.data.id === task.id) && (com.attributes.field_name === 'field_answer')
+                        && (maxCID < com.attributes.drupal_internal__cid)) {
                         task.answers[0] = {};
                         task.answers[0].id = com.id;
                         task.answers[0].title = com.attributes.subject;
                         task.answers[0].body = com.attributes.comment_body.processed.replace(/(<p>|<\/p>)/g, '');
+                        task.answers[0].progress = getters.getProgress.get(com.relationships.field_progress.data.id);
+                        task.progress = task.answers[0].progress ?? '0%';
                         task.answers[0].filesID = [];
                         task.answers[0].files = [];
                         console.log(com.relationships.field_file.data);
@@ -155,7 +180,7 @@ export const TaskModule = {
             commit('setTasks', tasks);
         },
 
-        async queryTasksFromMe({ commit }, { userUID }) {
+        async queryTasksFromMe({ commit, getters }, { userUID }) {
             const res = await QueryAPI.getMyTasks(userUID);
             const comments = await AnsQueryAPI.getAnswers();
             console.log(res);
@@ -169,6 +194,8 @@ export const TaskModule = {
                 task.title = item.attributes.title;
                 task.body = (item.attributes.body !== null)? item.attributes.body.processed.replace(/(<p>|<\/p>)/g, '') : null;
                 task.executorUID = item.relationships.field_ispolnitel.data.id;
+                task.status = getters.getStatuses.get(item.relationships.field_status.data.id) ?? 'Не определено';
+                task.progress = '0%';
 
                 res.data.included.forEach((itemInc, j) => {
                     if(itemInc.type === 'user--user') {
@@ -186,14 +213,17 @@ export const TaskModule = {
                 });
 
                 task.answers = [];
+                var maxCID = -1;
                 var j = -1;
                 comments.data.data.forEach((com) => {
-                    if(com.relationships.entity_id.data.id === task.id) {
+                    if((com.relationships.entity_id.data.id === task.id) && (com.attributes.field_name === 'field_answer')) {
                         j += 1;
                         task.answers[j] = {};
                         task.answers[j].id = com.id;
                         task.answers[j].title = com.attributes.subject;
                         task.answers[j].body = com.attributes.comment_body.processed.replace(/(<p>|<\/p>)/g, '');
+                        task.answers[j].progress = getters.getProgress.get(com.relationships.field_progress.data.id);
+                        task.progress = (maxCID < com.attributes.drupal_internal__cid)? task.answers[j].progress : task.progress;
                         task.answers[j].filesID = [];
                         task.answers[j].files = [];
                         console.log(com.relationships.field_file.data);
@@ -202,6 +232,7 @@ export const TaskModule = {
                                 task.answers[j].filesID.push(file.id);
                             });
                         }
+                        if(maxCID < com.attributes.drupal_internal__cid) maxCID = com.attributes.drupal_internal__cid;
                     }
                     else { return; }
 
@@ -226,6 +257,32 @@ export const TaskModule = {
             });
 
             commit('setTasksFromMe', tasks);
+        },
+
+        async getStatuses({ commit }) {
+            const res = await QueryAPI.getStatuses();
+            console.log(res);
+
+            const statuses = new Map();
+            res.data.data.forEach((item) => {
+                statuses.set(item.id, item.attributes.name);
+            });
+
+            console.log(statuses);
+            commit('setStatuses', statuses);
+        },
+
+        async getProgress({ commit }) {
+            const res = await QueryAPI.getProgress();
+            console.log(res);
+
+            const progress = new Map();
+            res.data.data.forEach((item) => {
+                progress.set(item.id, item.attributes.name);
+            });
+
+            console.log(progress);
+            commit('setProgress', progress);
         },
 
         async getUsers({ commit }) {
@@ -263,14 +320,16 @@ export const TaskModule = {
             commit('addTaskFromMe', task);
         },
 
-        async editTask({ commit, getters }, { id, title, body, executorUID }) {
-            const res = await QueryAPI.editTask(id, title, body, executorUID);
+        async editTask({ commit, getters }, { id, title, body, executorUID, status }) {
+            const statuses = getters.getStatuses;
+            const res = await QueryAPI.editTask(id, title, body, executorUID, [...statuses.keys()].find((key) => statuses.get(key) === status));
             console.log(res);
 
             const task = getters.getTaskFromMeByID(id);
             task.title = res.data.data.attributes.title;
             task.body = (res.data.data.attributes.body !== null)? res.data.data.attributes.body.processed.replace(/(<p>|<\/p>)/g, '') : null;
             task.executorUID = res.data.data.relationships.field_ispolnitel.data.id;
+            task.status = status;
 
             /*const task = {};
             task.id = id;
@@ -293,25 +352,28 @@ export const TaskModule = {
             commit('deleteTaskFromMe', id);
         },
 
-        async createAnswer({ commit, getters }, { title, body, taskUID, files }) {
-            const res = await AnsQueryAPI.createAnswer(title, body, taskUID);
+        async createAnswer({ commit, getters }, { title, body, taskUID, progress, files }) {
+            const progressMap = getters.getProgress;
+            const res = await AnsQueryAPI.createAnswer(title, body, [...progressMap.keys()].find((key) => progressMap.get(key) === progress), taskUID);
             console.log(res);
             console.log('Файлы:' + files)
 
             const task = getters.getUserTaskByID(taskUID);
 
-            task.ans = {};
-
-            task.ans.id = res.data.data.id;
-            task.ans.title = res.data.data.attributes.subject;
-            task.ans.body = res.data.data.attributes.comment_body.processed.replace(/(<p>|<\/p>)/g, '');
-            task.ans.filesID = [];
-            task.ans.files = files;
+            const answer = {};
+            answer.id = res.data.data.id;
+            answer.title = res.data.data.attributes.subject;
+            answer.body = res.data.data.attributes.comment_body.processed.replace(/(<p>|<\/p>)/g, '');
+            answer.progress = progress;
+            answer.filesID = [];
+            answer.files = files;
             if(res.data.data.relationships.field_file.data.length !== 0) {
                 res.data.data.relationships.field_file.data.forEach((file) => {
-                    task.ans.filesID.push(file.id);
+                    answer.filesID.push(file.id);
                 });
             }
+            task.progress = progress;
+            task.answers.push(answer);
 
             console.log(task);
             // comments.data.included.forEach((itemInc) => {

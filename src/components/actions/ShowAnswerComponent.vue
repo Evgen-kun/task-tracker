@@ -23,6 +23,10 @@
                 {{ title }}
             </v-card-title>
 
+            <v-card-subtitle>
+                Прогресс выполнения: {{ progress }}
+            </v-card-subtitle>
+
             <v-card-text>
                 {{ body }}
             </v-card-text>
@@ -58,6 +62,7 @@ import axios from 'axios';
             i: Number,
             title: String,
             body: String,
+            progress: String,
             files: Array,
         },
         methods: {

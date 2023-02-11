@@ -27,7 +27,7 @@ export const AnsQueryAPI = {
         return QueryAPIInstance.get(url);
     },
 
-    async createAnswer(title, body, taskUID, files = []) {
+    async createAnswer(title, body, progressUID, taskUID, files = []) {
         const url = `http://localhost/drupal/web/jsonapi/comment/answer`;
         console.log('Files: ' + files);
         const data = { 
@@ -53,6 +53,12 @@ export const AnsQueryAPI = {
                             id: taskUID
                         }
                     },
+                    field_progress: {
+                        data: {
+                            type: "taxonomy_term--progress",
+                            id: progressUID
+                        }
+                    }
                     // field_file: {
                     //     data: files
                     // }

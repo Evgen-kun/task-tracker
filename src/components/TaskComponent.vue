@@ -1,9 +1,56 @@
 <template>
-    <v-card
+  <v-card
+    v-if="!show"
     class="mx-auto mt-8"
     :color="color.get(taskStatus)"
     theme="dark"
-    max-width="550"
+    max-width="750"
+    rounded="xl"
+    @click="show = !show"
+  >
+
+  <div class="d-flex flex-row">
+  <v-card-item>
+    <v-list-item class="w-100">
+    <v-progress-circular
+        v-if="(taskProgress.slice(0, -1) !== '0') && (taskProgress.slice(0, -1) !== '100')"
+        :rotate="360"
+        :width="7"
+        :model-value="Number(taskProgress.slice(0, -1))"
+        color="wight"
+      >
+      </v-progress-circular>
+      <v-icon :icon="icon" v-else size="x-large"></v-icon>
+    </v-list-item>
+  </v-card-item>
+
+    <v-card-item class="text-h5 py-4" style="text-align:start" >
+      <v-list-item class="w-100">
+        {{ title }}
+      </v-list-item>
+    </v-card-item>
+      
+    <v-spacer></v-spacer>
+
+    <v-card-item class="text-h6">{{ user }}</v-card-item>
+
+    <v-card-item>
+      <v-list-item class="w-100">
+          <v-avatar
+            :image=image
+          ></v-avatar>
+      </v-list-item>
+    </v-card-item>
+  </div>
+
+  </v-card>
+
+  <v-card
+    v-if="show"
+    class="mx-auto mt-8"
+    :color="color.get(taskStatus)"
+    theme="dark"
+    max-width="750"
     rounded="xl"
     :prepend-icon="icon"
   >
@@ -18,6 +65,14 @@
       >
       </v-progress-circular>
       <v-icon v-else size="x-large"></v-icon>
+    </template>
+
+    <template v-slot:append>
+      <v-btn
+          icon="mdi-close"
+          color="error"
+          @click="show = !show"
+        ></v-btn>
     </template>
 
     <v-card-text class="text-h4 py-2">
@@ -45,7 +100,7 @@
             <v-btn
               rounded="pill"
               variant="elevated"
-              v-show="$route.path == '/about'"
+              v-show="path == '/about'"
               color="blue"
               @click="showAnswers = false; showEdit = !showEdit"
             >
@@ -55,7 +110,7 @@
             <v-btn
               rounded="pill"
               variant="elevated"
-              v-show="$route.path == '/about'"
+              v-show="path == '/about'"
               :disabled="answers.length === 0"
               color="green"
               @click="showEdit = false; showAnswers = !showAnswers"
@@ -66,7 +121,7 @@
             <v-btn
               rounded="pill"
               variant="elevated"
-              v-show="($route.path == '/') && (answers.length !== 0)"
+              v-show="(path == '/') && (answers.length !== 0)"
               color="green"
               @click="showLastAns = !showLastAns"
             >
@@ -76,7 +131,7 @@
             <v-btn
               rounded="pill"
               variant="elevated"
-              v-show="$route.path == '/'"
+              v-show="path == '/'"
               color="green"
               @click="showEdit = false; showCreateAns = !showCreateAns"
             >
@@ -138,7 +193,7 @@
       <div v-show="showCreateAns">
         <v-divider></v-divider>
         <v-card-text>
-          <CreateAnswerComponent :taskID="taskID" />
+            <CreateAnswerComponent :taskID="taskID" />
         </v-card-text>
       </div>
     </v-expand-transition>
@@ -155,6 +210,7 @@ import { mapGetters } from 'vuex';
     export default {
         data() {
             return {
+              show: false,
               showEdit: false,
               showCreateAns: false,
               showAnswers: false,
@@ -186,6 +242,9 @@ import { mapGetters } from 'vuex';
             
         },
         computed: {
+            path() {
+              return this.$route.path;
+            },
             icon() {
               const progress = Number(this.taskProgress.slice(0, -1));
               if(progress === 100) return "mdi-check-circle-outline";

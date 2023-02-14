@@ -1,6 +1,6 @@
 <template>
   <v-app>
-    <NavigationComponent />
+    <NavigationComponent v-if="$route.name !== 'login'"/>
     <v-main>
       <router-view :key="$route.path"/>
     </v-main>

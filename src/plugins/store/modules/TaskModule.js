@@ -17,8 +17,10 @@ export const TaskModule = {
     getters: {
         getUserTasks: (state) => state.tasks,
         getUserTaskByID: (state) => (id) => { return state.tasks.find(task => task.id === id) },
+        //getSortedUserTasks: (state) => (field) => { return state.tasks.sort((a, b) => a[field] > b[field] ? 1 : -1) },
         getTasksFromMe: (state) => state.tasksFromMe,
         getTaskFromMeByID: (state) => (id) => { return state.tasksFromMe.find(task => task.id === id) },
+        //getSortedTasksFromMe: (state) => (field) => { return state.tasksFromMe.sort((a, b) => a[field] > b[field] ? 1 : -1) },
         getUsers: (state) => state.users,
         getStatuses: (state) => state.statuses,
         getProgress: (state) => state.progress,
@@ -311,10 +313,13 @@ export const TaskModule = {
             task.id = res.data.data.id;
             task.title = res.data.data.attributes.title;
             task.body = (res.data.data.attributes.body !== null)? res.data.data.attributes.body.processed.replace(/(<p>|<\/p>)/g, '') : null;
+            task.status = 'Не выполнено';
+            task.progress = '0%';
             task.executorUID = res.data.data.relationships.field_ispolnitel.data.id;
             const json = await QueryAPI.getUserData(res.data.data.relationships.field_ispolnitel.data.id);
             task.executor = json.data.data.attributes.display_name;
             task.executorPicture = json.data.included[0].attributes.uri.url;
+            task.answers = [];
 
             console.log(task);
             commit('addTaskFromMe', task);

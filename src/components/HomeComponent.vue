@@ -11,8 +11,17 @@
 
       <h1 class="text-h2 font-weight-bold">Vuetify</h1> -->
 
+      <!-- <v-select
+        :items="fields"
+        :item-title="fields.title"
+        :item-value="fields.value"
+        label="Фильтрация"
+        density="comfortable"
+        v-model="selectedField"
+      ></v-select> -->
+
       <TaskComponent
-        v-for="(task, i) in tasks"
+        v-for="task in tasks"
         v-bind:key="task.id"
         v-bind:taskID="task.id"
         v-bind:title="task.title"
@@ -38,8 +47,27 @@ export default {
   data() {
     return {
       //tasks: [],
+      selectedField: "author",
       subtitle: "Назначил задачу",
       btnText: "Добавить ответ",
+      fields: [
+        {
+          title: 'Автор',
+          value: 'author',
+        },
+        {
+          title: 'Заголовок',
+          value: 'title',
+        },
+        {
+          title: 'Прогресс',
+          value: 'progress',
+        },
+        {
+          title: 'Статус',
+          value: 'status',
+        },
+      ],
     }
   },
   methods: {
@@ -49,6 +77,7 @@ export default {
     ...mapGetters('taskM', {
       tasks: 'getUserTasks',
     }),
+    //sortedTasks: store.getters['taskM/getSortedUserTasks'](this.selectedField),
   },
   components: {
     TaskComponent

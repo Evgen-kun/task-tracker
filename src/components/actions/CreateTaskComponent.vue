@@ -1,7 +1,7 @@
 <template>
     <v-card
     class="mx-auto"
-    max-width="550"
+    max-width="750"
     color="blue"
     rounded="xl"
   >
@@ -71,7 +71,7 @@ import { mapGetters } from 'vuex';
                     v => v.length <= 30 || 'Заголовок должен быть меньше 30 символов',
                 ],
                 textRules: [
-                    v => v.length <= 300 || 'Описание должно быть меньше 300 символов',
+                    v => v.length <= 1000 || 'Описание должно быть меньше 1000 символов',
                 ],
                 selectRules: [
                     v => !!v || 'Требуется исполнитель',

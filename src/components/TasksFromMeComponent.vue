@@ -45,6 +45,7 @@
     computed: {
       ...mapGetters('taskM', {
         tasks: 'getTasksFromMe',
+        //sordedTasks: 'getSortedTasksFromMe',
       }),
     },
     components: {

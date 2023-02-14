@@ -3,7 +3,9 @@
         color="primary"
         title="Task Tracker"
         density="compact"
-      ><v-spacer></v-spacer></v-app-bar>
+    >
+      <!-- <v-spacer></v-spacer> -->
+    </v-app-bar>
 
     <v-navigation-drawer
         expand-on-hover
@@ -22,12 +24,12 @@
 
         <v-list density="compact" nav>
             <router-link to="/">
-                <v-list-item prepend-icon="mdi-folder" title="Home" value="myfiles"></v-list-item>
+                <v-list-item prepend-icon="mdi-folder" title="Главная" value="myfiles"></v-list-item>
             </router-link>
             <router-link to="/about">
-                <v-list-item prepend-icon="mdi-account-multiple" title="About" value="shared"></v-list-item>
+                <v-list-item prepend-icon="mdi-account-multiple" title="Мои задачи" value="shared"></v-list-item>
             </router-link>
-            <v-list-item v-if="isAuth" prepend-icon="mdi-logout" title="Logout" value="logout" v-on:click="onLogoutButtonClick"></v-list-item>
+            <v-list-item v-if="isAuth" prepend-icon="mdi-logout" title="Выход" value="logout" v-on:click="onLogoutButtonClick"></v-list-item>
         </v-list>
     </v-navigation-drawer>
 </template>

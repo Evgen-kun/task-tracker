@@ -32,6 +32,15 @@ export const AuthAPI = {
      * 
      * @returns {Promise<AxiosResponse<any>>}
      */
+    getUserUID() {
+        const url = `http://localhost/drupal/web/jsonapi`;
+        return LoginAPIInstance.get(url);
+    },
+
+    /**
+     * 
+     * @returns {Promise<AxiosResponse<any>>}
+     */
     getUsersREST() {
         const url = `http://localhost/drupal/web/all_users`;
         return LoginAPIInstance.get(url);
@@ -59,11 +68,11 @@ export const AuthAPI = {
 
     /**
      * 
-     * @param {Number} userID 
+     * @param {String} userUID 
      * @returns {Promise<AxiosResponse<any>>}
      */
-    getUserData(userID) {
-        const url = `http://localhost/drupal/web/jsonapi/user/user?filter[drupal_internal__uid]=${userID}&fields[user--user]=id,name,mail,user_picture`;
-        return QueryAPIInstance.get(url);
+    getUserData(userUID) {
+        const url = `http://localhost/drupal/web/jsonapi/user/user?filter[id]=${userUID}&fields[user--user]=id,name,mail,user_picture,roles`;
+        return LoginAPIInstance.get(url);
     },
 }

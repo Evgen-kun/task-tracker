@@ -27,7 +27,7 @@
                 <v-list-item prepend-icon="mdi-folder" title="Главная" value="myfiles"></v-list-item>
             </router-link>
             <router-link to="/about">
-                <v-list-item prepend-icon="mdi-account-multiple" title="Мои задачи" value="shared"></v-list-item>
+                <v-list-item v-if="isManagerOrAdmin" prepend-icon="mdi-account-multiple" title="Мои задачи" value="shared"></v-list-item>
             </router-link>
             <v-list-item v-if="isAuth" prepend-icon="mdi-logout" title="Выход" value="logout" v-on:click="onLogoutButtonClick"></v-list-item>
         </v-list>
@@ -54,6 +54,10 @@ import { RouterLink, RouterView } from 'vue-router'
         computed: {
             isAuth() {
                 return localStorage.hasOwnProperty('token');
+            },
+            isManagerOrAdmin() {
+                const roles = JSON.parse(localStorage.getItem('userRoles')) ?? [];
+                return !!((roles.includes('manager')) || (roles.includes('administrator')));
             },
             ...mapGetters('authM', {
                 name: 'getUserName',

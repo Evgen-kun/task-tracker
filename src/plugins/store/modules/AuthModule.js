@@ -14,7 +14,7 @@ export const AuthModule = {
                 userName: localStorage.getItem('userName') || null,
                 userEmail: localStorage.getItem('userEmail') || null,
                 userPicture: localStorage.getItem('userPicture') || '/drupal/web/sites/default/files/inline-images/anonym.png',
-                //userRole: localStorage.getItem('userRole') || null,
+                userRoles: JSON.parse(localStorage.getItem('userRoles')) || [],
             }
         }
     },
@@ -27,7 +27,7 @@ export const AuthModule = {
         getUserName: (state) => state.credentials.userName,
         getUserEmail: (state) => state.credentials.userEmail,
         getUserPicture: (state) => state.credentials.userPicture,
-        //getUserRole: (state) => state.credentials.userRole,
+        getUserRole: (state) => state.credentials.userRole,
     },
 
     mutations: {
@@ -76,9 +76,9 @@ export const AuthModule = {
             localStorage.setItem('userPicture', userPicture);
         },
 
-        setUserRole(state, userRole) {
-            state.credentials.userRole = userRole;
-            localStorage.setItem('userRole', userRole);
+        setUserRoles(state, userRoles) {
+            state.credentials.userRoles = userRoles;
+            localStorage.setItem('userRoles', JSON.stringify(userRoles));
         },
 
         deleteToken(state) {
@@ -121,21 +121,24 @@ export const AuthModule = {
             localStorage.removeItem('userPicture');
         },
 
-        deleteUserRole(state) {
-            state.credentials.userRole = null;
-            localStorage.removeItem('userRole');
+        deleteUserRoles(state) {
+            state.credentials.userRoles = [];
+            localStorage.removeItem('userRoles');
         }
     },
 
     actions: {
         async onLogin({ commit }, { login, password }) {
             const res = await AuthAPI.login(login, password);
-            const userID = Number(res.headers.link.split(';')[0].substr(-2, 1));
+            //const userID = Number(res.headers.link.split(';')[0].substr(-2, 1));
+            const userUID = (await AuthAPI.getUserUID()).data.meta.links.me.meta.id;
 
-            const data = await AuthAPI.getUserData(userID);
-            const userUID = data.data.data[0].id;
+            const data = await AuthAPI.getUserData(userUID);
+            //const userUID = data.data.data[0].id;
+            const userID = data.data.data[0].attributes.drupal_internal__uid;
             const userName = data.data.data[0].attributes.name;
             const userEmail = data.data.data[0].attributes.mail;
+            const userRoles = data.data.data[0].relationships.roles.data.map(role => role.meta.drupal_internal__target_id);
             const userPictureID = data.data.data[0].relationships.user_picture.data.id;
 
             const userPictureData = await AuthAPI.getUserPicture(userPictureID);
@@ -164,6 +167,7 @@ export const AuthModule = {
             commit('setUserID', userID);
             commit('setUserName', userName);
             commit('setUserEmail', userEmail);
+            commit('setUserRoles', userRoles);
             commit('setUserPicture', userPicture);
             console.log(login + " залогинен, id: " + res.headers.link.split(';')[0].substr(-2, 1));
             //commit('setUserRole', userRole);
@@ -181,6 +185,7 @@ export const AuthModule = {
             commit('deleteUserID');
             commit('deleteUserName');
             commit('deleteUserEmail');
+            commit('deleteUserRoles');
             commit('deleteUserPicture');
             console.log("разлогинен");
             //commit('deleteUserRole');

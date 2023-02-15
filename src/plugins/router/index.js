@@ -9,8 +9,9 @@ const authGuard = function(to, from, next) {
 }
 
 const managerAuthGuard = function(to, from, next) {
+  const roles = JSON.parse(localStorage.getItem('userRoles'));
   if (!localStorage.hasOwnProperty('token')) next({ name: 'login' });
-  //else if (localStorage.getItem('userRole') == 'developer') next({ name: 'home' });
+  else if (!roles.includes('manager') && (!roles.includes('administrator'))) next({ name: 'home' });
   else next();
 }
 

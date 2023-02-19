@@ -1,6 +1,7 @@
 import { createStore } from "vuex";
 import { AuthModule } from "./modules/AuthModule";
 import { TaskModule } from "./modules/TaskModule";
+import { TeamModule } from "./modules/TeamModule";
 
 export default createStore({
   state: {},
@@ -10,5 +11,6 @@ export default createStore({
   modules: {
     authM: AuthModule,
     taskM: TaskModule,
+    teamM: TeamModule,
   },
 });

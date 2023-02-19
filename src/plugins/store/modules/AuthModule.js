@@ -27,7 +27,7 @@ export const AuthModule = {
         getUserName: (state) => state.credentials.userName,
         getUserEmail: (state) => state.credentials.userEmail,
         getUserPicture: (state) => state.credentials.userPicture,
-        getUserRole: (state) => state.credentials.userRole,
+        getUserRoles: (state) => state.credentials.userRoles,
     },
 
     mutations: {
@@ -169,7 +169,7 @@ export const AuthModule = {
             commit('setUserEmail', userEmail);
             commit('setUserRoles', userRoles);
             commit('setUserPicture', userPicture);
-            console.log(login + " залогинен, id: " + res.headers.link.split(';')[0].substr(-2, 1));
+            //console.log(login + " залогинен, id: " + res.headers.link.split(';')[0].substr(-2, 1));
             //commit('setUserRole', userRole);
             //DefaultAPIInstance.defaults.headers['Authorization'] = `Basic ${(String(login) + String(password)).toString('base64')}`;
             //DefaultAPIInstance.defaults.headers['X-CSRF-Token'] = `${res.headers['set-cookie']}`;

@@ -27,7 +27,10 @@
                 <v-list-item prepend-icon="mdi-folder" title="Главная" value="myfiles"></v-list-item>
             </router-link>
             <router-link to="/about">
-                <v-list-item v-if="isManagerOrAdmin" prepend-icon="mdi-account-multiple" title="Мои задачи" value="shared"></v-list-item>
+                <v-list-item v-if="isManagerOrAdmin" prepend-icon="mdi-comment-text-outline" title="Мои задачи" value="shared"></v-list-item>
+            </router-link>
+            <router-link to="/teams">
+                <v-list-item v-if="isManagerOrAdmin" prepend-icon="mdi-account-multiple" title="Команды" value="myteams"></v-list-item>
             </router-link>
             <v-list-item v-if="isAuth" prepend-icon="mdi-logout" title="Выход" value="logout" v-on:click="onLogoutButtonClick"></v-list-item>
         </v-list>
@@ -35,7 +38,6 @@
 </template>
 
 <script>
-import store from '@/plugins/store';
 import { mapGetters } from 'vuex';
 import { RouterLink, RouterView } from 'vue-router'
     export default { 

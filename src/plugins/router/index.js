@@ -37,6 +37,12 @@ const routes = [
     component: () => import(/* webpackChunkName: "about" */ "../../views/AboutView.vue"),
     beforeEnter: managerAuthGuard,
   },
+  {
+    path: "/teams",
+    name: "teams",
+    component: () => import("../../views/TeamsView.vue"),
+    beforeEnter: managerAuthGuard,
+  },
 ];
 
 const router = createRouter({

@@ -6,7 +6,7 @@
                     v-bind:teamID="team.id"
                     v-bind:title="team.title"
                     v-bind:body="team.body"
-                    v-bind:teamUsers="[...team.users.values()]"
+                    v-bind:teamUsers="[...team.users.values()].map(user => user.id)"
                     v-bind:allUsers="users">
                 </TeamComponent>
             </v-col>

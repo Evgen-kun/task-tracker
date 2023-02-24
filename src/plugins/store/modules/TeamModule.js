@@ -1,5 +1,6 @@
 import { TeamsQueryAPI } from "@/api/teamAPI";
-import { QueryAPI } from "@/api/taskAPI";
+const ADMIN_ID = '6da4f1c5-7607-4047-a6d0-011ba3e0c6cb';
+const GUEST_ID = '52a3ddd5-2b1f-4b48-b600-14507b648d69';
 
 export const TeamModule = {
     namespaced: true,
@@ -14,6 +15,7 @@ export const TeamModule = {
 
     getters: {
         getTeams: (state) => state.teams,
+        getTeamByID: (state) => (id) => { return state.teams.find(team => team.id === id) },
         getUsers: (state) => state.users,
         getProjects: (state) => state.projects,
     },
@@ -45,6 +47,12 @@ export const TeamModule = {
         addProject(state, project) {
             state.projects.push(project);
             //localStorage.setItem('projects', state.projects);
+        },
+
+        editTeam(state, newTeam) {
+            state.teams.forEach((team, i) => {
+                if (team.id === newTeam.id) state.teams[i] = newTeam;
+            });
         },
 
         deleteTeams(state) {
@@ -93,7 +101,7 @@ export const TeamModule = {
                 const team = {};
                 team.id = item.id;
                 team.title = item.attributes.title;
-                team.body = (item.attributes.body !== null)? item.attributes.body.processed.replace(/(<p>|<\/p>)/g, '') : null;
+                team.body = (item.attributes.body !== null)? item.attributes.body.value : null;
                 team.usersID = item.relationships.field_member.data.map(user => user.id);
                 team.users = new Map();
 
@@ -129,40 +137,78 @@ export const TeamModule = {
         },
 
         async getUsers({ commit }) {
-            const res = await QueryAPI.getUsers();
+            const res = await TeamsQueryAPI.getAllUsers();
             console.log(res);
 
-            const users = [];
-            console.log(res.data.data.length);
+            const users = new Map();
             res.data.data.forEach((item) => {
-                if(item.id === "52a3ddd5-2b1f-4b48-b600-14507b648d69" || item.id === "6da4f1c5-7607-4047-a6d0-011ba3e0c6cb") { return; }
+                if(item.id === GUEST_ID || item.id === ADMIN_ID) { return; }
                 const user = {};
                 user.id = item.id;
-                user.name = `${item.attributes.display_name} (${item.attributes.drupal_internal__uid})`;
-                users.push(user);
+                user.name = item.attributes.display_name;
+                user.nameWithID = `${item.attributes.display_name} (${item.attributes.drupal_internal__uid})`;
+                users.set(user.id, user);
+            });
+
+            res.data.included.forEach((itemInc) => {
+                if(itemInc.type === 'file--file') {
+                    const usersArr = [...users.values()];
+                    if(usersArr.map(user => user.pictureID).includes(itemInc.id)) {
+                        const userID = usersArr.find(user => user.pictureID === itemInc.id).id;
+                        const user = users.get(userID);
+                        user.picture = itemInc.attributes.uri.url;
+                        users.set(userID, user);
+                    }
+                }
             });
 
             console.log(users);
-            commit('setUsers', users);
+            commit('setUsers', [...users.values()]);
         },
 
-        async createTeam({ commit }, { title, body, users }) {
-            const res = await TeamsQueryAPI.createTeam(title, body, users);
+        async createTeam({ state, commit }, { title, body, usersUID }) {
+            const res = await TeamsQueryAPI.createTeam(title, body, usersUID);
+            const allUsers = state.users;
             console.log(res);
+            console.log(allUsers);
 
             const team = {};
             team.id = res.data.data.id;
             team.title = res.data.data.attributes.title;
-            team.body = (res.data.data.attributes.body !== null)? res.data.data.attributes.body.processed.replace(/(<p>|<\/p>)/g, '') : null;
-            team.usersID = users;
+            team.body = (res.data.data.attributes.body !== null)? res.data.data.attributes.body.value : null;
+            team.usersID = usersUID;
             team.users = new Map();
+
+            allUsers.forEach((user) => {
+                if(team.usersID.includes(user.id)) {
+                    team.users.set(user.id, user);
+                }
+            });
 
             console.log(team);
             commit('addTeam', team);
         },
 
-        async editTeam({ commit }, { id, title, body, executorsUID }) {
-            
+        async editTeam({ state, getters, commit }, { id, title, body, usersUID }) {
+            const res = await TeamsQueryAPI.editTeam(id, title, body, usersUID);
+            const allUsers = state.users;
+            console.log(res);
+            console.log(allUsers);
+
+            const team = getters.getTeamByID(id);
+            team.title = res.data.data.attributes.title;
+            team.body = (res.data.data.attributes.body !== null)? res.data.data.attributes.body.value : null;
+            team.usersID = res.data.data.relationships.field_member.data.map(user => user.id);
+            team.users = new Map();
+
+            allUsers.forEach((user) => {
+                if(team.usersID.includes(user.id)) {
+                    team.users.set(user.id, user);
+                }
+            });
+
+            console.log(team);
+            commit('editTeam', team);
         },
 
         async deleteTeam({ commit }, { id }) {

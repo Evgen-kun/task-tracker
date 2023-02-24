@@ -41,7 +41,7 @@
                 <v-select
                   label="Исполнитель*"
                   :items="allUsers"
-                  item-title="name"
+                  item-title="nameWithID"
                   item-value="id"
                   v-model="teamExecutors"
                   multiple
@@ -89,7 +89,7 @@ import store from '@/plugins/store';
                     v => v.length <= 30 || 'Название должно быть меньше 30 символов',
                 ],
                 textRules: [
-                    v => v.length <= 300 || 'Описание должно быть меньше 300 символов',
+                    v => (!!v)? v.length <= 300 : true || 'Описание должно быть меньше 300 символов',
                 ],
             }
         },
@@ -101,7 +101,7 @@ import store from '@/plugins/store';
                 const { valid } = await this.$refs.createTeamForm.validate();
 
                 if(valid) {
-                    await store.dispatch('teamM/createTeam', { title: this.teamTitle, body: this.teamSubtitle, users: this.teamExecutors});
+                    await store.dispatch('teamM/createTeam', { title: this.teamTitle, body: this.teamSubtitle, usersUID: this.teamExecutors});
                     this.$refs.createTeamForm.reset();
                     this.$refs.createTeamForm.resetValidation();
                 }

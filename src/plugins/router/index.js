@@ -40,8 +40,20 @@ const routes = [
   {
     path: "/teams",
     name: "teams",
-    component: () => import("../../views/TeamsView.vue"),
     beforeEnter: managerAuthGuard,
+    children: [
+      { 
+        path: '', 
+        component: () => import("../../views/TeamsView.vue"), 
+        beforeEnter: managerAuthGuard,
+      },
+      {
+        path: ":id",
+        name: "dashboard",
+        component: () => import("../../views/DashboardView.vue"),
+        beforeEnter: managerAuthGuard,
+      },
+    ],
   },
 ];
 

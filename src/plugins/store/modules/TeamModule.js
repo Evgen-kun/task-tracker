@@ -9,7 +9,6 @@ export const TeamModule = {
         return {
             teams: [],
             users: [],
-            projects: [],
         }
     },
 
@@ -17,7 +16,6 @@ export const TeamModule = {
         getTeams: (state) => state.teams,
         getTeamByID: (state) => (id) => { return state.teams.find(team => team.id === id) },
         getUsers: (state) => state.users,
-        getProjects: (state) => state.projects,
     },
 
     mutations: {
@@ -30,10 +28,6 @@ export const TeamModule = {
             state.users = users;
         },
 
-        setProjects(state, projects) {
-            state.projects = projects;
-        },
-
         addTeam(state, team) {
             state.teams.push(team);
             //localStorage.setItem('teams', state.teams);
@@ -42,11 +36,6 @@ export const TeamModule = {
         addUser(state, user) {
             state.users.push(user);
             //localStorage.setItem('users', state.users);
-        },
-
-        addProject(state, project) {
-            state.projects.push(project);
-            //localStorage.setItem('projects', state.projects);
         },
 
         editTeam(state, newTeam) {
@@ -76,17 +65,6 @@ export const TeamModule = {
                 if (user.id === userUID) state.users.splice(i, 1);
             });
             //localStorage.setItem('users', state.users);
-        },
-
-        deleteProjects(state) {
-            state.projects = null;
-        },
-
-        deleteProject(state, projectID) {
-            state.projects.forEach((project, i) => {
-                if (project.id === projectID) state.projects.splice(i, 1);
-            });
-            //localStorage.setItem('projects', state.projects);
         },
     },
 

@@ -5,10 +5,8 @@
  * @property {string} body - Task description
  * @property {string} status - Task status
  * @property {string} progress - Task progress
- * @property {string} authorUID - Task author UID
- * @property {string} author - Task author name
- * @property {string} authorPictureID - ID of author's picture
- * @property {string} authorPicture - Link to author's picture
+ * @property {User} author - Task author
+ * @property {User} executor - Task executor
  * @property {Array<Object>} answers - Task answers
  */
 
@@ -18,10 +16,8 @@ export default class Task {
     body;
     status;
     progress;
-    authorUID;
     author;
-    authorPictureID;
-    authorPicture;
+    executor;
     answers;
 
     constructor(item) {
@@ -30,10 +26,8 @@ export default class Task {
         this.body = item?.body ?? null;
         this.status = item?.status ?? null;
         this.progress = item?.progress ?? null;
-        this.authorUID = item?.authorUID ?? null;
         this.author = item?.author ?? null;
-        this.authorPictureID = item?.authorPictureID ?? null;
-        this.authorPicture = item?.authorPicture ?? null;
+        this.executor = item?.executor ?? null;
         this.answers = item?.answers ?? [];
     }
 }

@@ -9,9 +9,15 @@
   "dependencies": {
     "@mdi/font": "7.0.96",
     "axios": "^1.2.0",
+    "chart.js": "^4.2.1",
+    "chartjs-adapter-date-fns": "^3.0.0",
+    "chartjs-plugin-annotation": "^2.2.1",
     "cors": "^2.8.5",
+    "date-fns": "^2.29.3",
+    "gantt-elastic": "^1.0.12",
     "roboto-fontface": "*",
     "vue": "^3.2.38",
+    "vue-chartjs": "^5.2.0",
     "vue-router": "^4.1.6",
     "vuetify": "^3.0.0",
     "vuex": "^4.0.2",
@@ -19,6 +25,7 @@
   },
   "devDependencies": {
     "@vitejs/plugin-vue": "^3.0.3",
+    "sass": "^1.60.0",
     "vite": "^3.1.9",
     "vite-plugin-rewrite-all": "^1.0.1",
     "vite-plugin-vuetify": "^1.0.0-alpha.12"

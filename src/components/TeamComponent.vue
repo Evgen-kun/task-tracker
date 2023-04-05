@@ -3,7 +3,7 @@
     color="#A8E4A0"
     max-width="300"
     min-width="250"
-    @click="showTeam"
+    @click="goToDashboard"
     height="200"
   >
     <!-- <v-img
@@ -139,48 +139,51 @@
 <script>
 import store from '@/plugins/store';
 
-    export default {
-        data() {
-            return {
-                showEdit: false,
-                showDelete: false,
-                teamTitle: this.title,
-                teamSubtitle: this.body,
-                teamExecutors: this.teamUsers,
+export default {
+    data() {
+        return {
+            showEdit: false,
+            showDelete: false,
+            teamTitle: this.title,
+            teamSubtitle: this.body,
+            teamExecutors: this.teamUsers,
 
-                titleRules: [
-                    v => !!v || 'Требуется название',
-                    v => v.length <= 30 || 'Название должно быть меньше 30 символов',
-                ],
-                textRules: [
-                    v => (!!v)? v.length <= 300 : true || 'Описание должно быть меньше 300 символов',
-                ],
+            titleRules: [
+                v => !!v || 'Требуется название',
+                v => v.length <= 30 || 'Название должно быть меньше 30 символов',
+            ],
+            textRules: [
+                v => (!!v)? v.length <= 300 : true || 'Описание должно быть меньше 300 символов',
+            ],
+        }
+    },
+    props: {
+      teamID: String,
+      title: String,
+      body: String,
+      teamUsers: Array,
+      allUsers: Array,
+    },
+    methods: {
+        async editTeam() {
+            const { valid } = await this.$refs.editTeamForm.validate();
+
+            if(valid) {
+                await store.dispatch('teamM/editTeam', { id: this.teamID, title: this.teamTitle, body: this.teamSubtitle, usersUID: this.teamExecutors});
             }
+            else alert("NOT validate");
         },
-        props: {
-          teamID: String,
-          title: String,
-          body: String,
-          teamUsers: Array,
-          allUsers: Array,
+        async deleteTeam() {
+            await store.dispatch('teamM/deleteTeam', { id: this.teamID });
         },
-        methods: {
-            async editTeam() {
-                const { valid } = await this.$refs.editTeamForm.validate();
-
-                if(valid) {
-                    await store.dispatch('teamM/editTeam', { id: this.teamID, title: this.teamTitle, body: this.teamSubtitle, usersUID: this.teamExecutors});
-                }
-                else alert("NOT validate");
-            },
-            async deleteTeam() {
-                await store.dispatch('teamM/deleteTeam', { id: this.teamID });
-            },
-            showTeam() {
-                console.log(this.teamTitle);
-                console.log(this.teamSubtitle);
-                console.log(this.teamExecutors);
-            },
+        showTeam() {
+            console.log(this.teamTitle);
+            console.log(this.teamSubtitle);
+            console.log(this.teamExecutors);
         },
-    }
+        goToDashboard() {
+            this.$router.push({ name: 'dashboard', params: { id: this.teamID } });
+        },
+    },
+}
 </script>

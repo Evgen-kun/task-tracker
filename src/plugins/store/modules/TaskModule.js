@@ -263,27 +263,27 @@ export const TaskModule = {
 
         async getStatuses({ commit }) {
             const res = await QueryAPI.getStatuses();
-            console.log(res);
+            //console.log(res);
 
             const statuses = new Map();
             res.data.data.forEach((item) => {
                 statuses.set(item.id, item.attributes.name);
             });
 
-            console.log(statuses);
+            //console.log(statuses);
             commit('setStatuses', statuses);
         },
 
         async getProgress({ commit }) {
             const res = await QueryAPI.getProgress();
-            console.log(res);
+            //console.log(res);
 
             const progress = new Map();
             res.data.data.forEach((item) => {
                 progress.set(item.id, item.attributes.name);
             });
 
-            console.log(progress);
+            //console.log(progress);
             commit('setProgress', progress);
         },
 

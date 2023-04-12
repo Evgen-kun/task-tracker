@@ -45,7 +45,8 @@ export const assignedTasks = {
         ctx.textAlign = 'left';
         
         data.datasets[0].data.forEach((item, index) => {
-            ctx.fillText(item.name, 10, y.getPixelForValue(index));
+            if(index % 2 === 1) { return; }
+            ctx.fillText(item.name, 10, y.getPixelForValue(index / 2));
         });
         // console.log(data.datasets[0].data[0].name);
         ctx.fillText('Имена', 10, top - 15);
@@ -66,7 +67,8 @@ export const status = {
         ctx.textBaseline = 'middle';
         ctx.textAlign = 'center';
         data.datasets[0].data.forEach((item, index) => {
-            ctx.fillText(icons[item.status], left - 120, y.getPixelForValue(index));
+            if(index % 2 === 1) { return; }
+            ctx.fillText(icons[item.status], left - 120, y.getPixelForValue(index / 2));
         });
         ctx.fillText('Статус', left - 120, top - 15);
         ctx.restore();

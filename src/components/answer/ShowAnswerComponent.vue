@@ -6,7 +6,7 @@
 
         <div class="d-flex flex-row" @click="show = !show" style="cursor: pointer;">
         <v-card-title>
-            Ответ {{ i + 1 }}
+            Ответ {{ answerNum + 1 }}
         </v-card-title>
 
         <v-spacer></v-spacer>
@@ -20,21 +20,21 @@
             <v-divider></v-divider>
 
             <v-card-title>
-                {{ title }}
+                {{ answer.title }}
             </v-card-title>
 
             <v-card-subtitle>
-                Прогресс выполнения: {{ progress }}
+                Прогресс выполнения: {{ answer.progress }}
             </v-card-subtitle>
 
             <v-card-text>
-                {{ body }}
+                {{ answer.body }}
             </v-card-text>
 
-            <v-card-text v-if="files.length !== 0">
+            <v-card-text v-if="answer.files.length !== 0">
             <div class="text-center">
                 <v-chip
-                    v-for="file in files"
+                    v-for="file in answer.files"
                     class="ma-2"
                     color="primary"
                     variant="outlined"
@@ -59,11 +59,14 @@ import axios from 'axios';
             }
         },
         props: {
-            i: Number,
-            title: String,
-            body: String,
-            progress: String,
-            files: Array,
+            answerNum: {
+                type: Number,
+                required: true
+            },
+            answer: {
+                type: Object,
+                required: true
+            },
         },
         methods: {
             downloadFile({ link, name }) {

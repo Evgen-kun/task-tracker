@@ -40,7 +40,7 @@
 
                 <v-select
                   label="Исполнитель*"
-                  :items="allUsers"
+                  :items="usersWithID"
                   item-title="nameWithID"
                   item-value="id"
                   v-model="teamExecutors"
@@ -94,7 +94,10 @@ import store from '@/plugins/store';
             }
         },
         props: {
-            allUsers: Array,
+            allUsers: {
+              type: Array,
+              required: true
+            },
         },
         methods: {
             async createTeam() {
@@ -114,5 +117,10 @@ import store from '@/plugins/store';
                 console.log(this.teamExecutors);
             },
         },
+        computed: {
+            usersWithID() {
+                return this.allUsers.map(user => ({ ...user, nameWithID: `${user.name} (${user.id})` }));
+            },
+        }
     }
 </script>

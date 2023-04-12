@@ -17,16 +17,6 @@ export const AnsQueryAPI = {
         return QueryAPIInstance.get(url);
     },
 
-    getUsers() {
-        const url = `http://localhost/drupal/web/jsonapi/user/user?fields[user--user]=id,drupal_internal__uid,display_name`;
-        return QueryAPIInstance.get(url);
-    },
-
-    getUserData(userUID) {
-        const url = `http://localhost/drupal/web/jsonapi/user/user/${userUID}?include=user_picture&fields[user--user]=display_name&fields[file--file]=uri`;
-        return QueryAPIInstance.get(url);
-    },
-
     async createAnswer(title, body, progressUID, taskUID, files = []) {
         const url = `http://localhost/drupal/web/jsonapi/comment/answer`;
         console.log('Files: ' + files);

@@ -3,6 +3,7 @@ import { AuthModule } from "./modules/AuthModule";
 import { TaskModule } from "./modules/TaskModule";
 import { TeamModule } from "./modules/TeamModule";
 import { ProjectModule } from "./modules/ProjectModule";
+import { UserModule } from "./modules/UserModule";
 
 export default createStore({
   state: {},
@@ -14,5 +15,6 @@ export default createStore({
     taskM: TaskModule,
     teamM: TeamModule,
     projectM: ProjectModule,
+    userM: UserModule,
   },
 });

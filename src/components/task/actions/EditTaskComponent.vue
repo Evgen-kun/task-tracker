@@ -15,9 +15,9 @@
 
             <v-autocomplete
                 label="Исполнитель*"
-                :items="users"
-                item-title="name"
-                item-value="id"
+                :items="usersWithID"
+                item-title="nameWithID"
+                item-value="uid"
                 v-model="executorUID"
                 :rules="selectRules"
                 clearable
@@ -45,10 +45,10 @@ import { mapGetters } from 'vuex';
     export default {
         data() {
             return {
-                taskTitle: this.title,
-                text: this.body,
+                taskTitle: this.task.title,
+                text: this.task.body,
                 executorUID: this.userUID,
-                select: this.taskStatus,
+                select: this.task.status,
 
                 titleRules: [
                   v => !!v || 'Требуется заголовок',
@@ -63,11 +63,14 @@ import { mapGetters } from 'vuex';
             }
         },
         props: {
-            taskID: String,
-            taskStatus: String,
-            title: String,
-            body: String,
-            userUID: String,
+            task: {
+                type: Object,
+                required: true
+            },
+            userUID: {
+                type: String,
+                required: true
+            },
         },
         methods: {
             async editTask() {
@@ -75,7 +78,7 @@ import { mapGetters } from 'vuex';
 
               if(valid) {
                     await store.dispatch('taskM/editTask', {
-                        id: this.taskID, 
+                        id: this.task.id, 
                         title: this.taskTitle, 
                         body: this.text, 
                         executorUID: this.executorUID, 
@@ -85,17 +88,20 @@ import { mapGetters } from 'vuex';
                 //else alert("NOT validate");
             },
             async deleteTask() {
-              await store.dispatch('taskM/deleteTask', {id: this.taskID});
+              await store.dispatch('taskM/deleteTask', {id: this.task.id});
             },
             showExecutorUID() {
               console.log(this.executorUID);
             },
         },
         computed: {
-            ...mapGetters('taskM', {
-                users: 'getUsers',
-                statuses: 'getStatuses',
+            ...mapGetters({
+                users: 'userM/getUsers',
+                statuses: 'taskM/getStatuses',
             }),
+            usersWithID() {
+                return this.users.map(user => ({ ...user, nameWithID: `${user.name} (${user.id})` }));
+            },
         },
     }
 </script>

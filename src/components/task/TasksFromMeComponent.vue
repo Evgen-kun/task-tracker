@@ -8,15 +8,8 @@
         <TaskComponent
           v-for="task in tasks"
           v-bind:key="task.id"
-          v-bind:taskID="task.id"
-          v-bind:title="task.title"
-          v-bind:body="task.body"
+          v-bind:task="task"
           v-bind:user="task.executor"
-          v-bind:userUID="task.executorUID"
-          v-bind:image="task.executorPicture"
-          v-bind:answers="task.answers"
-          v-bind:taskStatus="task.status"
-          v-bind:taskProgress="task.progress"
           v-bind:subtitle="subtitle">
         </TaskComponent>
         
@@ -54,8 +47,10 @@
       CreateTaskComponent
     },
     async created() {
-      const userUID = store.getters['authM/getUserUID'];
-      await store.dispatch('taskM/queryTasksFromMe', { userUID });
+      const user = store.getters['authM/getUser'];
+      const userUID = user.uid;
+      await store.dispatch('taskM/queryTasksFromMe', { userUID: userUID });
+      await store.dispatch('userM/usersQuery');
     }
   }
 </script>

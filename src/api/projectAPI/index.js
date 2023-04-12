@@ -4,11 +4,11 @@ import store from "@/plugins/store";
 export const ProjectsQueryAPI = {
     /**
      * 
-     * @param {string} teamUID
+     * @param {string} teamID
      * @returns {Promise<AxiosResponse<any>>}
      */
-    getProjects(teamUID) {
-        const url = `http://localhost/drupal/web/jsonapi/node/team?filter[id]=${teamUID}&fields[node--team]=id,title,body,field_member,field_project&include=field_project.field_task&fields[node--project]=id,title,body,field_task&fields[node--task]=id,title,body,field_ispolnitel,field_status`;
+    getProjects(teamID) {
+        const url = `http://localhost/drupal/web/jsonapi/node/team?filter[id]=${teamID}&fields[node--team]=id,title,body,field_member,field_project&include=field_project.field_task&fields[node--project]=id,title,body,field_task&fields[node--task]=id,title,body,field_ispolnitel,field_status`;
         return QueryAPIInstance.get(url);
     },
 

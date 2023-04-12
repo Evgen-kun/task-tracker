@@ -17,6 +17,9 @@ export default defineConfig({
     }),
     pluginRewriteAll(),
   ],
+  test: {
+    environment: 'jsdom'
+  },
   define: { 'process.env': {} },
   resolve: {
     alias: {

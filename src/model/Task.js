@@ -7,7 +7,7 @@
  * @property {string} progress - Task progress
  * @property {User} author - Task author
  * @property {User} executor - Task executor
- * @property {Array<Object>} answers - Task answers
+ * @property {Array<Answer>} answers - Task answers
  */
 
 export default class Task {

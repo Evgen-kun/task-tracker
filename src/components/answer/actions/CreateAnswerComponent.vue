@@ -74,7 +74,10 @@ import { mapGetters } from 'vuex';
             }
         },
         props: {
-            taskID: String,
+            taskID: {
+                type: String,
+                required: true
+            },
         },
         methods: {
             async addAns() {

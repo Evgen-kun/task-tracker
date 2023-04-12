@@ -23,14 +23,8 @@
       <TaskComponent
         v-for="task in tasks"
         v-bind:key="task.id"
-        v-bind:taskID="task.id"
-        v-bind:title="task.title"
-        v-bind:body="task.body"
+        v-bind:task="task"
         v-bind:user="task.author"
-        v-bind:image="task.authorPicture"
-        v-bind:answers="task.answers"
-        v-bind:taskStatus="task.status"
-        v-bind:taskProgress="task.progress"
         v-bind:subtitle="subtitle">
       </TaskComponent>
 
@@ -83,12 +77,15 @@ export default {
     TaskComponent
   },
   async created() {
-    const userUID = store.getters['authM/getUserUID'];
+    const user = store.getters['authM/getUser'];
+    const userUID = user.uid;
+    console.log(user);
     console.log(store.getters['authM/getToken']);
     await store.dispatch('taskM/getStatuses');
     await store.dispatch('taskM/getProgress');
-    await store.dispatch('taskM/query', { userUID });
+    await store.dispatch('taskM/query', { userUID: userUID });
+    await store.dispatch('userM/usersQuery');
   }
 }
-  //
+
 </script>

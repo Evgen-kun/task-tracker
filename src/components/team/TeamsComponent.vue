@@ -3,10 +3,7 @@
         <v-row>
             <v-col v-for="team in teams" :key="team.id">
                 <TeamComponent
-                    v-bind:teamID="team.id"
-                    v-bind:title="team.title"
-                    v-bind:body="team.body"
-                    v-bind:teamUsers="[...team.users.values()].map(user => user.id)"
+                    v-bind:team="team"
                     v-bind:allUsers="users">
                 </TeamComponent>
             </v-col>
@@ -23,7 +20,7 @@
 import store from '@/plugins/store';
 import { mapGetters } from 'vuex';
 import TeamComponent from './TeamComponent.vue';
-import CreateTeamComponent from './CreateTeamComponent.vue';
+import CreateTeamComponent from './actions/CreateTeamComponent.vue';
 
 export default {
     data() {
@@ -35,9 +32,9 @@ export default {
 
     },
     computed: {
-        ...mapGetters('teamM', {
-            teams: 'getTeams',
-            users: 'getUsers',
+        ...mapGetters({
+            teams: 'teamM/getTeams',
+            users: 'userM/getUsers',
         }),
     },
     components: {
@@ -45,10 +42,10 @@ export default {
         CreateTeamComponent,
     },
     async created() {
-        const userUID = store.getters['authM/getUserUID'];
-        console.log(store.getters['authM/getToken']);
-        await store.dispatch('teamM/queryTeams', { userUID });
-        await store.dispatch('teamM/getUsers');
+        const user = store.getters['authM/getUser'];
+        const userUID = user.uid;
+        await store.dispatch('userM/usersQuery');
+        await store.dispatch('teamM/queryTeams', { userUID: userUID });
     }
 }
 </script>

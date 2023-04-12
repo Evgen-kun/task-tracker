@@ -1,4 +1,7 @@
 import { AuthAPI } from "@/api/authAPI";
+import { UsersQueryAPI } from "@/api/usersAPI";
+import Picture from "@/model/Picture";
+import User from "@/model/User";
 
 export const AuthModule = {
     namespaced: true,
@@ -7,30 +10,25 @@ export const AuthModule = {
         return {
             credentials: {
                 //isAuthorized: localStorage.hasOwnProperty('token'),
+                user: JSON.parse(localStorage.getItem('user')) || new User(),
                 token: localStorage.getItem('token') || null,
                 basicToken: localStorage.getItem('basicToken') || null,
-                userUID: localStorage.getItem('userUID') || null,
-                userID: localStorage.getItem('userID') || null,
-                userName: localStorage.getItem('userName') || null,
-                userEmail: localStorage.getItem('userEmail') || null,
-                userPicture: localStorage.getItem('userPicture') || '/drupal/web/sites/default/files/inline-images/anonym.png',
-                userRoles: JSON.parse(localStorage.getItem('userRoles')) || [],
             }
         }
     },
 
     getters: {
+        getUser: (state) => state.credentials.user,
         getToken: (state) => state.credentials.token,
         getBasicToken: (state) => state.credentials.basicToken,
-        getUserUID: (state) => state.credentials.userUID,
-        getUserID: (state) => state.credentials.userID,
-        getUserName: (state) => state.credentials.userName,
-        getUserEmail: (state) => state.credentials.userEmail,
-        getUserPicture: (state) => state.credentials.userPicture,
-        getUserRoles: (state) => state.credentials.userRoles,
     },
 
     mutations: {
+        setUser(state, user) {
+            state.credentials.user = user;
+            localStorage.setItem('user', JSON.stringify(user));
+        },
+
         setToken(state, token) {
             state.credentials.token = token;
             localStorage.setItem('token', token);
@@ -41,44 +39,9 @@ export const AuthModule = {
             localStorage.setItem('basicToken', basicToken);
         },
 
-        /*setUser(state, userUID, userID, userName, userEmail, userPicture) {
-            state.credentials.user = {};
-            state.credentials.user.userUID = userUID;
-            state.credentials.user.userID = userID;
-            state.credentials.user.userName = userName;
-            state.credentials.user.userEmail = userEmail;
-            state.credentials.user.userPicture = userPicture;
-            localStorage.setItem('user', state.credentials.user);
-        },*/
-
-        setUserUID(state, userUID) {
-            state.credentials.userUID = userUID;
-            localStorage.setItem('userUID', userUID);
-        },
-
-        setUserID(state, userID) {
-            state.credentials.userID = userID;
-            localStorage.setItem('userID', userID);
-        },
-
-        setUserName(state, userName) {
-            state.credentials.userName = userName;
-            localStorage.setItem('userName', userName);
-        },
-
-        setUserEmail(state, userEmail) {
-            state.credentials.userEmail = userEmail;
-            localStorage.setItem('userEmail', userEmail);
-        },
-
-        setUserPicture(state, userPicture) {
-            state.credentials.userPicture = userPicture;
-            localStorage.setItem('userPicture', userPicture);
-        },
-
-        setUserRoles(state, userRoles) {
-            state.credentials.userRoles = userRoles;
-            localStorage.setItem('userRoles', JSON.stringify(userRoles));
+        deleteUser(state) {
+            state.credentials.user = new User();
+            localStorage.removeItem('user');
         },
 
         deleteToken(state) {
@@ -90,85 +53,39 @@ export const AuthModule = {
             state.credentials.basicToken = null;
             localStorage.removeItem('basicToken');
         },
-
-        /*deleteUser(state) {
-            state.credentials.user = null;
-            localStorage.removeItem('user');
-        },*/
-
-        deleteUserUID(state) {
-            state.credentials.userUID = null;
-            localStorage.removeItem('userUID');
-        },
-
-        deleteUserID(state) {
-            state.credentials.userID = null;
-            localStorage.removeItem('userID');
-        },
-
-        deleteUserName(state) {
-            state.credentials.userName = null;
-            localStorage.removeItem('userName');
-        },
-
-        deleteUserEmail(state) {
-            state.credentials.userEmail = null;
-            localStorage.removeItem('userEmail');
-        },
-
-        deleteUserPicture(state) {
-            state.credentials.userPicture = '/drupal/web/sites/default/files/inline-images/anonym.png';
-            localStorage.removeItem('userPicture');
-        },
-
-        deleteUserRoles(state) {
-            state.credentials.userRoles = [];
-            localStorage.removeItem('userRoles');
-        }
     },
 
     actions: {
         async onLogin({ commit }, { login, password }) {
-            const res = await AuthAPI.login(login, password);
-            //const userID = Number(res.headers.link.split(';')[0].substr(-2, 1));
+            const auth = await AuthAPI.login(login, password);
+            //const userID = Number(auth.headers.link.split(';')[0].substr(-2, 1));
+            console.log("Auth: " + auth);
             const userUID = (await AuthAPI.getUserUID()).data.meta.links.me.meta.id;
 
-            const data = await AuthAPI.getUserData(userUID);
-            //const userUID = data.data.data[0].id;
-            const userID = data.data.data[0].attributes.drupal_internal__uid;
-            const userName = data.data.data[0].attributes.name;
-            const userEmail = data.data.data[0].attributes.mail;
-            const userRoles = data.data.data[0].relationships.roles.data.map(role => role.meta.drupal_internal__target_id);
-            const userPictureID = data.data.data[0].relationships.user_picture.data.id;
+            const res = await UsersQueryAPI.getUser(userUID);
+            const data = res.data.data;
+            const included = res.data.included;
 
-            const userPictureData = await AuthAPI.getUserPicture(userPictureID);
-            const userPicture = userPictureData.data.data.attributes.uri.url;
+            const picture = new Picture();
+            picture.uid = included[0].id;
+            picture.url = included[0].attributes.uri.url;
+
+            const user = new User();
+            user.uid = data.id;
+            user.id = data.attributes.drupal_internal__uid;
+            user.name = data.attributes.display_name;
+            user.email = data.attributes.mail;
+            user.picture = picture;
+            user.roles = data.relationships.roles.data.map(role => role.meta.drupal_internal__target_id);
 
             const token = await AuthAPI.getToken();
             console.log("X token: " + token.data);
 
-            const basicToken = btoa(userName + ":" + password);
+            const basicToken = btoa(user.name + ":" + password);
 
-            /*const users = await AuthAPI.getUsersREST();
-            console.log(users.data);
-            var userRole = null;
-            for(let i = 0; i < users.data.length; i++) {
-                if(users.data[i].uuid[0].value == userUID) {
-                    userRole = users.data[i].roles[0].target_id;
-                    break;
-                }
-            }
-            console.log(userRole);*/
-
+            commit('setUser', user);
             commit('setToken', token.data);
             commit('setBasicToken', basicToken);
-            //commit('setUser', userUID, userID, userName, userEmail, userPicture);
-            commit('setUserUID', userUID);
-            commit('setUserID', userID);
-            commit('setUserName', userName);
-            commit('setUserEmail', userEmail);
-            commit('setUserRoles', userRoles);
-            commit('setUserPicture', userPicture);
             //console.log(login + " залогинен, id: " + res.headers.link.split(';')[0].substr(-2, 1));
             //commit('setUserRole', userRole);
             //DefaultAPIInstance.defaults.headers['Authorization'] = `Basic ${(String(login) + String(password)).toString('base64')}`;
@@ -179,15 +96,10 @@ export const AuthModule = {
         async onLogout({ commit }) {
             const res = await AuthAPI.logout();
 
+            commit('deleteUser');
             commit('deleteToken');
             commit('deleteBasicToken');
-            commit('deleteUserUID');
-            commit('deleteUserID');
-            commit('deleteUserName');
-            commit('deleteUserEmail');
-            commit('deleteUserRoles');
-            commit('deleteUserPicture');
-            console.log("разлогинен");
+            // console.log("разлогинен");
             //commit('deleteUserRole');
             //delete DefaultAPIInstance.defaults.headers['Cookie'];
         }

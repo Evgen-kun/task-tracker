@@ -3,20 +3,20 @@
         <v-container>
             <v-text-field
                 label="Заголовок"
-                v-model="lastAnsTitle"
+                v-model="lastAnswer.title"
             >
             </v-text-field>
 
-            <v-textarea label="Описание" v-model="lastAnsText"></v-textarea>
+            <v-textarea label="Описание" v-model="lastAnswer.text"></v-textarea>
 
             <v-text-field
-                v-model="select"
+                v-model="lastAnswer.progress"
                 label="Прогресс выполнения"
             ></v-text-field>
 
             <v-file-input
-                v-if="lastAnsFiles.length !== 0"
-                v-model="lastAnsFiles"
+                v-if="lastAnswer.files.length !== 0"
+                v-model="lastAnswer.files"
                 label="Файлы"
                 multiple
                 prepend-icon="mdi-paperclip"
@@ -24,12 +24,12 @@
                 <template v-slot:selection="{ fileNames }">
                     <template v-for="fileName in fileNames" :key="fileName">
                         <v-chip
-                        variant="outlined"
-                        size="small"
-                        label
-                        color="white"
-                        text-color="white"
-                        class="me-2"
+                            variant="outlined"
+                            size="small"
+                            label
+                            color="white"
+                            text-color="white"
+                            class="me-2"
                         >
                         {{ fileName }}
                         </v-chip>
@@ -41,6 +41,8 @@
 </template>
 
 <script>
+import Answer from '@/model/Answer';
+
     export default {
         data() {
             return {
@@ -48,19 +50,19 @@
             }
         },
         props: {
-            title: String,
-            body: String,
-            files: Array,
-            taskProgress: String,
+            answers: {
+                type: Array,
+                required: true
+            },
         },
         methods: {
             
         },
         computed: {
-            select() { return this.taskProgress },
-            lastAnsTitle() { return this.title; },
-            lastAnsText() { return this.body; },
-            lastAnsFiles() { return this.files; },
+            lastAnswer() {
+              if(this.answers.length !== 0) return this.answers[this.answers.length - 1];
+              else return new Answer();
+            },
         },
     }
 </script>

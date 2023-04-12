@@ -8,7 +8,7 @@
   
   <script>
   // @ is an alias to /src
-  import TeamsComponent from '@/components/TeamsComponent.vue';
+  import TeamsComponent from '@/components/team/TeamsComponent.vue';
   
   export default {
     name: "TeamsView",

@@ -32,9 +32,9 @@
 
                     <v-autocomplete
                         label="Исполнитель*"
-                        :items="users"
-                        item-title="name"
-                        item-value="id"
+                        :items="usersWithID"
+                        item-title="nameWithID"
+                        item-value="uid"
                         v-model="executor"
                         :rules="selectRules"
                         clearable
@@ -78,9 +78,6 @@ import { mapGetters } from 'vuex';
                 ],
             }
         },
-        props: {
-
-        },
         methods: {
             async createTask() {
                 const { valid } = await this.$refs.createTaskForm.validate();
@@ -94,12 +91,12 @@ import { mapGetters } from 'vuex';
             },
         },
         computed: {
-            ...mapGetters('taskM', {
+            ...mapGetters('userM', {
                 users: 'getUsers',
             }),
-        },
-        async created() {
-            await store.dispatch('taskM/getUsers');
+            usersWithID() {
+                return this.users.map(user => ({ ...user, nameWithID: `${user.name} (${user.id})` }));
+            },
         },
     }
 </script>

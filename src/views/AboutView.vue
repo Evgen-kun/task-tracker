@@ -8,7 +8,7 @@
 
 <script>
 // @ is an alias to /src
-import TasksFromMeComponent from "@/components/TasksFromMeComponent.vue";
+import TasksFromMeComponent from "@/components/task/TasksFromMeComponent.vue";
 
 export default {
   name: "AboutView",

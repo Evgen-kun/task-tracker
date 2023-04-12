@@ -45,9 +45,9 @@
     </v-menu>
     </v-card-actions>
 
-    <v-card-title v-text="title"></v-card-title>
+    <v-card-title v-text="team.title"></v-card-title>
 
-    <v-card-subtitle v-text="body"></v-card-subtitle>
+    <v-card-subtitle v-text="team.body"></v-card-subtitle>
 
     <v-dialog
       v-model="showEdit"
@@ -76,10 +76,10 @@
 
                 <v-select
                   label="Исполнитель*"
-                  :items="allUsers"
+                  :items="usersWithID"
                   item-title="nameWithID"
-                  item-value="id"
-                  v-model="teamExecutors"
+                  item-value="uid"
+                  v-model="teamExecutorsID"
                   multiple
                 >
                 </v-select>
@@ -144,9 +144,9 @@ export default {
         return {
             showEdit: false,
             showDelete: false,
-            teamTitle: this.title,
-            teamSubtitle: this.body,
-            teamExecutors: this.teamUsers,
+            teamTitle: this.team.title,
+            teamSubtitle: this.team.body,
+            teamExecutorsID: this.team.users.map(user => user.uid),
 
             titleRules: [
                 v => !!v || 'Требуется название',
@@ -158,31 +158,40 @@ export default {
         }
     },
     props: {
-      teamID: String,
-      title: String,
-      body: String,
-      teamUsers: Array,
-      allUsers: Array,
+      team: {
+        type: Object,
+        required: true
+      },
+      allUsers: {
+        type: Array,
+        required: true
+      },
     },
     methods: {
         async editTeam() {
             const { valid } = await this.$refs.editTeamForm.validate();
 
             if(valid) {
-                await store.dispatch('teamM/editTeam', { id: this.teamID, title: this.teamTitle, body: this.teamSubtitle, usersUID: this.teamExecutors});
+                await store.dispatch('teamM/editTeam', { id: this.team.id, title: this.teamTitle, body: this.teamSubtitle, usersUID: this.teamExecutorsID});
             }
             else alert("NOT validate");
         },
         async deleteTeam() {
-            await store.dispatch('teamM/deleteTeam', { id: this.teamID });
+            await store.dispatch('teamM/deleteTeam', { id: this.team.id });
         },
         showTeam() {
             console.log(this.teamTitle);
             console.log(this.teamSubtitle);
-            console.log(this.teamExecutors);
+            console.log(this.teamExecutorsID);
         },
         goToDashboard() {
-            this.$router.push({ name: 'dashboard', params: { id: this.teamID } });
+            this.$router.push({ name: 'dashboard', params: { id: this.team.id } });
+        },
+    },
+    computed: {
+        usersWithID() {
+            console.log("Все пользователи: " + this.allUsers);
+            return this.allUsers.map(user => ({ ...user, nameWithID: `${user.name} (${user.id})` }));
         },
     },
 }

@@ -1,9 +1,6 @@
 import { ProjectsQueryAPI } from "@/api/projectAPI";
 import Project from "@/model/Project";
 import Task from "@/model/Task";
-import User from "@/model/User";
-const ADMIN_ID = '6da4f1c5-7607-4047-a6d0-011ba3e0c6cb';
-const GUEST_ID = '52a3ddd5-2b1f-4b48-b600-14507b648d69';
 
 export const ProjectModule = {
     namespaced: true,
@@ -17,7 +14,6 @@ export const ProjectModule = {
     getters: {
         getProjects: (state) => state.projects,
         getProjectByID: (state) => (id) => { return state.projects.find(project => project.id === id) },
-        getAllUsers: (state, getters, rootState, rootGetters) => rootGetters['teamM/getUsers'],
     },
 
     mutations: {
@@ -49,8 +45,8 @@ export const ProjectModule = {
     },
 
     actions: {
-        async queryProjects({ commit }, { teamUID }) {
-            const res = await ProjectsQueryAPI.getProjects(teamUID);
+        async queryProjects({ commit, dispatch }, { teamID }) {
+            const res = await ProjectsQueryAPI.getProjects(teamID);
             console.log(res);
 
             const projects = [];
@@ -59,23 +55,21 @@ export const ProjectModule = {
                 project.id = item.id;
                 project.title = item.attributes.title;
                 project.body = (item.attributes.body !== null)? item.attributes.body.value : null;
-                project.tasksID = item.relationships.field_task.data.map(task => task.id);
-                project.tasks = new Map();
+                const projectTasksID = item.relationships.field_task.data.map(task => task.id);
 
                 res.data.included.forEach((itemInc) => {
                     if(itemInc.type === 'node--task') {
-                        if(project.tasksID.includes(itemInc.id)) {
+                        if(projectTasksID.includes(itemInc.id)) {
                             const task = new Task();
                             task.id = itemInc.id;
                             task.title = itemInc.attributes.title;
                             task.body = (item.attributes.body !== null)? item.attributes.body.value : null;
 
-                            const executor = new User();
-                            executor.uid = itemInc.relationships.field_ispolnitel.data.id;
-                            executor.name = this.getUser(task.executorUID) ?? null;
+                            const executorUID = itemInc.relationships.field_ispolnitel.data.id;
+                            const executor = dispatch('getUser', { userUID: executorUID }) ?? null;
                             task.executor = executor;
 
-                            project.tasks.set(task.id, task);
+                            project.tasks.push(task);
                         }
                     }
                 });
@@ -108,17 +102,16 @@ export const ProjectModule = {
                 });*/
 
                 projects.push(project);
-                console.log(team);
             });
 
-            commit('setTeams', teams);
+            commit('setProjects', projects);
         },
 
-        getUser({ getters }, userID) {
-            const allUsers = getters.getAllUsers();
+        getUser({ rootGetters }, { userUID }) {
+            const allUsers = rootGetters['userM/getUsers'];
             console.log(res);
 
-            const user = allUsers.find(user => user.id === userID);
+            const user = allUsers.find(user => user.uid === userUID);
 
             console.log("USER: " + user);
             return user;

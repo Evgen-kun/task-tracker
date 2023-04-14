@@ -123,7 +123,7 @@ export const TaskModule = {
                 task.title = item.attributes.title;
                 task.body = (item.attributes.body !== null)? item.attributes.body.processed.replace(/(<p>|<\/p>)/g, '') : null;
                 task.status = getters.getStatuses.get(item.relationships.field_status.data.id) ?? 'Не определено';
-                task.progress = '0%';
+                task.progress = 0;
 
                 const authorUID = item.relationships.uid.data.id;
                 res.data.included.forEach((itemInc, j) => {
@@ -159,7 +159,7 @@ export const TaskModule = {
                     answer.title = com.attributes.subject;
                     answer.body = com.attributes.comment_body.processed.replace(/(<p>|<\/p>)/g, '');
                     answer.progress = getters.getProgress.get(com.relationships.field_progress.data.id);
-                    task.progress = answer.progress ?? '0%';
+                    task.progress = answer.progress ?? 0;
 
                     const answerFilesID = [];
                     // console.log(com.relationships.field_file.data);
@@ -206,7 +206,7 @@ export const TaskModule = {
                 task.title = item.attributes.title;
                 task.body = (item.attributes.body !== null)? item.attributes.body.processed.replace(/(<p>|<\/p>)/g, '') : null;
                 task.status = getters.getStatuses.get(item.relationships.field_status.data.id) ?? 'Не определено';
-                task.progress = '0%';
+                task.progress = 0;
 
                 const executorUID = item.relationships.field_ispolnitel.data.id;
                 res.data.included.forEach((itemInc, j) => {
@@ -294,7 +294,7 @@ export const TaskModule = {
 
             const progress = new Map();
             res.data.data.forEach((item) => {
-                progress.set(item.id, item.attributes.name);
+                progress.set(item.id, Number(item.attributes.name.slice(0, -1)));
             });
 
             //console.log(progress);
@@ -341,7 +341,7 @@ export const TaskModule = {
             task.title = res.data.data.attributes.title;
             task.body = (res.data.data.attributes.body !== null)? res.data.data.attributes.body.processed.replace(/(<p>|<\/p>)/g, '') : null;
             task.status = 'Не выполнено';
-            task.progress = '0%';
+            task.progress = 0;
             task.executor = executor;
             task.author = author;
             task.answers = [];

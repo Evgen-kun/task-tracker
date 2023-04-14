@@ -4,7 +4,7 @@
  * @property {number} id - Answer ID
  * @property {string} title - Answer title
  * @property {string} body - Answer description
- * @property {string} progress - Answer progress
+ * @property {Number} progress - Answer progress
  * @property {User} author - Answer author
  * @property {Array<File>} files - Answer files
  */

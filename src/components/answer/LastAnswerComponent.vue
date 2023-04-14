@@ -10,9 +10,10 @@
             <v-textarea label="Описание" v-model="lastAnswer.text"></v-textarea>
 
             <v-text-field
-                v-model="lastAnswer.progress"
                 label="Прогресс выполнения"
-            ></v-text-field>
+            >
+                {{ lastAnswer.progress }}%
+            </v-text-field>
 
             <v-file-input
                 v-if="lastAnswer.files.length !== 0"

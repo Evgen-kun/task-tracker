@@ -24,7 +24,7 @@
             </v-card-title>
 
             <v-card-subtitle>
-                Прогресс выполнения: {{ answer.progress }}
+                Прогресс выполнения: {{ answer.progress }}%
             </v-card-subtitle>
 
             <v-card-text>

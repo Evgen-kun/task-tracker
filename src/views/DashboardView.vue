@@ -1,12 +1,12 @@
 <template>
     <v-container fluid class="dashboard">
         <v-responsive class="d-flex">
-            <div class="d-flex flex-column align-left pa-1">
+            <div class="d-flex flex-column align-center pa-1">
                 <v-btn-toggle
                 v-model="toggle"
                 color="primary"
                 rounded="lg"
-                variant="text"
+                variant="outlined"
                 mandatory
                 >
                     <v-btn icon="mdi-view-list" value="tasklist" title="Список">
@@ -22,10 +22,14 @@
                 </v-btn-toggle>
             </div>
             <div v-if="toggle === 'gantt'">
-                <GanttComponent />
+                <!-- <GanttComponent /> -->
             </div>
             <div v-if="toggle === 'kanban'">
-                <DashboardComponent />
+                <KanbanComponent />
+            </div>
+            <div v-if="toggle === 'tasklist'">
+                <!-- <TaskListComponent /> -->
+                <TaskListVuetifyComponent />
             </div>
             <!-- <GanttElastic /> -->
       </v-responsive>
@@ -35,16 +39,21 @@
 <script>
 // @ is an alias to /src
 import DashboardComponent from '@/components/gantt/DashboardComponent.vue';
-import GanttComponent from '@/components/gantt/GanttComponent.vue';
+// import GanttComponent from '@/components/gantt/GanttComponent.vue';
+import KanbanComponent from '@/components/task/KanbanComponent.vue';
+// import TaskListComponent from '@/components/task/TaskListComponent.vue';
+import TaskListVuetifyComponent from '@/components/task/TaskListVuetifyComponent.vue';
 // import GanttElastic from '@/components/GanttElastic.vue';
 
 export default {
     name: "DashboardView",
     components: {
-        DashboardComponent,
-        GanttComponent,
-        // GanttElastic
-    },
+    DashboardComponent,
+    // GanttComponent,
+    // TaskListComponent,
+    KanbanComponent,
+    TaskListVuetifyComponent
+},
     data() {
         return {
             toggle: "gantt",
@@ -57,3 +66,7 @@ export default {
     },
 };
 </script>
+
+<style scoped>
+
+</style>

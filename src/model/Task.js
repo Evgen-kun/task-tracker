@@ -4,7 +4,7 @@
  * @property {string} title - Task title
  * @property {string} body - Task description
  * @property {string} status - Task status
- * @property {string} progress - Task progress
+ * @property {Number} progress - Task progress
  * @property {User} author - Task author
  * @property {User} executor - Task executor
  * @property {Array<Answer>} answers - Task answers

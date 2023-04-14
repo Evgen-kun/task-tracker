@@ -1,45 +1,46 @@
 <template>
   <v-card
     v-if="!show"
-    class="mx-auto mt-8"
+    class="mx-auto mt-3"
     :color="color.get(task.status)"
     theme="dark"
-    max-width="750"
+    max-width="100%"
+    min-width="350px"
     rounded="xl"
     @click="show = !show"
   >
 
   <div class="d-flex flex-row">
   <v-card-item>
-    <v-list-item class="w-100">
+    <!-- <v-list-item class="w-100"> -->
     <v-progress-circular
-        v-if="(task.progress.slice(0, -1) !== '0') && (task.progress.slice(0, -1) !== '100')"
+        v-if="(task.progress !== 0) && (task.progress !== 100)"
         :rotate="360"
         :width="7"
-        :model-value="Number(task.progress.slice(0, -1))"
+        :model-value="task.progress"
         color="wight"
       >
       </v-progress-circular>
       <v-icon :icon="icon" v-else size="x-large"></v-icon>
-    </v-list-item>
+    <!-- </v-list-item> -->
   </v-card-item>
 
-    <v-card-item class="text-h5 py-4" style="text-align:start" >
-      <v-list-item class="w-100">
+    <v-card-title class="text-h5 py-4 shrink-block" style="text-align:start" >
+      <!-- <v-list-item class="w-100"> -->
         {{ task.title }}
-      </v-list-item>
-    </v-card-item>
+      <!-- </v-list-item> -->
+    </v-card-title>
       
     <v-spacer></v-spacer>
 
     <v-card-item class="text-h6">{{ user.name }}</v-card-item>
 
     <v-card-item>
-      <v-list-item class="w-100">
+      <!-- <v-list-item class="w-100"> -->
           <v-avatar
             :image=user.picture.url
           ></v-avatar>
-      </v-list-item>
+      <!-- </v-list-item> -->
     </v-card-item>
   </div>
 
@@ -47,20 +48,22 @@
 
   <v-card
     v-if="show"
-    class="mx-auto mt-8"
+    class="mx-auto mt-3"
     :color="color.get(task.status)"
     theme="dark"
-    max-width="750"
+    max-width="100%"
+    min-width="350px"
     rounded="xl"
     :prepend-icon="icon"
   >
 
     <template v-slot:prepend>
       <v-progress-circular
-        v-if="(task.progress.slice(0, -1) !== '0') && (task.progress.slice(0, -1) !== '100')"
+        v-if="(task.progress !== 0) && (task.progress !== 100)"
         :rotate="360"
-        :width="7"
-        :model-value="Number(task.progress.slice(0, -1))"
+        :size="45"
+        :width="10"
+        :model-value="task.progress"
         color="wight"
       >
       </v-progress-circular>
@@ -197,6 +200,7 @@ import LastAnswerComponent from '../answer/LastAnswerComponent.vue';
 // import { mapGetters } from 'vuex';
 
     export default {
+      name: "TaskComponent",
         data() {
             return {
               show: false,
@@ -237,7 +241,7 @@ import LastAnswerComponent from '../answer/LastAnswerComponent.vue';
               return this.$route.path;
             },
             icon() {
-              const progress = Number(this.task.progress.slice(0, -1));
+              const progress = this.task.progress;
               if(progress === 100) return "mdi-check-circle-outline";
               if(progress === 0) return "mdi-alert-octagon-outline";
             },
@@ -254,3 +258,9 @@ import LastAnswerComponent from '../answer/LastAnswerComponent.vue';
         },
     }
 </script>
+
+<style>
+.shrink-block {
+  flex-shrink: 1;
+}
+</style>

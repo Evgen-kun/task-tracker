@@ -20,7 +20,7 @@ const routes = [
     path: "/",
     name: "home",
     component: HomeView,
-    beforeEnter: authGuard,
+    // beforeEnter: authGuard,
   },
   {
     path: "/login",
@@ -35,23 +35,23 @@ const routes = [
     // this generates a separate chunk (about.[hash].js) for this route
     // which is lazy-loaded when the route is visited.
     component: () => import(/* webpackChunkName: "about" */ "../../views/AboutView.vue"),
-    beforeEnter: managerAuthGuard,
+    // beforeEnter: managerAuthGuard,
   },
   {
     path: "/teams",
     name: "teams",
-    beforeEnter: managerAuthGuard,
+    // beforeEnter: managerAuthGuard,
     children: [
       { 
         path: '', 
         component: () => import("../../views/TeamsView.vue"), 
-        beforeEnter: managerAuthGuard,
+        // beforeEnter: managerAuthGuard,
       },
       {
         path: ":id",
         name: "dashboard",
         component: () => import("../../views/DashboardView.vue"),
-        beforeEnter: managerAuthGuard,
+        // beforeEnter: managerAuthGuard,
       },
     ],
   },

@@ -16,7 +16,7 @@
             <v-select
                 v-model="select"
                 :items="[...progress.values()]"
-                label="Прогресс выполнения"
+                label="Прогресс выполнения (%)"
                 single-line
                 required
             ></v-select>
@@ -88,7 +88,7 @@ import { mapGetters } from 'vuex';
                         title: this.ansTitle, 
                         body: this.ansText, 
                         taskUID: this.taskID, 
-                        progress: this.select, 
+                        progress: `${this.select}%`, 
                         files: this.files
                     });
                 }

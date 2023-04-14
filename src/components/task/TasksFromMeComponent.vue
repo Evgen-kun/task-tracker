@@ -5,6 +5,16 @@
         <!-- <EditorComponent /> -->
         <CreateTaskComponent />
   
+        <draggable v-model="myList" tag="transition" item-key="id">
+          <template #item="{ element: task }">
+            <div><TaskComponent
+              v-bind:task="task"
+              v-bind:user="task.executor"
+              v-bind:subtitle="subtitle">
+            </TaskComponent></div>
+          </template>
+        </draggable>
+
         <TaskComponent
           v-for="task in tasks"
           v-bind:key="task.id"
@@ -18,8 +28,9 @@
 </template>
   
 <script>
+  import draggable from 'vuedraggable';
   import store from '@/plugins/store';
-  import { mapGetters } from 'vuex';
+  import { mapGetters, mapState } from 'vuex';
   //import EditorComponent from './EditorComponent.vue';
   import CreateTaskComponent from './actions/CreateTaskComponent.vue';
   import TaskComponent from './TaskComponent.vue';
@@ -40,11 +51,23 @@
         tasks: 'getTasksFromMe',
         //sordedTasks: 'getSortedTasksFromMe',
       }),
+      ...mapState('taskM', {
+        myTasks: 'tasksFromMe',
+      }),
+      myList: {
+        get() {
+            return this.myTasks;
+        },
+        set(value) {
+            this.$store.commit('taskM/setTasksFromMe', value);
+        }
+      },
     },
     components: {
       TaskComponent,
       //EditorComponent,
-      CreateTaskComponent
+      CreateTaskComponent,
+      draggable
     },
     async created() {
       const user = store.getters['authM/getUser'];
@@ -55,3 +78,6 @@
   }
 </script>
   
+<style scoped>
+
+</style>

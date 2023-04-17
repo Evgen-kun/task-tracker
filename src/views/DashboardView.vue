@@ -24,12 +24,18 @@
             <div v-if="toggle === 'gantt'">
                 <!-- <GanttComponent /> -->
             </div>
+            <!-- <div v-if="toggle === 'calendar'">
+                <GanttComponent />
+            </div> -->
             <div v-if="toggle === 'kanban'">
                 <KanbanComponent />
             </div>
             <div v-if="toggle === 'tasklist'">
                 <!-- <TaskListComponent /> -->
                 <TaskListVuetifyComponent />
+            </div>
+            <div v-if="toggle === 'dashboard'">
+                <DashboardComponent />
             </div>
             <!-- <GanttElastic /> -->
       </v-responsive>
@@ -38,7 +44,8 @@
   
 <script>
 // @ is an alias to /src
-import DashboardComponent from '@/components/gantt/DashboardComponent.vue';
+// import GanttDashboardComponent from '@/components/gantt/GanttDashboardComponent.vue.js';
+import DashboardComponent from '@/components/dashboard/DashboardComponent.vue';
 // import GanttComponent from '@/components/gantt/GanttComponent.vue';
 import KanbanComponent from '@/components/task/KanbanComponent.vue';
 // import TaskListComponent from '@/components/task/TaskListComponent.vue';
@@ -48,6 +55,7 @@ import TaskListVuetifyComponent from '@/components/task/TaskListVuetifyComponent
 export default {
     name: "DashboardView",
     components: {
+    // GanttDashboardComponent,
     DashboardComponent,
     // GanttComponent,
     // TaskListComponent,

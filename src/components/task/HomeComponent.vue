@@ -83,6 +83,7 @@ export default {
     console.log(store.getters['authM/getToken']);
     await store.dispatch('taskM/getStatuses');
     await store.dispatch('taskM/getProgress');
+    await store.dispatch('taskM/getDifficulty');
     await store.dispatch('taskM/query', { userUID: userUID });
     await store.dispatch('userM/usersQuery');
   }

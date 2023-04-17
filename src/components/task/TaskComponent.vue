@@ -2,8 +2,7 @@
   <v-card
     v-if="!show"
     class="mx-auto mt-3"
-    :color="color.get(task.status)"
-    theme="dark"
+    :color="color.get(task.difficulty)"
     max-width="100%"
     min-width="350px"
     rounded="xl"
@@ -49,8 +48,7 @@
   <v-card
     v-if="show"
     class="mx-auto mt-3"
-    :color="color.get(task.status)"
-    theme="dark"
+    :color="color.get(task.difficulty)"
     max-width="100%"
     min-width="350px"
     rounded="xl"
@@ -210,6 +208,13 @@ import LastAnswerComponent from '../answer/LastAnswerComponent.vue';
               showLastAns: false,
 
               color: new Map([
+                ['Легко', '#c2fcc8'], 
+                ['Нормально', '#c2dcfc'],
+                ['Сложно', '#fcc2c2'],
+                ['Не определено', '#d1d1d1'],
+              ]),
+
+              statusColor: new Map([
                 ['Выполнено', '#009400'], 
                 ['Не выполнено', '#3055db'],
                 ['Выполняется', '#26c6da'],

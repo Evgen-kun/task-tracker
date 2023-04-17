@@ -184,7 +184,7 @@ export default {
         selected: [],
         dialog: false,
         dialogDelete: false,
-        itemsPerPage: 5,
+        itemsPerPage: 10,
         headers: [
           { 
             title: 'Название',

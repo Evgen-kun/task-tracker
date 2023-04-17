@@ -8,12 +8,12 @@ export const QueryAPI = {
      * @returns {Promise<AxiosResponse<any>>}
      */
     getTasks(userUID) {
-        const url = `http://localhost/drupal/web/jsonapi/node/task?include=uid.user_picture&filter[field_ispolnitel.id]=${userUID}&fields[node--task]=id,title,body,uid,field_status&fields[user--user]=id,display_name,user_picture&fields[file--file]=id,uid,uri`;
+        const url = `http://localhost/drupal/web/jsonapi/node/task?include=uid.user_picture&filter[field_ispolnitel.id]=${userUID}&fields[node--task]=id,title,body,uid,field_status,field_difficulty_level,field_begin_date,field_due_date&fields[user--user]=id,display_name,user_picture&fields[file--file]=id,uid,uri`;
         return QueryAPIInstance.get(url);
     },
 
     getMyTasks(userUID) {
-        const url = `http://localhost/drupal/web/jsonapi/node/task?include=field_ispolnitel.user_picture&filter[uid.id]=${userUID}&fields[node--task]=id,title,body,field_ispolnitel,field_status&fields[user--user]=id,display_name,user_picture&fields[file--file]=id,uri`;
+        const url = `http://localhost/drupal/web/jsonapi/node/task?include=field_ispolnitel.user_picture&filter[uid.id]=${userUID}&fields[node--task]=id,title,body,field_ispolnitel,field_status,field_difficulty_level,field_begin_date,field_due_date&fields[user--user]=id,display_name,user_picture&fields[file--file]=id,uri`;
         return QueryAPIInstance.get(url);
     },
 
@@ -27,7 +27,12 @@ export const QueryAPI = {
         return QueryAPIInstance.get(url);
     },
 
-    async createTask(title, body, executorUID, token) {
+    getDifficulty() {
+        const url = `http://localhost/drupal/web/jsonapi/taxonomy_term/difficulty_level?fields[taxonomy_term--difficulty_level]=id,name`;
+        return QueryAPIInstance.get(url);
+    },
+
+    async createTask(title, body, executorUID, difficultyID) {
         const url = `http://localhost/drupal/web/jsonapi/node/task`;
         const data = { 
             data: {
@@ -45,6 +50,12 @@ export const QueryAPI = {
                             type: "user--user",
                             id: executorUID
                         }
+                    },
+                    field_difficulty_level: {
+                        data: {
+                            type: "taxonomy_term--difficulty_level",
+                            id: difficultyID
+                        }
                     }
                 }
             }
@@ -59,7 +70,7 @@ export const QueryAPI = {
         return PostQueryAPIInstance.post(url, data);
     },
 
-    async editTask(id, title, body, executorUID, statusUID) {
+    async editTask(id, title, body, executorUID, statusUID, difficultyID) {
         const url = `http://localhost/drupal/web/jsonapi/node/task/${id}`;
         const data = { 
             data: {
@@ -83,6 +94,12 @@ export const QueryAPI = {
                         data: {
                             type: "taxonomy_term--status",
                             id: statusUID
+                        }
+                    },
+                    field_difficulty_level: {
+                        data: {
+                            type: "taxonomy_term--difficulty_level",
+                            id: difficultyID
                         }
                     }
                 }

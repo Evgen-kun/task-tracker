@@ -16,6 +16,7 @@ export const TaskModule = {
             users: [],
             statuses: new Map(),
             progress: new Map(),
+            difficulty: new Map()
         }
     },
 
@@ -29,6 +30,10 @@ export const TaskModule = {
         getUsers: (state) => state.users,
         getStatuses: (state) => state.statuses,
         getProgress: (state) => state.progress,
+        getDifficulty: (state) => state.difficulty,
+
+        getFilteredByStatusTasks: (state) => (status) => state.tasksFromMe.filter(task => task.status === status),
+
     },
 
     mutations: {
@@ -51,6 +56,10 @@ export const TaskModule = {
 
         setProgress(state, progress) {
             state.progress = progress;
+        },
+
+        setDifficulty(state, difficulty) {
+            state.difficulty = difficulty;
         },
 
         addUserTask(state, task) {
@@ -95,6 +104,10 @@ export const TaskModule = {
             state.progress = null;
         },
 
+        deleteDifficulty(state) {
+            state.difficulty = null;
+        },
+
         deleteUserTask(state, taskID) {
             state.tasks.forEach((task, i) => {
                 if (task.id === taskID) state.tasks.splice(i, 1);
@@ -123,6 +136,9 @@ export const TaskModule = {
                 task.title = item.attributes.title;
                 task.body = (item.attributes.body !== null)? item.attributes.body.processed.replace(/(<p>|<\/p>)/g, '') : null;
                 task.status = getters.getStatuses.get(item.relationships.field_status.data.id) ?? 'Не определено';
+                task.difficulty = getters.getDifficulty.get(item.relationships.field_difficulty_level.data.id) ?? 'Легко';
+                task.beginDate = item.attributes.field_begin_date;
+                task.dueDate = item.attributes.field_due_date;
                 task.progress = 0;
 
                 const authorUID = item.relationships.uid.data.id;
@@ -206,6 +222,9 @@ export const TaskModule = {
                 task.title = item.attributes.title;
                 task.body = (item.attributes.body !== null)? item.attributes.body.processed.replace(/(<p>|<\/p>)/g, '') : null;
                 task.status = getters.getStatuses.get(item.relationships.field_status.data.id) ?? 'Не определено';
+                task.difficulty = getters.getDifficulty.get(item.relationships.field_difficulty_level.data.id) ?? 'Легко';
+                task.beginDate = item.attributes.field_begin_date;
+                task.dueDate = item.attributes.field_due_date;
                 task.progress = 0;
 
                 const executorUID = item.relationships.field_ispolnitel.data.id;
@@ -301,6 +320,19 @@ export const TaskModule = {
             commit('setProgress', progress);
         },
 
+        async getDifficulty({ commit }) {
+            const res = await QueryAPI.getDifficulty();
+            //console.log(res);
+
+            const difficulty = new Map();
+            res.data.data.forEach((item) => {
+                difficulty.set(item.id, item.attributes.name);
+            });
+
+            //console.log(statuses);
+            commit('setDifficulty', difficulty);
+        },
+
         /*async getUsers({ commit }) {
             const res = await QueryAPI.getUsers();
             console.log(res);
@@ -320,7 +352,7 @@ export const TaskModule = {
             commit('setUsers', users);
         },*/
 
-        async createNewTask({ commit, dispatch, rootGetters }, { title, body, executorUID }) {
+        async createNewTask({ commit, dispatch, getters, rootGetters }, { title, body, executorUID, difficultyValue }) {
             var executor;
             if (!dispatch('userM/isUserExists', { uid: executorUID })) {
                 executor = await dispatch('userM/addNewUser', { uid: executorUID });
@@ -330,8 +362,10 @@ export const TaskModule = {
             }
 
             const author = rootGetters['authM/getUser'];
+            const difficulties = getters.getDifficulty;
 
-            const res = await QueryAPI.createTask(title, body, executorUID);
+            const res = await QueryAPI.createTask(title, body, executorUID, 
+                [...difficulties.keys()].find((key) => difficulties.get(key) === difficultyValue));
             
             // console.log(res);
             // console.log(executor);
@@ -344,15 +378,21 @@ export const TaskModule = {
             task.progress = 0;
             task.executor = executor;
             task.author = author;
+            task.beginDate = res.data.data.attributes.field_begin_date;
+            task.dueDate = res.data.data.attributes.field_due_date;
+            task.difficulty = getters.getDifficulty.get(res.data.data.relationships.field_difficulty_level.data.id);
             task.answers = [];
 
             console.log(task);
             commit('addTaskFromMe', task);
         },
 
-        async editTask({ commit, getters, rootGetters }, { id, title, body, executorUID, status }) {
+        async editTask({ commit, getters, rootGetters }, { id, title, body, executorUID, status, difficulty }) {
             const statuses = getters.getStatuses;
-            const res = await QueryAPI.editTask(id, title, body, executorUID, [...statuses.keys()].find((key) => statuses.get(key) === status));
+            const difficulties = getters.getDifficulty;
+            const res = await QueryAPI.editTask(id, title, body, executorUID, 
+                [...statuses.keys()].find((key) => statuses.get(key) === status), 
+                [...difficulties.keys()].find((key) => difficulties.get(key) === difficulty));
             console.log(res);
 
             const task = getters.getTaskFromMeByID(id);
@@ -360,6 +400,7 @@ export const TaskModule = {
             task.body = (res.data.data.attributes.body !== null)? res.data.data.attributes.body.processed.replace(/(<p>|<\/p>)/g, '') : null;
             task.executor = rootGetters['userM/getUserByUID'](res.data.data.relationships.field_ispolnitel.data.id);
             task.status = status;
+            task.difficulty = difficulty;
 
             /*const task = {};
             task.id = id;

@@ -41,6 +41,13 @@
                         required
                     ></v-autocomplete>
 
+                    <v-autocomplete
+                        label="Сложность задачи"
+                        :items="[...difficulty.values()]"
+                        v-model="selectDifficulty"
+                        clearable
+                    ></v-autocomplete>
+
                     <small>*обязательное поле</small>
                     <v-btn block type="submit" color="black" rounded="lg">Создать</v-btn>
                 </v-container>
@@ -65,6 +72,7 @@ import { mapGetters } from 'vuex';
                 taskTitle: "",
                 text: "",
                 executor: "",
+                selectDifficulty: "",
                 name: "Test",
                 titleRules: [
                     v => !!v || 'Требуется заголовок',
@@ -83,7 +91,12 @@ import { mapGetters } from 'vuex';
                 const { valid } = await this.$refs.createTaskForm.validate();
 
                 if(valid) {
-                    await store.dispatch('taskM/createNewTask', { title: this.taskTitle, body: this.text, executorUID: this.executor});
+                    await store.dispatch('taskM/createNewTask', { 
+                        title: this.taskTitle, 
+                        body: this.text, 
+                        executorUID: this.executor,
+                        difficultyValue: this.selectDifficulty
+                    });
                     this.$refs.createTaskForm.reset();
                     this.$refs.createTaskForm.resetValidation();
                 }
@@ -91,8 +104,9 @@ import { mapGetters } from 'vuex';
             },
         },
         computed: {
-            ...mapGetters('userM', {
-                users: 'getUsers',
+            ...mapGetters({
+                users: 'userM/getUsers',
+                difficulty: 'taskM/getDifficulty'
             }),
             usersWithID() {
                 return this.users.map(user => ({ ...user, nameWithID: `${user.name} (${user.id})` }));

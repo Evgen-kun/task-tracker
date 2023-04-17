@@ -25,9 +25,16 @@
             ></v-autocomplete>
 
             <v-select
-                v-model="select"
+                v-model="selectStatus"
                 :items="[...statuses.values()]"
                 label="Статус задачи"
+                single-line
+            ></v-select>
+
+            <v-select
+                v-model="selectDifficulty"
+                :items="[...difficulty.values()]"
+                label="Сложность задачи"
                 single-line
             ></v-select>
 
@@ -48,7 +55,8 @@ import { mapGetters } from 'vuex';
                 taskTitle: this.task.title,
                 text: this.task.body,
                 executorUID: this.userUID,
-                select: this.task.status,
+                selectStatus: this.task.status,
+                selectDifficulty: this.task.difficulty,
 
                 titleRules: [
                   v => !!v || 'Требуется заголовок',
@@ -82,7 +90,8 @@ import { mapGetters } from 'vuex';
                         title: this.taskTitle, 
                         body: this.text, 
                         executorUID: this.executorUID, 
-                        status: this.select
+                        status: this.selectStatus,
+                        difficulty: this.selectDifficulty,
                     });
                 }
                 //else alert("NOT validate");
@@ -98,6 +107,7 @@ import { mapGetters } from 'vuex';
             ...mapGetters({
                 users: 'userM/getUsers',
                 statuses: 'taskM/getStatuses',
+                difficulty: 'taskM/getDifficulty'
             }),
             usersWithID() {
                 return this.users.map(user => ({ ...user, nameWithID: `${user.name} (${user.id})` }));

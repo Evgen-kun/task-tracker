@@ -20,15 +20,17 @@
                 </v-btn>
             </v-toolbar>
 
-            <v-card-item>
-                <TaskComponent
-                    v-for="task in tasks"
-                    v-bind:key="task.id"
-                    v-bind:task="task"
-                    v-bind:user="task.executor"
-                    v-bind:subtitle="subtitle">
-                </TaskComponent>
-            </v-card-item>
+            <draggable v-model="myList" class="list-group" group="tasks" tag="transition" item-key="id">
+                <template #item="{ element: task }">
+                    <v-card-item>
+                        <TaskComponent
+                            v-bind:task="task"
+                            v-bind:user="task.executor"
+                            v-bind:subtitle="subtitle">
+                        </TaskComponent>
+                    </v-card-item>
+                </template>
+            </draggable>
         </v-card>
     </div>
 </template>
@@ -42,7 +44,7 @@
   export default {
     data() {
       return {
-        
+        subtitle: "",
       }
     },
     props: {
@@ -64,10 +66,11 @@
       }),
       myList: {
         get() {
-            return this.myTasks.filter(task => task.status === title);
+            return this.myTasks.filter(task => task.status === this.title);
         },
         set(value) {
-            this.$store.commit('taskM/setTasksFromMe', value);
+            this.$store.dispatch('taskM/replaceTasksFromMe', { tasks: value, status: this.title });
+            // this.$store.commit('taskM/replaceTasksFromMe', { tasks: value, title: this.title });
         }
       },
     },

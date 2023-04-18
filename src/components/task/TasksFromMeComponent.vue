@@ -15,13 +15,13 @@
           </template>
         </draggable>
 
-        <TaskComponent
+        <!-- <TaskComponent
           v-for="task in tasks"
           v-bind:key="task.id"
           v-bind:task="task"
           v-bind:user="task.executor"
           v-bind:subtitle="subtitle">
-        </TaskComponent>
+        </TaskComponent> -->
         
       </v-responsive>
     </v-container>

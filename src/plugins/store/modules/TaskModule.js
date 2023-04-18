@@ -46,6 +46,24 @@ export const TaskModule = {
             state.tasksFromMe = tasks;
         },
 
+        replaceTasks(state, { tasks, title }) {
+            tasks.forEach((task, i) => {
+                task.status = title;
+                state.tasks.forEach((myTask, j) => {
+                    if (task.id === myTask.id) state.tasks[j] = task;
+                });
+            });
+        },
+
+        replaceTasksFromMe(state, { tasks, title }) {
+            tasks.forEach((task, i) => {
+                task.status = title;
+                state.tasksFromMe.forEach((taskFromMe, j) => {
+                    if (task.id === taskFromMe.id) state.tasksFromMe[j] = task;
+                });
+            });
+        },
+
         setUsers(state, users) {
             state.users = users;
         },
@@ -294,6 +312,26 @@ export const TaskModule = {
             commit('setTasksFromMe', tasks);
         },
 
+        async replaceTasksFromMe({ commit, getters, dispatch }, { tasks, status }) {
+            console.log("Обновление статуса");
+
+            // console.log(tasks);
+            // console.log(getters.getTasksFromMe);
+
+            await tasks.forEach(async (task) => {
+                const res = await dispatch('editTask', { 
+                    id: task.id, 
+                    title: task.title, 
+                    body: task.body, 
+                    executorUID: task.executor.uid, 
+                    status: status, 
+                    difficulty: task.difficulty 
+                });
+            });
+        
+            // commit('replaceTasksFromMe', { tasks: tasks, title: status });
+        },
+
         async getStatuses({ commit }) {
             const res = await QueryAPI.getStatuses();
             //console.log(res);
@@ -395,10 +433,16 @@ export const TaskModule = {
                 [...difficulties.keys()].find((key) => difficulties.get(key) === difficulty));
             console.log(res);
 
+            console.log("executorUID" + executorUID);
             const task = getters.getTaskFromMeByID(id);
+            const user = rootGetters['userM/getUserByUID'](executorUID);
+            const picture = rootGetters['userM/getPictureByUserUID'](executorUID);
+
             task.title = res.data.data.attributes.title;
             task.body = (res.data.data.attributes.body !== null)? res.data.data.attributes.body.processed.replace(/(<p>|<\/p>)/g, '') : null;
-            task.executor = rootGetters['userM/getUserByUID'](res.data.data.relationships.field_ispolnitel.data.id);
+            task.executor = user;
+            task.executor.picture = picture;
+            console.log("executor" + task.executor);
             task.status = status;
             task.difficulty = difficulty;
 

@@ -10,6 +10,7 @@ export const UserModule = {
     state() {
         return {
             users: [],
+            pictures: new Map()
         }
     },
 
@@ -19,11 +20,18 @@ export const UserModule = {
         getUserByUID: (state) => (uid) => { return state.users.find(user => user.uid === uid) },
         getUserByID: (state) => (id) => { return state.users.find(user => user.id === id) },
         getUsersByRole: (state) => (role) => { return state.users.filter(user => user.role === role) },
+
+        getPictures: (state) => state.pictures,
+        getPictureByUserUID: (state) => (uid) => { return state.pictures.get(uid) },
     },
 
     mutations: {
         setUsers(state, users) {
             state.users = users;
+        },
+
+        addPicture(state, { picture, user }) {
+            state.pictures.set(user.id, picture);
         },
 
         addUser(state, user) {
@@ -91,11 +99,16 @@ export const UserModule = {
         },
 
         getUserPicture(context, { user, pictures }) {
-            const picture = pictures.find(picture => picture.id === user.relationships.user_picture.data.id);
-            return new Picture({ 
-                uid: picture.id,
-                url: picture.attributes.uri.url
-            })
+            const res = pictures.find(picture => picture.id === user.relationships.user_picture.data.id);
+
+            const picture = new Picture({ 
+                uid: res.id,
+                url: res.attributes.uri.url
+            });
+
+            context.commit('addPicture', { picture, user });
+
+            return picture;
         },
 
         isUserExists({ getters }, { uid }) {

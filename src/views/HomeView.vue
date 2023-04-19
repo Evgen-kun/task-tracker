@@ -8,7 +8,7 @@
 
 <script>
 // @ is an alias to /src
-import HomeComponent from "@/components/task/HomeComponent.vue";
+import HomeComponent from "@/components/base/HomeComponent.vue";
 
 export default {
   name: "HomeView",

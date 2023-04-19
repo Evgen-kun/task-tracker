@@ -2,13 +2,25 @@
   <div>
     <Bar :data="data" :options="options" />
   </div>
-  <div>
-    <v-text-field v-model="dateStart" type="month" label="Начальная дата"></v-text-field>
-    <v-text-field v-model="dateEnd" type="month" label="Конечная дата"></v-text-field>
+  <div class="d-flex flex-row">
+    <v-text-field 
+      v-model="dateStart" 
+      class="mx-2"
+      type="month" 
+      variant="outlined" 
+      label="Начальная дата"
+    ></v-text-field>
+    <v-text-field 
+      v-model="dateEnd" 
+      class="mx-2"
+      type="month" 
+      variant="outlined" 
+      label="Конечная дата"
+    ></v-text-field>
   </div>
 </template>
 
-<script lang="ts">
+<script>
 import {
   Chart as ChartJS,
   Title,
@@ -47,6 +59,8 @@ ChartJS.register(
   // progressBar
 );
 
+import store from '@/plugins/store';
+
 export default {
   name: 'MyChart',
   extends: Bar,
@@ -72,31 +86,13 @@ export default {
         datasets: [
           {
             label: 'Задачи',
-            data: [
-              { x: ['2023-04-20', '2023-04-29'], y: 'Task 1', name: 'John', status: 0, progress: 30 },
-              { x: ['2023-04-20', '2023-04-25'], y: 'Task 1', name: 'John', status: 10, progress: 30 },
-
-              { x: ['2023-04-11', '2023-04-19'], y: 'Task 2', name: 'Jack', status: 0, progress: 10 },
-              { x: ['2023-04-11', '2023-04-15'], y: 'Task 2', name: 'Jack', status: 10, progress: 10 },
-
-              { x: ['2023-04-12', '2023-04-26'], y: 'Task 3', name: 'James', status: 0, progress: 80 },
-              { x: ['2023-04-12', '2023-04-20'], y: 'Task 3', name: 'James', status: 10, progress: 80 },
-
-              { x: ['2023-04-25', '2023-04-29'], y: 'Task 4', name: 'Tom', status: 1, progress: 50 },
-              { x: [], y: 'Task 4', name: 'Tom', status: 11, progress: 50, progressDate: () => {} },
-
-              { x: ['2023-04-25', '2023-04-29'], y: 'Task 5', name: 'Jeff', status: 2, progress: 40 },
-              { x: ['2023-04-25', '2023-04-26'], y: 'Task 5', name: 'Jeff', status: 12, progress: 40 },
-
-              { x: ['2023-05-05', '2023-05-09'], y: 'Task 6', name: 'Tom', status: 1, progress: 30 },
-              { x: ['2023-05-05', '2023-05-07'], y: 'Task 6', name: 'Tom', status: 11, progress: 30 },
-
-              { x: ['2023-05-15', '2023-05-25'], y: 'Task 7', name: 'Jeff', status: 2, progress: 70 },
-              { x: ['2023-05-15', '2023-05-20'], y: 'Task 7', name: 'Jeff', status: 12, progress: 70 },
-            ],
+            data: [],
             backgroundColor: (ctx) => {
-              if(ctx.raw.status > 9) return this.borderColors[ctx.raw.status - 10];
-              return this.colors[ctx.raw.status];
+              switch(ctx.raw.difficulty) {
+                case "Легко": return this.borderColors[0];
+                case "Нормально": return this.borderColors[1];
+                case "Сложно": return this.borderColors[2];
+              };
             },
             // borderColor: (ctx) => {
             //   return this.borderColors[ctx.raw.status];
@@ -160,7 +156,7 @@ export default {
           y: {
             min: 0,
             max: 10,
-            labels: ['Task 1', 'Task 2', 'Task 3', 'Task 4', 'Task 5', 'Task 6', 'Task 7'],
+            labels: [],
           }
         },
         plugins: {
@@ -254,6 +250,58 @@ export default {
     this.options.scales.x.min = this.minDate;
     this.options.scales.x.max = this.maxDate;
     this.options = Object.assign({}, this.options);
+  },
+  created() {
+    const tasks = store.getters['taskM/getTasksFromMe'];
+    console.log(tasks);
+    this.options.scales.y.labels = tasks.map(task => task.title);
+
+    const data = [];
+
+    tasks.forEach((task) => {
+      data.push({ 
+          x: [task.beginDate, task.dueDate], 
+          y: task.title, 
+          name: task.executor.name, 
+          status: task.status, 
+          progress: task.progress,
+          difficulty: task.difficulty,
+          type: "task"
+        });
+
+        const beginDate = new Date(task.beginDate);
+        const dueDate = new Date(task.dueDate);
+
+        const timestamp = dueDate - beginDate;
+        console.log("timestamp: " + timestamp);
+        const done = timestamp * task.progress * 0.01;
+        console.log("done: " + done);
+        const doneTime = Number(beginDate) + done;
+        console.log("doneTime: " + doneTime);
+        console.log("res: " + beginDate);
+        console.log("res: " + dueDate);
+        console.log("res: " + new Date(doneTime));
+
+        data.push({ 
+          x: [task.beginDate, doneTime], 
+          y: task.title, 
+          name: task.executor.name, 
+          status: task.status, 
+          progress: task.progress,
+          difficulty: task.difficulty,
+          type: "progress"
+        });
+      });
+
+    console.log("Dataset: " + data);
+    this.data.datasets[0].data = data;
+    this.data.datasets[0].backgroundColor = (ctx) => {
+      switch(ctx.raw.difficulty) {
+        case "Легко": return (ctx.raw.type === 'task')? this.colors[0] : this.borderColors[0];
+        case "Нормально": return (ctx.raw.type === 'task')? this.colors[1] : this.borderColors[1];
+        case "Сложно": return (ctx.raw.type === 'task')? this.colors[2] : this.borderColors[2];
+      };
+    };
   }
 }
 </script>

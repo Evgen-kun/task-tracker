@@ -481,17 +481,17 @@ export const TaskModule = {
             answer.body = res.data.data.attributes.comment_body.processed.replace(/(<p>|<\/p>)/g, '');
             answer.progress = progress;
 
-            answer.filesID = [];
-            answer.files = files;
-            if(res.data.data.relationships.field_file.data.length !== 0) {
-                res.data.data.relationships.field_file.data.forEach((item) => {
-                    const file = new File();
-                    file.uid = item.id;
-                    file.id = item.meta.drupal_internal__target_id;
-                    file.name = 
-                    answer.filesID.push(item.id);
-                });
-            }
+            // answer.filesID = [];
+            // answer.files = files;
+            // if(res.data.data.relationships.field_file.data.length !== 0) {
+            //     res.data.data.relationships.field_file.data.forEach((item) => {
+            //         const file = new File();
+            //         file.uid = item.id;
+            //         file.id = item.meta.drupal_internal__target_id;
+            //         file.name = 
+            //         answer.filesID.push(item.id);
+            //     });
+            // }
             task.progress = progress;
             task.answers.push(answer);
 

@@ -60,7 +60,7 @@ import { mapGetters } from 'vuex';
             return {
                 ansTitle: "",
                 ansText: "",
-                select: "0%",
+                select: "0",
                 files: [],
 
                 titleRules: [
@@ -88,7 +88,7 @@ import { mapGetters } from 'vuex';
                         title: this.ansTitle, 
                         body: this.ansText, 
                         taskUID: this.taskID, 
-                        progress: `${this.select}%`, 
+                        progress: this.select, 
                         files: this.files
                     });
                 }

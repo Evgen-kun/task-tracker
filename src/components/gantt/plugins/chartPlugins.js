@@ -49,7 +49,7 @@ export const assignedTasks = {
             ctx.fillText(item.name, 10, y.getPixelForValue(index / 2));
         });
         // console.log(data.datasets[0].data[0].name);
-        ctx.fillText('Имена', 10, top - 15);
+        ctx.fillText('Исполнители', 10, top - 15);
         ctx.restore();
     }
 }
@@ -59,7 +59,10 @@ export const status = {
     beforeDatasetsDraw(chart, args, pluginOptions) {
         const { ctx, data, chartArea: { top, bottom, left, right }, scales: { x, y } } = chart;
     
-        const icons = ['\u2713', '\u23F3', '\u2717'];
+        const icons = new Map();
+        icons.set('Не выполнено', '\u2717');
+        icons.set('Выполняется', '\u23F3');
+        icons.set('Выполнено', '\u2713');
         
         ctx.save();
         ctx.font = 'bolder 12px sans-serif';
@@ -68,9 +71,9 @@ export const status = {
         ctx.textAlign = 'center';
         data.datasets[0].data.forEach((item, index) => {
             if(index % 2 === 1) { return; }
-            ctx.fillText(icons[item.status], left - 120, y.getPixelForValue(index / 2));
+            ctx.fillText(icons.get(item.status), left - 200, y.getPixelForValue(index / 2));
         });
-        ctx.fillText('Статус', left - 120, top - 15);
+        ctx.fillText('Статус', left - 200, top - 15);
         ctx.restore();
     }
 }

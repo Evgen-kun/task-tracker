@@ -13,11 +13,11 @@
                     {{ title }}
                 </v-toolbar-title>
 
-                <v-spacer></v-spacer>
+                <!-- <v-spacer></v-spacer>
 
                 <v-btn icon @click="">
                     <v-icon>mdi-plus</v-icon>
-                </v-btn>
+                </v-btn> -->
             </v-toolbar>
 
             <draggable v-model="myList" class="list-group" group="tasks" tag="transition" item-key="id">

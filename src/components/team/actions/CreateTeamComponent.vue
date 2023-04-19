@@ -1,15 +1,23 @@
 <template>
     <v-card
     color="#A5A8E9"
-    max-width="300"
-    min-width="250"
+    width="100%"
     @click="show = !show"
     height="200"
+    rounded="xl"
+    class="elevation-0"
   >
 
     <!--<v-img
       src="../assets/plus4.png"
     ></v-img>-->
+
+    <v-img
+      src='@/assets/plus-icon-plus.png'
+      class="align-end"
+      height="200px"
+    >
+    </v-img>
 
    <v-card-title>{{ title }}</v-card-title>
 

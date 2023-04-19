@@ -10,7 +10,7 @@
 <script setup>
   import { RouterLink, RouterView } from 'vue-router'
   //import HomeComponent from '@/components/HomeComponent.vue'
-  import NavigationComponent from '@/components/NavigationComponent.vue'
+  import NavigationComponent from '@/components/base/NavigationComponent.vue'
 </script>
 
 <style>
@@ -20,6 +20,13 @@
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
   color: #2c3e50;
+}
+
+main {
+  background-image: url('@/assets/bg/bg-2.jpg');
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position: center;
 }
 
 nav a {

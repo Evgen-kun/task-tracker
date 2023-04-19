@@ -1,10 +1,11 @@
 <template>
   <v-card
     color="#A8E4A0"
-    max-width="300"
-    min-width="250"
+    width="100%"
     @click="goToDashboard"
     height="200"
+    rounded="xl"
+    class="elevation-0"
   >
     <!-- <v-img
       :src="card.src"

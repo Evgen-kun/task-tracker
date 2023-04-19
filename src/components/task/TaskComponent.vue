@@ -1,10 +1,10 @@
 <template>
   <v-card
     v-if="!show"
-    class="mx-auto mt-3"
+    class="mx-auto mt-3 elevation-0"
     :color="color.get(task.difficulty)"
-    max-width="100%"
-    min-width="350px"
+    max-width="750px"
+    min-width="300px"
     rounded="xl"
     @click="show = !show"
   >
@@ -47,10 +47,10 @@
 
   <v-card
     v-if="show"
-    class="mx-auto mt-3"
+    class="mx-auto mt-3 elevation-0"
     :color="color.get(task.difficulty)"
-    max-width="100%"
-    min-width="350px"
+    max-width="750px"
+    min-width="300px"
     rounded="xl"
     :prepend-icon="icon"
   >

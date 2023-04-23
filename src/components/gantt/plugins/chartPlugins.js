@@ -60,19 +60,28 @@ export const status = {
         const { ctx, data, chartArea: { top, bottom, left, right }, scales: { x, y } } = chart;
     
         const icons = new Map();
-        icons.set('Не выполнено', '\u2717');
-        icons.set('Выполняется', '\u23F3');
-        icons.set('Выполнено', '\u2713');
+        icons.set('Не выполнено', { icon: '\uf00d', color: 'rgba(255, 26, 104, 1)' });
+        icons.set('Выполняется', { icon: '\uf110', color: 'rgba(255, 206, 86, 1)' });
+        icons.set('Выполнено', { icon: '\uf00c', color: 'rgba(75, 192, 192, 1)' });
+
+        const angle = Math.PI / 180;
         
         ctx.save();
-        ctx.font = 'bolder 12px sans-serif';
-        ctx.fillStyle = 'black';
+        ctx.font = 'bolder 12px FontAwesome';
         ctx.textBaseline = 'middle';
         ctx.textAlign = 'center';
         data.datasets[0].data.forEach((item, index) => {
             if(index % 2 === 1) { return; }
-            ctx.fillText(icons.get(item.status), left - 200, y.getPixelForValue(index / 2));
+            ctx.beginPath();
+            ctx.fillStyle = icons.get(item.status).color;
+            ctx.arc(left - 200, y.getPixelForValue(index / 2), 12, 0, angle * 360, false);
+            ctx.closePath();
+            ctx.fill();
+            ctx.fillStyle = 'white';
+            ctx.fillText(icons.get(item.status).icon, left - 200, y.getPixelForValue(index / 2));
         });
+        ctx.font = 'bolder 12px sans-serif';
+        ctx.fillStyle = 'black';
         ctx.fillText('Статус', left - 200, top - 15);
         ctx.restore();
     }

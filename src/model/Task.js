@@ -5,6 +5,7 @@
  * @property {string} body - Task description
  * @property {string} status - Task status
  * @property {Number} progress - Task progress
+ * @property {Project} project - Task's project
  * @property {string} difficulty - Task difficulty
  * @property {Date} beginDate - Task begin date
  * @property {Date} dueDate - Task due date
@@ -19,6 +20,7 @@ export default class Task {
     body;
     status;
     progress;
+    project;
     difficulty;
     beginDate;
     dueDate;
@@ -32,6 +34,7 @@ export default class Task {
         this.body = item?.body ?? null;
         this.status = item?.status ?? null;
         this.progress = item?.progress ?? null;
+        this.project = item?.project ?? null;
         this.difficulty = item?.difficulty ?? null;
         this.beginDate = item?.beginDate ?? null;
         this.dueDate = item?.dueDate ?? null;

@@ -1,26 +1,46 @@
 <template>
-  <div>
-    <Bar :data="data" :options="options" />
-  </div>
-  <div class="d-flex flex-row">
-    <v-text-field 
-      v-model="dateStart" 
-      class="mx-2"
-      type="month" 
-      variant="outlined" 
-      label="Начальная дата"
-    ></v-text-field>
-    <v-text-field 
-      v-model="dateEnd" 
-      class="mx-2"
-      type="month" 
-      variant="outlined" 
-      label="Конечная дата"
-    ></v-text-field>
-  </div>
+  <v-sheet rounded="lg">
+    <div class="container">
+      <Bar
+        id="gantt-component-id" 
+        ref="bar"
+        :key="key" 
+        :data="chartData" 
+        :options="options" 
+      ></Bar>
+    </div>
+    <div class="d-flex flex-row">
+      <v-text-field 
+        v-model="dateStart" 
+        class="mx-2"
+        type="month" 
+        variant="outlined" 
+        label="Начальная дата"
+      ></v-text-field>
+      <v-text-field 
+        v-model="dateEnd" 
+        class="mx-2"
+        type="month" 
+        variant="outlined" 
+        label="Конечная дата"
+      ></v-text-field>
+
+      <v-autocomplete
+        v-model="filterExecutors"
+        label="Фильтр по исполнителям"
+        :items="allUsers"
+        item-title="nameWithID"
+        item-value="uid"
+        chips
+        closable-chips
+        clearable
+        multiple
+      ></v-autocomplete>
+    </div>
+  </v-sheet>
 </template>
 
-<script>
+<script lang="ts">
 import {
   Chart as ChartJS,
   Title,
@@ -34,13 +54,13 @@ import {
 import { Bar } from 'vue-chartjs';
 import 'chartjs-adapter-date-fns';
 // import annotationPlugin from 'chartjs-plugin-annotation';
-import { 
-  todayLine,
-  assignedTasks,
-  status,
-  weekend,
-  // progressBar
-} from './plugins/chartPlugins'
+// import { 
+//   todayLine,
+//   assignedTasks,
+//   status,
+//   weekend,
+//   // progressBar
+// } from './plugins/chartPlugins'
 
 
 ChartJS.register(
@@ -51,26 +71,31 @@ ChartJS.register(
   Title,
   Tooltip,
   Legend,
+  // todayLine,
+  // assignedTasks,
+  // status,
+  // weekend,
   // annotationPlugin
-  todayLine,
-  assignedTasks,
-  status,
-  weekend,
+  // todayLine,
+  // assignedTasks,
+  // status,
+  // weekend,
   // progressBar
 );
 
 import store from '@/plugins/store';
 
 export default {
-  name: 'MyChart',
-  extends: Bar,
+  name: 'GanttComponent',
   components: {
     Bar,
   },
   data() {
     return {
+      key: 0,
       dateStart: new Date().toLocaleDateString("ru-RU", { year: 'numeric', month: '2-digit' }).toString().split('.').reverse().join('-'),
       dateEnd: new Date().toLocaleDateString("ru-RU", { year: 'numeric', month: '2-digit' }).toString().split('.').reverse().join('-'),
+      filterExecutors: [],
       colors: [
         'rgba(13, 215, 13, 0.3)',
         'rgba(46, 144, 255, 0.3)',
@@ -81,6 +106,8 @@ export default {
         'rgba(46, 144, 255, 1)',
         'rgba(255, 26, 104, 1)'
       ],
+      allTasks: [],
+      allUsers: [],
       data: {
         // labels: ['Выполненные', 'В процессе', 'Назначенные'],
         datasets: [
@@ -139,6 +166,7 @@ export default {
         indexAxis: 'y',
         scales: {
           x: {
+            id: 'x-axis-1',
             position: 'top',
             type: 'time',
             time: {
@@ -154,13 +182,14 @@ export default {
             stacked: true,
           },
           y: {
+            id: 'y-axis-1',
             min: 0,
             max: 10,
             labels: [],
           }
         },
         plugins: {
-          plugins: [todayLine, assignedTasks, status, weekend/*, progressBar*/],
+          // plugins: [todayLine, assignedTasks, status, weekend, /*progressBar*/],
           weekend: {
             weekendColor: 'rgba(102, 102, 102, 0.2)'
           },
@@ -199,23 +228,54 @@ export default {
     lastDay(year, month) {
       return new Date(year, month, 0).getDate();
     },
-    chartFilter() {
+    chartFilterDate() {
       // console.log("Update!");
       this.options.scales.x.min = this.minDate;
       this.options.scales.x.max = this.maxDate;
 
       this.options = Object.assign({}, this.options);
-    }
+    },
+    chartFilterExecutor() {
+      console.log(this.filterExecutors);
+      console.log(this.data.datasets[0].data);
+      if(this.filterExecutors.length === 0) { this.data.datasets[0].data = this.allTasks; }
+      else { this.data.datasets[0].data = this.allTasks.filter(task => this.filterExecutors.includes(task.executorUID)); }
+      this.options.scales.y.labels = this.data.datasets[0].data.filter(task => task.type === "task").map(task => task.y);
+
+      console.log(this.data.datasets[0].data);
+      this.dynamicHeight(this.data.datasets[0].data.length);
+      // this.data = Object.assign({}, this.data);
+      this.key += 1;
+      // this.dynamicHeight(this.data.datasets[0].data.length);
+    },
+    dynamicHeight(rowsCount) {
+      let rowHeight = 50;
+      const chartBox = document.querySelector('canvas');
+      console.log(chartBox);
+      console.log(chartBox.parentNode);
+
+      chartBox.parentNode.style.height = rowHeight * rowsCount + 'px';
+    },
   },
   watch: {
     dateStart() {
-      this.chartFilter();
+      this.chartFilterDate();
     },
     dateEnd() {
-      this.chartFilter();
+      this.chartFilterDate();
+    },
+    filterExecutors() {
+      this.chartFilterExecutor();
     }
   },
   computed: {
+    chartData() {
+      // if(this.filterExecutors.length === 0) { this.data.datasets[0].data = this.allTasks; }
+      // else { this.data.datasets[0].data = this.allTasks.filter(task => this.filterExecutors.includes(task.executorUID)); }
+
+      return this.data;
+    },
+
     startYear() {
       return this.dateStart.substring(0, 4);
     },
@@ -247,13 +307,120 @@ export default {
     },
   },
   mounted() {
+    // Add plugins
+    this.$refs.bar.chart.addPlugin({ // todayLine plugin
+      id: 'todayLine',
+      beforeDatasetsDraw(chart, args, pluginOptions) {
+        const { ctx, data, chartArea: { top, bottom, left, right }, scales: { x, y } } = chart;
+        ctx.save();
+        ctx.beginPath();
+        ctx.lineWidth = 3;
+        ctx.strokeStyle = 'rgba(102, 102, 102, 1)';
+        ctx.setLineDash([6, 6]);
+        ctx.moveTo(x.getPixelForValue(new Date()), top);
+        ctx.lineTo(x.getPixelForValue(new Date()), bottom);
+        ctx.stroke();
+        ctx.restore();
+    
+        ctx.setLineDash([]);
+
+        ctx.beginPath();
+        ctx.lineWidth = 1;
+        ctx.strokeStyle = 'rgba(102, 102, 102, 1)';
+        ctx.fillStyle = 'rgba(102, 102, 102, 1)';
+        ctx.moveTo(x.getPixelForValue(new Date()), top + 3);
+        ctx.lineTo(x.getPixelForValue(new Date()) - 6, top - 6);
+        ctx.lineTo(x.getPixelForValue(new Date()) + 6, top - 6);
+        ctx.closePath();
+        ctx.stroke();
+        ctx.fill();
+        ctx.restore();
+
+        ctx.font = 'bolder 12px sans-serif';
+        ctx.fillStyle = 'rgba(102, 102, 102, 1)';
+        ctx.textAlign = 'center';
+        ctx.fillText('Сейчас', x.getPixelForValue(new Date()), bottom + 15);
+        ctx.restore();
+      }
+    });
+    this.$refs.bar.chart.addPlugin({ // assignedTasks plugin
+      id: 'assignedTasks',
+      afterDatasetsDraw(chart, args, pluginOptions) {
+        const { ctx, data, chartArea: { top, bottom, left, right }, scales: { x, y } } = chart;
+        
+        ctx.font = 'bolder 12px sans-serif';
+        ctx.fillStyle = 'black';
+        ctx.textBaseline = 'middle';
+        ctx.textAlign = 'left';
+        
+        data.datasets[0].data.forEach((item, index) => {
+          if(index % 2 === 1) { return; }
+          ctx.fillText(item.name, 10, y.getPixelForValue(index / 2));
+        });
+        // console.log(data.datasets[0].data[0].name);
+        ctx.fillText('Исполнители', 10, top - 15);
+        ctx.restore();
+      }
+    });
+    this.$refs.bar.chart.addPlugin({ // status plugin
+      id: 'status',
+      beforeDatasetsDraw(chart, args, pluginOptions) {
+        const { ctx, data, chartArea: { top, bottom, left, right }, scales: { x, y } } = chart;
+    
+        const icons = new Map();
+        icons.set('Не выполнено', { icon: '\uf00d', color: 'rgba(255, 26, 104, 1)' });
+        icons.set('Выполняется', { icon: '\uf110', color: 'rgba(255, 206, 86, 1)' });
+        icons.set('Выполнено', { icon: '\uf00c', color: 'rgba(75, 192, 192, 1)' });
+
+        const angle = Math.PI / 180;
+        
+        ctx.save();
+        ctx.font = 'bolder 12px FontAwesome';
+        ctx.textBaseline = 'middle';
+        ctx.textAlign = 'center';
+        data.datasets[0].data.forEach((item, index) => {
+          if(index % 2 === 1) { return; }
+          ctx.beginPath();
+          ctx.fillStyle = icons.get(item.status).color;
+          ctx.arc(left - 200, y.getPixelForValue(index / 2), 12, 0, angle * 360, false);
+          ctx.closePath();
+          ctx.fill();
+          ctx.fillStyle = 'white';
+          ctx.fillText(icons.get(item.status).icon, left - 200, y.getPixelForValue(index / 2));
+        });
+        ctx.font = 'bolder 12px sans-serif';
+        ctx.fillStyle = 'black';
+        ctx.fillText('Статус', left - 200, top - 15);
+        ctx.restore();
+      }
+    });
+    this.$refs.bar.chart.addPlugin({ // weekend plugin
+      id: 'weekend',
+      beforeDatasetsDraw(chart, args, pluginOptions) {
+        const { ctx, chartArea: { top, bottom, left, right, width, height }, scales: { x, y } } = chart;
+        ctx.save();
+
+        x.ticks.forEach((tick, index) => {
+          const day = new Date(tick.value).getDay();
+          if(day === 6 || day === 0) {
+            ctx.fillStyle = pluginOptions.weekendColor; //'rgba(102, 102, 102, 0.2)';
+            ctx.fillRect(x.getPixelForValue(tick.value), top, 
+              x.getPixelForValue(new Date(tick.value).setHours(24)) - x.getPixelForValue(tick.value), height);
+          }
+        });
+      }
+    });
+    
     this.options.scales.x.min = this.minDate;
     this.options.scales.x.max = this.maxDate;
     this.options = Object.assign({}, this.options);
   },
   created() {
-    const tasks = store.getters['taskM/getTasksFromMe'];
+    // const tasks = store.getters['taskM/getTasksFromMe'];
+    const tasks = store.getters['taskM/getTasksFromMeByProjectID'](this.$route.params.projectID); 
     console.log(tasks);
+    this.allUsers = store.getters['userM/getUsers'].map(user => ({ ...user, nameWithID: `${user.name} (${user.id})` }));
+    // this.filterExecutors = this.allUsers.map(user => user.uid);
     this.options.scales.y.labels = tasks.map(task => task.title);
 
     const data = [];
@@ -262,6 +429,7 @@ export default {
       data.push({ 
           x: [task.beginDate, task.dueDate], 
           y: task.title, 
+          executorUID: task.executor.uid,
           name: task.executor.name, 
           status: task.status, 
           progress: task.progress,
@@ -285,6 +453,7 @@ export default {
         data.push({ 
           x: [task.beginDate, doneTime], 
           y: task.title, 
+          executorUID: task.executor.uid,
           name: task.executor.name, 
           status: task.status, 
           progress: task.progress,
@@ -294,6 +463,7 @@ export default {
       });
 
     console.log("Dataset: " + data);
+    this.allTasks = data;
     this.data.datasets[0].data = data;
     this.data.datasets[0].backgroundColor = (ctx) => {
       switch(ctx.raw.difficulty) {
@@ -302,12 +472,12 @@ export default {
         case "Сложно": return (ctx.raw.type === 'task')? this.colors[2] : this.borderColors[2];
       };
     };
-  }
+  },
 }
 </script>
 
-<style>
+<style scoped>
   canvas { 
-    height: 620px;
+    height: 640px;
   }
 </style>

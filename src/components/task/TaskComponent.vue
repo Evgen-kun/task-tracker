@@ -52,7 +52,6 @@
     max-width="750px"
     min-width="300px"
     rounded="xl"
-    :prepend-icon="icon"
   >
 
     <template v-slot:prepend>
@@ -65,7 +64,8 @@
         color="wight"
       >
       </v-progress-circular>
-      <v-icon v-else size="x-large"></v-icon>
+      <v-icon :icon="icon" v-else size="x-large"></v-icon>
+      <v-chip v-if="!!task.project" class="ml-2" color="primary">{{ task.project.title }}</v-chip>
     </template>
 
     <template v-slot:append>
@@ -122,7 +122,7 @@
             <v-btn
               rounded="pill"
               variant="elevated"
-              v-show="(path == '/') && (task.answers.length !== 0)"
+              v-show="(path == '/inbox') && (task.answers.length !== 0)"
               color="green"
               @click="showLastAns = !showLastAns"
             >
@@ -132,7 +132,7 @@
             <v-btn
               rounded="pill"
               variant="elevated"
-              v-show="path == '/'"
+              v-show="path == '/inbox'"
               color="green"
               @click="showEdit = false; showCreateAns = !showCreateAns"
             >
@@ -248,7 +248,7 @@ import LastAnswerComponent from '../answer/LastAnswerComponent.vue';
             icon() {
               const progress = this.task.progress;
               if(progress === 100) return "mdi-check-circle-outline";
-              if(progress === 0) return "mdi-alert-octagon-outline";
+              if(progress === 0) return "mdi-alert-circle-outline";
             },
             lastAnswer() {
               if(this.task.answers.length !== 0) return this.task.answers[this.task.answers.length - 1];
@@ -264,8 +264,12 @@ import LastAnswerComponent from '../answer/LastAnswerComponent.vue';
     }
 </script>
 
-<style>
+<style scoped>
 .shrink-block {
   flex-shrink: 1;
+}
+
+.v-card-text {
+  line-height: 1.5rem;
 }
 </style>

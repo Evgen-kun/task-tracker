@@ -3,7 +3,6 @@
         class="mx-2"
         width="100%"
         min-width="270"
-        variant="outlined"
         rounded="xl"
     >
         <v-card-item>

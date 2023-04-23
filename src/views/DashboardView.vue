@@ -3,11 +3,11 @@
         <v-responsive class="d-flex">
             <div class="d-flex flex-column align-center pa-1">
                 <v-btn-toggle
-                v-model="toggle"
-                color="primary"
-                rounded="lg"
-                variant="outlined"
-                mandatory
+                    v-model="toggle"
+                    class="elevation-5"
+                    color="deep-purple-accent-3"
+                    rounded="lg"
+                    mandatory
                 >
                     <v-btn icon="mdi-view-list" value="tasklist" title="Список">
                         <!-- <v-tooltip

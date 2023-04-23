@@ -32,10 +32,13 @@
                 <v-list-item prepend-icon="mdi-bell-outline" title="Входящие" value="inbox"></v-list-item>
             </router-link>
             <router-link to="/about">
-                <v-list-item v-if="isManagerOrAdmin" prepend-icon="mdi-comment-text-outline" title="Мои задачи" value="shared"></v-list-item>
+                <v-list-item prepend-icon="mdi-comment-text-outline" title="Мои задачи" value="shared"></v-list-item>
             </router-link>
             <router-link to="/teams">
                 <v-list-item v-if="isManagerOrAdmin" prepend-icon="mdi-account-multiple-outline" title="Команды" value="myteams"></v-list-item>
+            </router-link>
+            <router-link to="/panel">
+                <v-list-item v-if="isAdmin" prepend-icon="mdi-view-dashboard" title="Статистика" value="panel"></v-list-item>
             </router-link>
             <v-list-item v-if="isAuth" prepend-icon="mdi-logout" title="Выход" value="logout" v-on:click="onLogoutButtonClick"></v-list-item>
         </v-list>
@@ -66,6 +69,10 @@ import { RouterLink, RouterView } from 'vue-router'
             isManagerOrAdmin() {
                 const roles = JSON.parse(localStorage.getItem('user'))?.roles ?? [];
                 return !!((roles.includes('manager')) || (roles.includes('administrator')));
+            },
+            isAdmin() {
+                const roles = JSON.parse(localStorage.getItem('user'))?.roles ?? [];
+                return !!(roles.includes('administrator'));
             },
             ...mapGetters('authM', {
                 user: 'getUser',

@@ -2,7 +2,7 @@
   <v-card
     color="#A8E4A0"
     width="100%"
-    @click="goToDashboard"
+    @click="goToProjects"
     height="200"
     rounded="xl"
     class="elevation-0"
@@ -76,7 +76,7 @@
                 <v-textarea label="Описание" :rules="textRules" v-model="teamSubtitle"></v-textarea>
 
                 <v-select
-                  label="Исполнитель*"
+                  label="Исполнители"
                   :items="usersWithID"
                   item-title="nameWithID"
                   item-value="uid"
@@ -185,8 +185,9 @@ export default {
             console.log(this.teamSubtitle);
             console.log(this.teamExecutorsID);
         },
-        goToDashboard() {
-            this.$router.push({ name: 'dashboard', params: { id: this.team.id } });
+        goToProjects() {
+            // this.$router.push({ name: 'team', params: { teamID: this.team.id } });
+            this.$router.push({ name: 'projects', params: { teamID: this.team.id } });
         },
     },
     computed: {

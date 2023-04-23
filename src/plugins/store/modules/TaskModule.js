@@ -11,8 +11,9 @@ export const TaskModule = {
 
     state() {
         return {
-            tasks: [],
+            tasksToMe: [],
             tasksFromMe: [],
+            tasksFromProjects: [],
             users: [],
             statuses: new Map(),
             progress: new Map(),
@@ -21,12 +22,16 @@ export const TaskModule = {
     },
 
     getters: {
-        getUserTasks: (state) => state.tasks,
-        getUserTaskByID: (state) => (id) => { return state.tasks.find(task => task.id === id) },
-        //getSortedUserTasks: (state) => (field) => { return state.tasks.sort((a, b) => a[field] > b[field] ? 1 : -1) },
+        getUserTasks: (state) => state.tasksToMe,
+        getUserTaskByID: (state) => (id) => { return state.tasksToMe.find(task => task.id === id) },
+
         getTasksFromMe: (state) => state.tasksFromMe,
         getTaskFromMeByID: (state) => (id) => { return state.tasksFromMe.find(task => task.id === id) },
-        //getSortedTasksFromMe: (state) => (field) => { return state.tasksFromMe.sort((a, b) => a[field] > b[field] ? 1 : -1) },
+        getTasksFromMeByProjectID: (state) => (id) => { return state.tasksFromMe.filter(task => task.project?.id === id) },
+
+        getTasksFromProjects: (state) => state.tasksFromProjects,
+        getTasksFromProjectsByID: (state) => (id) => state.tasksFromProjects.filter(task => task.id),
+
         getUsers: (state) => state.users,
         getStatuses: (state) => state.statuses,
         getProgress: (state) => state.progress,
@@ -37,9 +42,8 @@ export const TaskModule = {
     },
 
     mutations: {
-        setTasks(state, tasks) {
-            state.tasks = tasks;
-            //localStorage.setItem('tasks', tasks);
+        setTasksToMe(state, tasks) {
+            state.tasksToMe = tasks;
         },
 
         setTasksFromMe(state, tasks) {
@@ -49,8 +53,8 @@ export const TaskModule = {
         replaceTasks(state, { tasks, title }) {
             tasks.forEach((task, i) => {
                 task.status = title;
-                state.tasks.forEach((myTask, j) => {
-                    if (task.id === myTask.id) state.tasks[j] = task;
+                state.tasksToMe.forEach((myTask, j) => {
+                    if (task.id === myTask.id) state.tasksToMe[j] = task;
                 });
             });
         },
@@ -81,13 +85,12 @@ export const TaskModule = {
         },
 
         addUserTask(state, task) {
-            state.tasks.push(task);
-            //localStorage.setItem('tasks', state.tasks);
+            state.tasksToMe.push(task);
         },
 
         addAnswer(state, taskWithAnswer) {
-            state.tasks.forEach((task, i) => {
-                if (task.id === taskWithAnswer.id) state.tasks[i] = taskWithAnswer;
+            state.tasksToMe.forEach((task, i) => {
+                if (task.id === taskWithAnswer.id) state.tasksToMe[i] = taskWithAnswer;
             });
         },
 
@@ -101,9 +104,8 @@ export const TaskModule = {
             });
         },
 
-        deleteTasks(state) {
-            state.tasks = null;
-            //localStorage.removeItem('tasks');
+        deleteTasksToMe(state) {
+            state.tasksToMe = null;
         },
 
         deleteTasksFromMe(state) {
@@ -127,10 +129,9 @@ export const TaskModule = {
         },
 
         deleteUserTask(state, taskID) {
-            state.tasks.forEach((task, i) => {
-                if (task.id === taskID) state.tasks.splice(i, 1);
+            state.tasksToMe.forEach((task, i) => {
+                if (task.id === taskID) state.tasksToMe.splice(i, 1);
             });
-            //localStorage.setItem('tasks', state.tasks);
         },
 
         deleteTaskFromMe(state, taskID) {
@@ -141,7 +142,7 @@ export const TaskModule = {
     },
 
     actions: {
-        async query({ commit, getters }, { userUID }) {
+        async queryTasksToMe({ commit, getters, rootGetters }, { userUID }) {
             const res = await QueryAPI.getTasks(userUID);
             const comments = await AnsQueryAPI.getMyAnswers(userUID);
             // console.log(res);
@@ -158,6 +159,8 @@ export const TaskModule = {
                 task.beginDate = item.attributes.field_begin_date;
                 task.dueDate = item.attributes.field_due_date;
                 task.progress = 0;
+                task.project = (item.relationships.field_project?.data?.id)? 
+                    rootGetters['projectM/getProjectByID'](item.relationships.field_project.data.id) : null;
 
                 const authorUID = item.relationships.uid.data.id;
                 res.data.included.forEach((itemInc, j) => {
@@ -223,10 +226,10 @@ export const TaskModule = {
             });
 
             console.log(tasks);
-            commit('setTasks', tasks);
+            commit('setTasksToMe', tasks);
         },
 
-        async queryTasksFromMe({ commit, getters }, { userUID }) {
+        async queryTasksFromMe({ commit, getters, rootGetters }, { userUID }) {
             const res = await QueryAPI.getMyTasks(userUID);
             const comments = await AnsQueryAPI.getAnswers();
             // console.log(res);
@@ -244,6 +247,8 @@ export const TaskModule = {
                 task.beginDate = item.attributes.field_begin_date;
                 task.dueDate = item.attributes.field_due_date;
                 task.progress = 0;
+                task.project = (item.relationships.field_project?.data?.id)? 
+                    rootGetters['projectM/getProjectByID'](item.relationships.field_project.data.id) : null;
 
                 const executorUID = item.relationships.field_ispolnitel.data.id;
                 res.data.included.forEach((itemInc, j) => {
@@ -309,6 +314,7 @@ export const TaskModule = {
                 // console.log(task);
             });
 
+            console.log(tasks);
             commit('setTasksFromMe', tasks);
         },
 
@@ -325,7 +331,8 @@ export const TaskModule = {
                     body: task.body, 
                     executorUID: task.executor.uid, 
                     status: status, 
-                    difficulty: task.difficulty 
+                    difficulty: task.difficulty,
+                    projectID: task.project?.id
                 });
             });
         
@@ -390,7 +397,7 @@ export const TaskModule = {
             commit('setUsers', users);
         },*/
 
-        async createNewTask({ commit, dispatch, getters, rootGetters }, { title, body, executorUID, difficultyValue }) {
+        async createNewTask({ commit, dispatch, getters, rootGetters }, { title, body, executorUID, difficultyValue, projectID }) {
             var executor;
             if (!dispatch('userM/isUserExists', { uid: executorUID })) {
                 executor = await dispatch('userM/addNewUser', { uid: executorUID });
@@ -403,7 +410,8 @@ export const TaskModule = {
             const difficulties = getters.getDifficulty;
 
             const res = await QueryAPI.createTask(title, body, executorUID, 
-                [...difficulties.keys()].find((key) => difficulties.get(key) === difficultyValue));
+                [...difficulties.keys()].find((key) => difficulties.get(key) === difficultyValue),
+                projectID);
             
             // console.log(res);
             // console.log(executor);
@@ -414,6 +422,8 @@ export const TaskModule = {
             task.body = (res.data.data.attributes.body !== null)? res.data.data.attributes.body.processed.replace(/(<p>|<\/p>)/g, '') : null;
             task.status = 'Не выполнено';
             task.progress = 0;
+            task.project = (res.data.data.relationships.field_project?.data?.id)? 
+                rootGetters['projectM/getProjectByID'](res.data.data.relationships.field_project.data.id) : null;
             task.executor = executor;
             task.author = author;
             task.beginDate = res.data.data.attributes.field_begin_date;
@@ -425,12 +435,13 @@ export const TaskModule = {
             commit('addTaskFromMe', task);
         },
 
-        async editTask({ commit, getters, rootGetters }, { id, title, body, executorUID, status, difficulty }) {
+        async editTask({ commit, getters, rootGetters }, { id, title, body, executorUID, status, difficulty, projectID }) {
             const statuses = getters.getStatuses;
             const difficulties = getters.getDifficulty;
             const res = await QueryAPI.editTask(id, title, body, executorUID, 
                 [...statuses.keys()].find((key) => statuses.get(key) === status), 
-                [...difficulties.keys()].find((key) => difficulties.get(key) === difficulty));
+                [...difficulties.keys()].find((key) => difficulties.get(key) === difficulty),
+                projectID);
             console.log(res);
 
             console.log("executorUID" + executorUID);
@@ -445,6 +456,8 @@ export const TaskModule = {
             console.log("executor" + task.executor);
             task.status = status;
             task.difficulty = difficulty;
+            task.project = (res.data.data.relationships.field_project?.data?.id)? 
+                rootGetters['projectM/getProjectByID'](res.data.data.relationships.field_project.data.id) : null;
 
             /*const task = {};
             task.id = id;

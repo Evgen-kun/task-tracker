@@ -1,8 +1,9 @@
 <template>
     <v-card
-    class="mx-auto"
+    class="mx-auto elevation-0"
     max-width="750"
-    color="blue"
+    min-height="48px"
+    color="#eaccff"
     rounded="xl"
   >
 
@@ -48,8 +49,17 @@
                         clearable
                     ></v-autocomplete>
 
+                    <v-autocomplete
+                        label="Проект"
+                        :items="projects"
+                        item-title="title"
+                        item-value="id"
+                        v-model="selectProject"
+                        clearable
+                    ></v-autocomplete>
+
                     <small>*обязательное поле</small>
-                    <v-btn block type="submit" color="black" rounded="lg">Создать</v-btn>
+                    <v-btn block type="submit" color="blue" rounded="lg">Создать</v-btn>
                 </v-container>
             </v-form>
         </v-card-text>
@@ -73,6 +83,7 @@ import { mapGetters } from 'vuex';
                 text: "",
                 executor: "",
                 selectDifficulty: "",
+                selectProject: null,
                 name: "Test",
                 titleRules: [
                     v => !!v || 'Требуется заголовок',
@@ -95,7 +106,8 @@ import { mapGetters } from 'vuex';
                         title: this.taskTitle, 
                         body: this.text, 
                         executorUID: this.executor,
-                        difficultyValue: this.selectDifficulty
+                        difficultyValue: this.selectDifficulty,
+                        projectID: this.selectProject
                     });
                     this.$refs.createTaskForm.reset();
                     this.$refs.createTaskForm.resetValidation();
@@ -106,7 +118,8 @@ import { mapGetters } from 'vuex';
         computed: {
             ...mapGetters({
                 users: 'userM/getUsers',
-                difficulty: 'taskM/getDifficulty'
+                difficulty: 'taskM/getDifficulty',
+                projects: 'projectM/getProjects'
             }),
             usersWithID() {
                 return this.users.map(user => ({ ...user, nameWithID: `${user.name} (${user.id})` }));

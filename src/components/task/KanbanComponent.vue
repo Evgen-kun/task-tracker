@@ -39,10 +39,12 @@
   
     },
     computed: {
-      ...mapGetters('taskM', {
-        tasks: 'getTasksFromMe',
-        //sordedTasks: 'getSortedTasksFromMe',
-      }),
+      // ...mapGetters('taskM', {
+      //   tasks: 'getTasksFromMe',
+      // }),
+      tasks() { 
+        return this.$store.getters['taskM/getTasksFromMeByProjectID'](this.$route.params.projectID); 
+      },
       ...mapState('taskM', {
         myTasks: 'tasksFromMe',
       }),

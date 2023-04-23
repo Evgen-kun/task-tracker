@@ -24,19 +24,28 @@
                 required
             ></v-autocomplete>
 
-            <v-select
+            <v-autocomplete
                 v-model="selectStatus"
                 :items="[...statuses.values()]"
                 label="Статус задачи"
                 single-line
-            ></v-select>
+            ></v-autocomplete>
 
-            <v-select
+            <v-autocomplete
                 v-model="selectDifficulty"
                 :items="[...difficulty.values()]"
                 label="Сложность задачи"
                 single-line
-            ></v-select>
+            ></v-autocomplete>
+
+            <v-autocomplete
+                label="Проект"
+                :items="projects"
+                item-title="title"
+                item-value="id"
+                v-model="selectProject"
+                clearable
+            ></v-autocomplete>
 
             <small>*обязательное поле</small><br>
             <v-btn type="submit" rounded="pill" variant="elevated">Применить</v-btn>
@@ -57,6 +66,7 @@ import { mapGetters } from 'vuex';
                 executorUID: this.userUID,
                 selectStatus: this.task.status,
                 selectDifficulty: this.task.difficulty,
+                selectProject: this.task.project?.id,
 
                 titleRules: [
                   v => !!v || 'Требуется заголовок',
@@ -84,6 +94,8 @@ import { mapGetters } from 'vuex';
             async editTask() {
               const { valid } = await this.$refs.taskForm.validate();
 
+              console.log("Выбранный проект: " + this.selectProject);
+
               if(valid) {
                     await store.dispatch('taskM/editTask', {
                         id: this.task.id, 
@@ -92,6 +104,7 @@ import { mapGetters } from 'vuex';
                         executorUID: this.executorUID, 
                         status: this.selectStatus,
                         difficulty: this.selectDifficulty,
+                        projectID: this.selectProject
                     });
                 }
                 //else alert("NOT validate");
@@ -107,7 +120,8 @@ import { mapGetters } from 'vuex';
             ...mapGetters({
                 users: 'userM/getUsers',
                 statuses: 'taskM/getStatuses',
-                difficulty: 'taskM/getDifficulty'
+                difficulty: 'taskM/getDifficulty',
+                projects: 'projectM/getProjects'
             }),
             usersWithID() {
                 return this.users.map(user => ({ ...user, nameWithID: `${user.name} (${user.id})` }));

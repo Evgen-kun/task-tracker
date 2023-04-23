@@ -44,7 +44,7 @@
   export default {
     data() {
       return {
-        subtitle: "",
+        subtitle: "Исполнитель",
       }
     },
     props: {
@@ -61,9 +61,12 @@
         
     },
     computed: {
-      ...mapState('taskM', {
-        myTasks: 'tasksFromMe',
-      }),
+    //   ...mapState('taskM', {
+    //     myTasks: 'tasksFromMe',
+    //   }),
+      myTasks() { 
+        return this.$store.getters['taskM/getTasksFromMeByProjectID'](this.$route.params.projectID); 
+      },
       myList: {
         get() {
             return this.myTasks.filter(task => task.status === this.title);

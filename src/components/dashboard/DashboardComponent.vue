@@ -1,20 +1,22 @@
 <template>
-    <div class="d-flex flex-row">
+    <div class="d-flex flex-row mt-3">
         <DashboardCardComponent 
             v-for="item in items"
             v-bind:key="item.id"
             v-bind:item="item">
         </DashboardCardComponent>
     </div>
-    <div>
-        <!-- <DashboardChartComponent /> -->
+    <div class="d-flex flex-row mt-3">
+        <DashboardStatusChartComponent />
+        <DashboardLoadingChartComponent />
     </div>
 </template>
     
 <script>
 import store from '@/plugins/store';
 import DashboardCardComponent from './DashboardCardComponent.vue';
-// import DashboardChartComponent from './DashboardChartComponent.vue';
+import DashboardStatusChartComponent from './DashboardStatusChartComponent.vue';
+import DashboardLoadingChartComponent from './DashboardLoadingChartComponent.vue';
   
 export default {
     name: "DashboardComponent",
@@ -35,7 +37,8 @@ export default {
     // },
     components: {
         DashboardCardComponent,
-        // DashboardChartComponent
+        DashboardStatusChartComponent,
+        DashboardLoadingChartComponent
     },
     methods: {
         
@@ -44,9 +47,6 @@ export default {
         // ...mapState('taskM', {
         //     tasks: 'tasksFromMe',
         // }),
-        dashboardChartData() {
-            return [this.uncomplitedTasks, this.inProgressTasks, this.complitedTasks];
-        }
     },
     async created() {
         const user = store.getters['authM/getUser'];
@@ -54,26 +54,25 @@ export default {
         await store.dispatch('taskM/queryTasksFromMe', { userUID: userUID });
         await store.dispatch('userM/usersQuery');
 
-        this.complitedTasks = store.getters['taskM/getFilteredByStatusTasks']("Выполнено");
-        this.uncomplitedTasks = store.getters['taskM/getFilteredByStatusTasks']("Не выполнено");
-        this.inProgressTasks = store.getters['taskM/getFilteredByStatusTasks']("Выполняется");
-        this.tasks = store.getters['taskM/getTasksFromMe'];
+        // this.tasks = store.getters['taskM/getTasksFromMe'];
+        this.tasks = store.getters['taskM/getTasksFromMeByProjectID'](this.$route.params.projectID);
+
       
         this.items = [
             {
                 id: 1,
                 title: "Завершённые задачи",
-                value: this.complitedTasks.length
+                value: this.tasks.filter(task => task.status === "Выполнено").length
             },
             {
                 id: 2,
                 title: "Незавершённые задачи",
-                value: this.uncomplitedTasks.length
+                value: this.tasks.filter(task => task.status === "Не выполнено").length
             },
             {
                 id: 3,
                 title: "Просроченные задачи",
-                value: 0
+                value: 0  // TODO
             },
             {
                 id: 4,

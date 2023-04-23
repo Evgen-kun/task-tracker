@@ -2,8 +2,8 @@
   <v-container class="fill-height">
     <v-responsive class="d-flex align-center text-center fill-height">
       <v-card
-        class="mx-auto elevation-0"
-        max-width="500"
+        class="mx-auto elevation-0 bg-img"
+        max-width="540px"
         rounded="xl"
       >
         <v-card-item>
@@ -16,14 +16,17 @@
         </v-card-text>
       </v-card>
 
-      <v-row align-content="stretch" class="mt-4">
+      <v-row class="mt-4">
         <v-col class="mx-2">
           <v-card
             width="100%"
+            min-width="540px"
+            height="100%"
             rounded="xl"
-            class="elevation-0"
+            class="elevation-0 bg-blur"
+            color="rgba(255, 255, 255, 0.4)"
           >
-            <v-card-title>
+            <v-card-title class="text-h5">
               Задачи
             </v-card-title>
             <v-card-item>
@@ -53,14 +56,35 @@
         <v-col class="mx-2">
           <v-card
             width="100%"
+            min-width="540px"
+            height="100%"
             rounded="xl"
-            class="elevation-0"
+            class="elevation-0 bg-blur"
+            color="rgba(255, 255, 255, 0.4)"
           >
-            <v-card-title>
+            <v-card-title class="text-h5">
               Команды
             </v-card-title>
             <v-card-item>
               <TeamsComponent />
+            </v-card-item>
+          </v-card>
+        </v-col>
+
+        <v-col class="mx-2">
+          <v-card
+            width="100%"
+            min-width="540px"
+            height="100%"
+            rounded="xl"
+            class="elevation-0 bg-blur"
+            color="rgba(255, 255, 255, 0.4)"
+          >
+            <v-card-title class="text-h5">
+              Проекты
+            </v-card-title>
+            <v-card-item>
+              <ProjectsComponent />
             </v-card-item>
           </v-card>
         </v-col>
@@ -75,6 +99,7 @@ import { mapGetters } from 'vuex';
 import InboxComponent from '../task/InboxComponent.vue';
 import TasksFromMeComponent from '../task/TasksFromMeComponent.vue';
 import TeamsComponent from '../team/TeamsComponent.vue';
+import ProjectsComponent from '../projects/ProjectsComponent.vue';
 
 export default {
   data() {
@@ -100,26 +125,42 @@ export default {
   components: {
     InboxComponent,
     TasksFromMeComponent,
-    TeamsComponent
+    TeamsComponent,
+    ProjectsComponent
 },
   async created() {
     const user = store.getters['authM/getUser'];
     const userUID = user.uid;
     this.name = user.name;
-    console.log(user);
+    // console.log(user);
     console.log(store.getters['authM/getToken']);
+    await store.dispatch('userM/usersQuery');
     await store.dispatch('taskM/getStatuses');
     await store.dispatch('taskM/getProgress');
     await store.dispatch('taskM/getDifficulty');
-    await store.dispatch('taskM/query', { userUID: userUID });
-    await store.dispatch('userM/usersQuery');
+    await store.dispatch('teamM/queryTeams', { userUID: userUID });
+    await store.dispatch('projectM/queryProjects', { userUID: userUID });
+    await store.dispatch('taskM/queryTasksToMe', { userUID: userUID });
   }
 }
 
 </script>
 
 <style scoped>
+
 .line-h {
   line-height: 2rem;
 }
+
+.bg-img {
+  background-image: url('@/assets/bg/bg-1.jpg');
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position: center;
+}
+
+.bg-blur {
+
+        backdrop-filter: blur(10px);
+    }
 </style>

@@ -8,9 +8,16 @@ const authGuard = function(to, from, next) {
 }
 
 const managerAuthGuard = function(to, from, next) {
-  const roles = JSON.parse(localStorage.getItem('userRoles'));
+  const roles = JSON.parse(localStorage.getItem('user')).roles;
   if (!localStorage.hasOwnProperty('token')) next({ name: 'login' });
   else if (!roles.includes('manager') && (!roles.includes('administrator'))) next({ name: 'home' });
+  else next();
+}
+
+const adminAuthGuard = function(to, from, next) {
+  const roles = JSON.parse(localStorage.getItem('user')).roles;
+  if (!localStorage.hasOwnProperty('token')) next({ name: 'login' });
+  else if (!roles.includes('administrator')) next({ name: 'home' });
   else next();
 }
 
@@ -36,25 +43,53 @@ const routes = [
     path: "/about",
     name: "about",
     component: () => import("@/views/AboutView.vue"),
-    beforeEnter: managerAuthGuard,
+    beforeEnter: authGuard,
   },
   {
     path: "/teams",
     name: "teams",
     beforeEnter: managerAuthGuard,
     children: [
-      { 
-        path: '', 
-        component: () => import("@/views/TeamsView.vue"), 
-        beforeEnter: managerAuthGuard,
+      {
+        path: '',
+        component: () => import("@/views/TeamsView.vue"),
       },
       {
-        path: ":id",
-        name: "dashboard",
-        component: () => import("@/views/DashboardView.vue"),
+        path: ":teamID",
+        name: "team",
         beforeEnter: managerAuthGuard,
-      },
-    ],
+        children: [
+          {
+            path: 'projects',
+            children: [
+              {
+                path: '',
+                name: 'projects',
+                component: () => import("@/views/ProjectsView.vue"),
+                beforeEnter: managerAuthGuard,
+              },
+              {
+                path: ":projectID",
+                name: "dashboard",
+                component: () => import("@/views/DashboardView.vue"),
+                beforeEnter: managerAuthGuard,
+              }
+            ]
+          },
+          
+        ]
+      }
+      
+    ]
+  },
+  {
+    
+  },
+  {
+    path: "/panel",
+    name: "panel",
+    component: () => import("@/views/PanelView.vue"),
+    beforeEnter: adminAuthGuard,
   },
 ];
 

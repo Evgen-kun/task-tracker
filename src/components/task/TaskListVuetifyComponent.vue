@@ -288,10 +288,12 @@ export default {
       },
     },
     computed: {
-        ...mapGetters('taskM', {
-        tasks: 'getTasksFromMe',
-        //sordedTasks: 'getSortedTasksFromMe',
-      }),
+      //   ...mapGetters('taskM', {
+      //   tasks: 'getTasksFromMe',
+      // }),
+      tasks() { 
+        return store.getters['taskM/getTasksFromMeByProjectID'](this.$route.params.projectID); 
+      },
       formTitle () {
         return this.editedIndex === -1 ? 'Новая задача' : 'Редактирование задачи'
       },

@@ -4,19 +4,29 @@ import store from "@/plugins/store";
 export const ProjectsQueryAPI = {
     /**
      * 
+     * @param {string} userUID
+     * @returns {Promise<AxiosResponse<any>>}
+     */
+    getProjectsByUserUID(userUID) {
+        const url = `http://localhost/drupal/web/jsonapi/node/project?filter[uid.id]=${userUID}&fields[node--project]=id,title,body,field_team`;
+        return QueryAPIInstance.get(url);
+    },
+
+    /**
+     * 
      * @param {string} teamID
      * @returns {Promise<AxiosResponse<any>>}
      */
-    getProjects(teamID) {
+    getProjectsByTeamID(teamID) {
         const url = `http://localhost/drupal/web/jsonapi/node/team?filter[id]=${teamID}&fields[node--team]=id,title,body,field_member,field_project&include=field_project.field_task&fields[node--project]=id,title,body,field_task&fields[node--task]=id,title,body,field_ispolnitel,field_status`;
         return QueryAPIInstance.get(url);
     },
 
-    /*async createProject(title, body, usersUID) {
+    async createProject(title, body, teamID) {
         const url = `http://localhost/drupal/web/jsonapi/node/project`;
         const data = { 
             data: {
-                type: "node--team",
+                type: "node--project",
                 attributes: {
                     title: title,
                     body: {
@@ -25,8 +35,11 @@ export const ProjectsQueryAPI = {
                     }
                 },
                 relationships: {
-                    field_member: {
-                        data: (usersUID.length !== 0)? usersUID.map(userUID => userUID = {type: "user--user", id: userUID}) : [],
+                    field_team: {
+                        data: {
+                            type: "node--team",
+                            id: teamID
+                        }
                     }
                 }
             }
@@ -36,16 +49,14 @@ export const ProjectsQueryAPI = {
         PostQueryAPIInstance.defaults.headers['Content-Type'] = 'application/vnd.api+json';
         PostQueryAPIInstance.defaults.headers['Accept'] = 'application/vnd.api+json';
         PostQueryAPIInstance.defaults.headers['Authorization'] = `Basic ${await store.getters['authM/getBasicToken']}`;
-        console.log(PostQueryAPIInstance.defaults.headers['X-CSRF-Token']);
-        console.log(PostQueryAPIInstance.defaults.headers['Authorization']);
         return PostQueryAPIInstance.post(url, data);
     },
 
-    async editProject(id, title, body, usersUID) {
+    async editProject(id, title, body, teamID) {
         const url = `http://localhost/drupal/web/jsonapi/node/project/${id}`;
         const data = { 
             data: {
-                type: "node--team",
+                type: "node--project",
                 id: id,
                 attributes: {
                     title: title,
@@ -55,8 +66,11 @@ export const ProjectsQueryAPI = {
                     }
                 },
                 relationships: {
-                    field_member: {
-                        data: (usersUID.length !== 0)? usersUID.map(userUID => userUID = {type: "user--user", id: userUID}) : [],
+                    field_team: {
+                        data: {
+                            type: "node--team",
+                            id: teamID
+                        }
                     }
                 }
             }
@@ -66,8 +80,6 @@ export const ProjectsQueryAPI = {
         PostQueryAPIInstance.defaults.headers['Content-Type'] = 'application/vnd.api+json';
         PostQueryAPIInstance.defaults.headers['Accept'] = 'application/vnd.api+json';
         PostQueryAPIInstance.defaults.headers['Authorization'] = `Basic ${await store.getters['authM/getBasicToken']}`;
-        console.log(PostQueryAPIInstance.defaults.headers['X-CSRF-Token']);
-        console.log(PostQueryAPIInstance.defaults.headers['Authorization']);
         return PostQueryAPIInstance.patch(url, data);
     },
     
@@ -78,9 +90,7 @@ export const ProjectsQueryAPI = {
         PostQueryAPIInstance.defaults.headers['Content-Type'] = 'application/vnd.api+json';
         PostQueryAPIInstance.defaults.headers['Accept'] = 'application/vnd.api+json';
         PostQueryAPIInstance.defaults.headers['Authorization'] = `Basic ${await store.getters['authM/getBasicToken']}`;
-        console.log(PostQueryAPIInstance.defaults.headers['X-CSRF-Token']);
-        console.log(PostQueryAPIInstance.defaults.headers['Authorization']);
         return PostQueryAPIInstance.delete(url);
-    },*/
+    },
 
 }

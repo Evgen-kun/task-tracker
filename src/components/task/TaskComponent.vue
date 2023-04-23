@@ -103,9 +103,13 @@
               variant="elevated"
               v-show="path == '/about'"
               color="blue"
-              @click="showAnswers = false; showEdit = !showEdit"
             >
               Изменить
+              <EditTaskDialogComponent
+                v-bind:task="task"
+                v-bind:userUID="user.uid"
+              >
+              </EditTaskDialogComponent>
             </v-btn>
 
             <v-btn
@@ -114,7 +118,7 @@
               v-show="path == '/about'"
               :disabled="task.answers.length === 0"
               color="green"
-              @click="showEdit = false; showAnswers = !showAnswers"
+              @click="showAnswers = !showAnswers"
             >
               Ответы
             </v-btn>
@@ -134,7 +138,7 @@
               variant="elevated"
               v-show="path == '/inbox'"
               color="green"
-              @click="showEdit = false; showCreateAns = !showCreateAns"
+              @click="showCreateAns = !showCreateAns"
             >
               Добавить ответ
             </v-btn>
@@ -167,19 +171,6 @@
     </v-expand-transition>
 
     <v-expand-transition>
-      <div v-show="showEdit">
-        <v-divider></v-divider>
-        <v-card-text>
-            <EditTaskComponent
-              v-bind:task="task"
-              v-bind:userUID="user.uid"
-            >
-            </EditTaskComponent>
-        </v-card-text>
-      </div>
-    </v-expand-transition>
-
-    <v-expand-transition>
       <div v-show="showCreateAns">
         <v-divider></v-divider>
         <v-card-text>
@@ -193,7 +184,7 @@
 <script>
 import ShowAnswerComponent from '../answer/ShowAnswerComponent.vue';
 import CreateAnswerComponent from '../answer/actions/CreateAnswerComponent.vue';
-import EditTaskComponent from './actions/EditTaskComponent.vue';
+import EditTaskDialogComponent from './actions/dialog/EditTaskDialogComponent.vue';
 import LastAnswerComponent from '../answer/LastAnswerComponent.vue';
 // import { mapGetters } from 'vuex';
 
@@ -202,7 +193,6 @@ import LastAnswerComponent from '../answer/LastAnswerComponent.vue';
         data() {
             return {
               show: false,
-              showEdit: false,
               showCreateAns: false,
               showAnswers: false,
               showLastAns: false,
@@ -258,7 +248,7 @@ import LastAnswerComponent from '../answer/LastAnswerComponent.vue';
         components: {
             ShowAnswerComponent,
             CreateAnswerComponent,
-            EditTaskComponent,
+            EditTaskDialogComponent,
             LastAnswerComponent,
         },
     }

@@ -8,12 +8,12 @@ export const QueryAPI = {
      * @returns {Promise<AxiosResponse<any>>}
      */
     getTasks(userUID) {
-        const url = `http://localhost/drupal/web/jsonapi/node/task?include=uid.user_picture&filter[field_ispolnitel.id]=${userUID}&fields[node--task]=id,title,body,uid,field_status,field_difficulty_level,field_begin_date,field_due_date,field_project&fields[user--user]=id,display_name,user_picture&fields[file--file]=id,uid,uri`;
+        const url = `http://localhost/drupal/web/jsonapi/node/task?include=uid.user_picture&filter[field_ispolnitel.id]=${userUID}&fields[node--task]=id,title,body,uid,field_status,field_difficulty_level,field_begin_date,field_due_date,field_project&fields[user--user]=id,display_name,drupal_internal__uid,user_picture&fields[file--file]=id,uid,uri`;
         return QueryAPIInstance.get(url);
     },
 
     getMyTasks(userUID) {
-        const url = `http://localhost/drupal/web/jsonapi/node/task?include=field_ispolnitel.user_picture&filter[uid.id]=${userUID}&fields[node--task]=id,title,body,field_ispolnitel,field_status,field_difficulty_level,field_begin_date,field_due_date,field_project&fields[user--user]=id,display_name,user_picture&fields[file--file]=id,uri`;
+        const url = `http://localhost/drupal/web/jsonapi/node/task?include=field_ispolnitel.user_picture&filter[uid.id]=${userUID}&fields[node--task]=id,title,body,field_ispolnitel,field_status,field_difficulty_level,field_begin_date,field_due_date,field_project&fields[user--user]=id,display_name,drupal_internal__uid,user_picture&fields[file--file]=id,uri`;
         return QueryAPIInstance.get(url);
     },
 
@@ -32,7 +32,7 @@ export const QueryAPI = {
         return QueryAPIInstance.get(url);
     },
 
-    async createTask(title, body, executorUID, difficultyID, projectID) {
+    async createTask(title, body, executorUID, difficultyID, projectID, beginDate, dueDate) {
         const url = `http://localhost/drupal/web/jsonapi/node/task`;
         const data = { 
             data: {
@@ -42,7 +42,9 @@ export const QueryAPI = {
                     body: {
                         value: body,
                         format: "plain_text"
-                    }
+                    },
+                    field_begin_date: beginDate,
+                    field_due_date: dueDate
                 },
                 relationships: {
                     field_ispolnitel: {
@@ -77,7 +79,7 @@ export const QueryAPI = {
         return PostQueryAPIInstance.post(url, data);
     },
 
-    async editTask(id, title, body, executorUID, statusUID, difficultyID, projectID) {
+    async editTask(id, title, body, executorUID, statusUID, difficultyID, projectID, beginDate, dueDate) {
         const url = `http://localhost/drupal/web/jsonapi/node/task/${id}`;
         const data = { 
             data: {
@@ -88,7 +90,9 @@ export const QueryAPI = {
                     body: {
                         value: body,
                         format: "plain_text"
-                    }
+                    },
+                    field_begin_date: beginDate,
+                    field_due_date: dueDate
                 },
                 relationships: {
                     field_ispolnitel: {

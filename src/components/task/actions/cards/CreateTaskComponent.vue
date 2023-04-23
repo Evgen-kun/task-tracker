@@ -49,6 +49,21 @@
                         clearable
                     ></v-autocomplete>
 
+                    <div class="d-flex flex-row">
+                        <v-text-field
+                            v-model="beginDate"
+                            label="Дата начала"
+                            type="date"
+                        ></v-text-field>
+
+                        <v-text-field
+                            v-model="dueDate"
+                            class="ml-2"
+                            label="Дедлайн"
+                            type="date"
+                        ></v-text-field>
+                    </div>
+
                     <v-autocomplete
                         label="Проект"
                         :items="projects"
@@ -84,6 +99,8 @@ import { mapGetters } from 'vuex';
                 executor: "",
                 selectDifficulty: "",
                 selectProject: null,
+                beginDate: new Date().toLocaleDateString("ru-RU", { year: 'numeric', month: '2-digit', day: '2-digit' }).toString().split('.').reverse().join('-'),
+                dueDate: '',
                 name: "Test",
                 titleRules: [
                     v => !!v || 'Требуется заголовок',

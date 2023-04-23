@@ -106,7 +106,11 @@ import store from '@/plugins/store';
                 const { valid } = await this.$refs.createProjectForm.validate();
 
                 if(valid) {
-                    await store.dispatch('projectM/createProject', { title: this.projectTitle, body: this.projectSubtitle });
+                    await store.dispatch('projectM/createProject', { 
+                      title: this.projectTitle, 
+                      body: this.projectSubtitle, 
+                      teamID: this.projectTeamID 
+                    });
                     this.$refs.createProjectForm.reset();
                     this.$refs.createProjectForm.resetValidation();
                 }

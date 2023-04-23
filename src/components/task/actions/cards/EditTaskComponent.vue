@@ -38,6 +38,22 @@
                 single-line
             ></v-autocomplete>
 
+            <div class="d-flex flex-row">
+                <v-text-field
+                    v-model="beginDate"
+                    label="Дата начала"
+                    type="date"
+                ></v-text-field>
+
+                <v-text-field
+                    v-model="dueDate"
+                    class="ml-2"
+                    label="Дедлайн"
+                    type="date"
+                ></v-text-field>
+            </div>
+            
+
             <v-autocomplete
                 label="Проект"
                 :items="projects"
@@ -67,6 +83,8 @@ import { mapGetters } from 'vuex';
                 selectStatus: this.task.status,
                 selectDifficulty: this.task.difficulty,
                 selectProject: this.task.project?.id,
+                beginDate: new Date(this.task.beginDate).toLocaleDateString("ru-RU", { year: 'numeric', month: '2-digit', day: '2-digit' }).toString().split('.').reverse().join('-'),
+                dueDate: new Date(this.task.dueDate).toLocaleDateString("ru-RU", { year: 'numeric', month: '2-digit', day: '2-digit' }).toString().split('.').reverse().join('-'),
 
                 titleRules: [
                   v => !!v || 'Требуется заголовок',
@@ -118,13 +136,20 @@ import { mapGetters } from 'vuex';
         },
         computed: {
             ...mapGetters({
-                users: 'userM/getUsers',
+                // users: 'userM/getUsers',
                 statuses: 'taskM/getStatuses',
                 difficulty: 'taskM/getDifficulty',
                 projects: 'projectM/getProjects'
             }),
+            getUsers() {
+                const currentUser = store.getters['authM/getUser'];
+                if(!!this.task.project?.id) return [...store.getters['projectM/getProjectByID'](this.selectProject).team.users, currentUser];
+                else return [...store.getters['userM/getUsers'], currentUser];
+            },
             usersWithID() {
-                return this.users.map(user => ({ ...user, nameWithID: `${user.name} (${user.id})` }));
+                console.log(this.getUsers);
+                if(!this.getUsers.map(user => user.uid).includes(this.executorUID)) this.executorUID = null;
+                return this.getUsers.map(user => ({ ...user, nameWithID: `${user.name} (${user.id})` }));
             },
         },
     }

@@ -168,6 +168,7 @@ export const TaskModule = {
                         if(itemInc.id === authorUID) {
                             const author = new User();
                             author.uid = authorUID;
+                            author.id = itemInc.attributes.drupal_internal__uid;
                             author.name = itemInc.attributes.display_name;
 
                             const picture = new Picture();
@@ -256,6 +257,7 @@ export const TaskModule = {
                         if(itemInc.id === executorUID) {
                             const executor = new User();
                             executor.uid = executorUID;
+                            executor.id = itemInc.attributes.drupal_internal__uid;
                             executor.name = itemInc.attributes.display_name;
 
                             const picture = new Picture();
@@ -397,7 +399,7 @@ export const TaskModule = {
             commit('setUsers', users);
         },*/
 
-        async createNewTask({ commit, dispatch, getters, rootGetters }, { title, body, executorUID, difficultyValue, projectID }) {
+        async createNewTask({ commit, dispatch, getters, rootGetters }, { title, body, executorUID, difficultyValue, projectID, beginDate, dueDate }) {
             var executor;
             if (!dispatch('userM/isUserExists', { uid: executorUID })) {
                 executor = await dispatch('userM/addNewUser', { uid: executorUID });
@@ -409,9 +411,15 @@ export const TaskModule = {
             const author = rootGetters['authM/getUser'];
             const difficulties = getters.getDifficulty;
 
-            const res = await QueryAPI.createTask(title, body, executorUID, 
+            const res = await QueryAPI.createTask(
+                title, 
+                body, 
+                executorUID, 
                 [...difficulties.keys()].find((key) => difficulties.get(key) === difficultyValue),
-                projectID);
+                projectID,
+                beginDate,
+                dueDate
+            );
             
             // console.log(res);
             // console.log(executor);
@@ -435,13 +443,20 @@ export const TaskModule = {
             commit('addTaskFromMe', task);
         },
 
-        async editTask({ commit, getters, rootGetters }, { id, title, body, executorUID, status, difficulty, projectID }) {
+        async editTask({ commit, getters, rootGetters }, { id, title, body, executorUID, status, difficulty, projectID, beginDate, dueDate }) {
             const statuses = getters.getStatuses;
             const difficulties = getters.getDifficulty;
-            const res = await QueryAPI.editTask(id, title, body, executorUID, 
+            const res = await QueryAPI.editTask(
+                id, 
+                title, 
+                body, 
+                executorUID, 
                 [...statuses.keys()].find((key) => statuses.get(key) === status), 
                 [...difficulties.keys()].find((key) => difficulties.get(key) === difficulty),
-                projectID);
+                projectID,
+                beginDate,
+                dueDate
+            );
             console.log(res);
 
             console.log("executorUID" + executorUID);

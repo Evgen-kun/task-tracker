@@ -20,19 +20,12 @@
                     <v-btn icon="mdi-view-dashboard" value="dashboard" title="Панель мониторинга"></v-btn>
                 </v-btn-toggle>
             </div>
-            <div v-if="toggle === 'gantt'">
-                <GanttComponent />
-
-            </div>
-            <div v-if="toggle === 'kanban'">
-                <KanbanComponent />
-            </div>
-            <div v-if="toggle === 'tasklist'">
+            <div class="mt-5">
+                <GanttComponent v-if="toggle === 'gantt'" />
+                <KanbanComponent v-if="toggle === 'kanban'" />
                 <!-- <TaskListComponent /> -->
-                <TaskListVuetifyComponent />
-            </div>
-            <div v-if="toggle === 'dashboard'">
-                <DashboardComponent />
+                <TaskListVuetifyComponent v-if="toggle === 'tasklist'" />
+                <DashboardComponent v-if="toggle === 'dashboard'" />
             </div>
             <!-- <GanttElastic /> -->
       </v-responsive>

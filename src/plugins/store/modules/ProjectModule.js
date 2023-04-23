@@ -120,7 +120,7 @@ export const ProjectModule = {
             return user;
         },
 
-        async createProject({ commit }, { title, body, teamID }) {
+        async createProject({ commit, rootGetters }, { title, body, teamID }) {
             const res = await ProjectsQueryAPI.createProject(title, body, teamID);
             // const allUsers = rootGetters['userM/getUsers'];
             // console.log(res);

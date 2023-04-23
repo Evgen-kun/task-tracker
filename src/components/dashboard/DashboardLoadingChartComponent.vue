@@ -76,7 +76,14 @@
         // this.allTasks = store.getters['taskM/getTasksFromMe'];
         // this.allUsers = store.getters['userM/getUsers'];
         this.allTasks = store.getters['taskM/getTasksFromMeByProjectID'](this.$route.params.projectID);
-        this.allUsers = store.getters['projectM/getProjectByID'](this.$route.params.projectID).team.users;
+        const allUsers = new Map();
+        this.allTasks.forEach((task) => {
+          allUsers.set(task.executor.uid, task.executor);
+        });
+        this.allUsers = [...allUsers.values()];
+        console.log(allUsers);
+        console.log(allUsers.values());
+        console.log(this.allUsers);
         const data = [];
         const labels = [];
         this.allUsers.forEach((user) => {

@@ -3,7 +3,13 @@
       <v-responsive class="d-flex align-center text-center fill-height">
 
         <!-- <EditorComponent /> -->
-        <CreateTaskComponent />
+        <v-btn
+          color="deep-purple-accent-3"
+          rounded="lg"
+        >
+          Создать задачу
+          <CreateTaskDialogComponent />
+        </v-btn>
   
         <draggable v-model="myList" tag="transition" item-key="id">
           <template #item="{ element: task }">
@@ -32,7 +38,7 @@
   import store from '@/plugins/store';
   import { mapGetters, mapState } from 'vuex';
   //import EditorComponent from './EditorComponent.vue';
-  import CreateTaskComponent from './actions/CreateTaskComponent.vue';
+  import CreateTaskDialogComponent from './actions/dialog/CreateTaskDialogComponent.vue';
   import TaskComponent from './TaskComponent.vue';
   
   export default {
@@ -66,7 +72,7 @@
     components: {
       TaskComponent,
       //EditorComponent,
-      CreateTaskComponent,
+      CreateTaskDialogComponent,
       draggable
     },
     async created() {

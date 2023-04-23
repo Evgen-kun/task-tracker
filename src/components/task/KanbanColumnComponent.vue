@@ -3,9 +3,10 @@
         <v-card
             min-width="350px"
             max-width="400px"
+            color="rgba(255, 255, 255, 0.4)"
         >
             <v-toolbar
-            color="info"
+            color="deep-purple-accent-3"
             density="compact"
             dark
             >

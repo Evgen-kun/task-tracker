@@ -6,6 +6,7 @@
     max-width="750px"
     min-width="300px"
     rounded="xl"
+    :ripple="false"
     @click="show = !show"
   >
 
@@ -52,28 +53,34 @@
     max-width="750px"
     min-width="300px"
     rounded="xl"
+    :ripple="false"
+    @click="show = !show"
   >
 
     <template v-slot:prepend>
       <v-progress-circular
         v-if="(task.progress !== 0) && (task.progress !== 100)"
         :rotate="360"
-        :size="45"
-        :width="10"
+        :width="7"
         :model-value="task.progress"
         color="wight"
       >
       </v-progress-circular>
       <v-icon :icon="icon" v-else size="x-large"></v-icon>
-      <v-chip v-if="!!task.project" class="ml-2" color="primary">{{ task.project.title }}</v-chip>
+      <v-chip v-if="(!!task.project) && (this.$route.name !== 'dashboard')" class="ml-2" color="primary">{{ task.project.title }}</v-chip>
     </template>
 
     <template v-slot:append>
-      <v-btn
+      <!-- <v-btn
           icon="mdi-close"
           color="error"
           @click="show = !show"
-        ></v-btn>
+        ></v-btn> -->
+        <v-chip 
+          prepend-icon="mdi-clock"
+          color="pink">
+          {{ beginDueDate }}
+        </v-chip>
     </template>
 
     <v-card-text class="text-h4 py-2">
@@ -100,7 +107,7 @@
           <div>
             <v-btn
               rounded="pill"
-              variant="elevated"
+              variant="tonal"
               v-show="path == '/about'"
               color="blue"
             >
@@ -114,35 +121,35 @@
 
             <v-btn
               rounded="pill"
-              variant="elevated"
+              variant="tonal"
               v-show="path == '/about'"
               :disabled="task.answers.length === 0"
-              color="green"
-              @click="showAnswers = !showAnswers"
+              color="blue"
+              @click.stop="showAnswers = !showAnswers"
             >
               Ответы
             </v-btn>
 
             <v-btn
               rounded="pill"
-              variant="elevated"
+              variant="tonal"
               v-show="(path == '/inbox') && (task.answers.length !== 0)"
-              color="green"
-              @click="showLastAns = !showLastAns"
+              color="blue"
+              @click.stop="showLastAns = !showLastAns"
             >
               Последний ответ
             </v-btn>
 
             <v-btn
               rounded="pill"
-              variant="elevated"
+              variant="tonal"
               v-show="path == '/inbox'"
-              color="green"
-              @click="showCreateAns = !showCreateAns"
+              color="blue"
+              @click.stop="showCreateAns = !showCreateAns"
             >
               Добавить ответ
             </v-btn>
-            <!-- <v-btn @click="showEdit = !showEdit">{{ btnText }}</v-btn> -->
+            <!-- <v-btn @click.stop="showEdit = !showEdit">{{ btnText }}</v-btn> -->
           </div>
         </template>
       </v-list-item>
@@ -243,6 +250,10 @@ import LastAnswerComponent from '../answer/LastAnswerComponent.vue';
             lastAnswer() {
               if(this.task.answers.length !== 0) return this.task.answers[this.task.answers.length - 1];
               else return { title: null, body: null, files: [] };
+            },
+            beginDueDate() {
+              return `${new Date(this.task.beginDate).toLocaleDateString("ru-RU", { month: 'short', day: 'numeric' })} - ` +
+                `${new Date(this.task.dueDate).toLocaleDateString("ru-RU", { month: 'short', day: 'numeric' })}`;
             },
         },
         components: {

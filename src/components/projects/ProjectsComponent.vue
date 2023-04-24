@@ -51,8 +51,8 @@ export default {
         const userUID = user.uid;
         console.log("Параметры роута: ");
         console.log(this.$route.params);
-        await store.dispatch('teamM/queryTeams', { userUID: userUID });
-        await store.dispatch('projectM/queryProjects', { userUID: userUID });
+        await store.dispatch('teamM/queryTeams', { userUID: userUID, userRoles: user.roles });
+        await store.dispatch('projectM/queryProjects', { userUID: userUID, userRoles: user.roles });
     }
 }
 </script>

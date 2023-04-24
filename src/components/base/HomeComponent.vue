@@ -47,7 +47,7 @@
               </v-btn-toggle>
             </v-card-item>
             <v-card-item>
-              <InboxComponent v-if="toggleValue === 'toMe'" />
+              <InboxListComponent v-if="toggleValue === 'toMe'" />
               <TasksFromMeComponent v-if="toggleValue === 'fromMe'" />
             </v-card-item>
           </v-card>
@@ -96,7 +96,7 @@
 <script>
 import store from '@/plugins/store';
 import { mapGetters } from 'vuex';
-import InboxComponent from '../task/InboxComponent.vue';
+import InboxListComponent from '../task/InboxListComponent.vue';
 import TasksFromMeComponent from '../task/TasksFromMeComponent.vue';
 import TeamsComponent from '../team/TeamsComponent.vue';
 import ProjectsComponent from '../projects/ProjectsComponent.vue';
@@ -123,14 +123,13 @@ export default {
     //sortedTasks: store.getters['taskM/getSortedUserTasks'](this.selectedField),
   },
   components: {
-    InboxComponent,
+    InboxListComponent,
     TasksFromMeComponent,
     TeamsComponent,
     ProjectsComponent
 },
   async created() {
     const user = store.getters['authM/getUser'];
-    const userUID = user.uid;
     this.name = user.name;
     // console.log(user);
     console.log(store.getters['authM/getToken']);
@@ -138,9 +137,10 @@ export default {
     await store.dispatch('taskM/getStatuses');
     await store.dispatch('taskM/getProgress');
     await store.dispatch('taskM/getDifficulty');
-    await store.dispatch('teamM/queryTeams', { userUID: userUID });
-    await store.dispatch('projectM/queryProjects', { userUID: userUID });
-    await store.dispatch('taskM/queryTasksToMe', { userUID: userUID });
+    await store.dispatch('teamM/queryTeams', { userUID: user.uid, userRoles: user.roles });
+    console.log(user.roles);
+    await store.dispatch('projectM/queryProjects', { userUID: user.uid, userRoles: user.roles });
+    await store.dispatch('taskM/queryTasksToMe', { userUID: user.uid });
   }
 }
 

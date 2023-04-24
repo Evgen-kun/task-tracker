@@ -12,6 +12,11 @@ export const TeamsQueryAPI = {
         return QueryAPIInstance.get(url);
     },
 
+    getTeamsWithMe(userUID) {
+        const url = `http://localhost/drupal/web/jsonapi/node/team?include=field_member.user_picture&filter[field_member.id]=${userUID}&fields[node--team]=id,title,body,field_member&fields[user--user]=id,display_name,user_picture`;
+        return QueryAPIInstance.get(url);
+    },
+
     getAllUsers() {
         const url = `http://localhost/drupal/web/jsonapi/user/user?include=user_picture&fields[user--user]=drupal_internal__uid,display_name,user_picture&fields[file--file]=uri`;
         return QueryAPIInstance.get(url);

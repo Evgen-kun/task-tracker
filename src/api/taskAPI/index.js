@@ -8,7 +8,7 @@ export const QueryAPI = {
      * @returns {Promise<AxiosResponse<any>>}
      */
     getTasks(userUID) {
-        const url = `http://localhost/drupal/web/jsonapi/node/task?include=uid.user_picture&filter[field_ispolnitel.id]=${userUID}&fields[node--task]=id,title,body,uid,field_status,field_difficulty_level,field_begin_date,field_due_date,field_project&fields[user--user]=id,display_name,drupal_internal__uid,user_picture&fields[file--file]=id,uid,uri`;
+        const url = `http://localhost/drupal/web/jsonapi/node/task?include=uid.user_picture,field_project&filter[field_ispolnitel.id]=${userUID}&fields[node--task]=id,title,body,uid,field_status,field_difficulty_level,field_begin_date,field_due_date,field_project&fields[user--user]=id,display_name,drupal_internal__uid,user_picture&fields[file--file]=id,uid,uri`;
         return QueryAPIInstance.get(url);
     },
 

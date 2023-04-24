@@ -32,7 +32,7 @@ import { mapGetters } from 'vuex';
 import TaskComponent from './TaskComponent.vue';
   
 export default {
-    name: 'InboxComponent',
+    name: 'InboxListComponent',
     data() {
       return {
         //tasks: [],

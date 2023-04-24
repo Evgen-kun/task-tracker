@@ -45,7 +45,7 @@ export default {
         const user = store.getters['authM/getUser'];
         const userUID = user.uid;
         await store.dispatch('userM/usersQuery');
-        await store.dispatch('teamM/queryTeams', { userUID: userUID });
+        await store.dispatch('teamM/queryTeams', { userUID: userUID, userRoles: user.roles });
     }
 }
 </script>

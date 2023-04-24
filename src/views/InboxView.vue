@@ -1,19 +1,22 @@
 <template>
     <v-container class="inbox">
       <v-responsive class="d-flex align-center text-center fill-height">
-        <InboxComponent />
+        <!-- <InboxListComponent /> -->
+        <InboxKanbanComponent />
       </v-responsive>
     </v-container>
 </template>
 
 <script>
 // @ is an alias to /src
-import InboxComponent from "@/components/task/InboxComponent.vue";
+// import InboxListComponent from "@/components/task/InboxListComponent.vue";
+import InboxKanbanComponent from '@/components/task/InboxKanbanComponent.vue';
 
 export default {
     name: "InboxView",
     components: {
-        InboxComponent,
+      // InboxListComponent,
+      InboxKanbanComponent
     },
 };
 </script>

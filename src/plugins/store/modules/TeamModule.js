@@ -46,8 +46,12 @@ export const TeamModule = {
     },
 
     actions: {
-        async queryTeams({ commit, rootGetters }, { userUID }) {
-            const res = await TeamsQueryAPI.getTeams(userUID);
+        async queryTeams({ commit, rootGetters }, { userUID, userRoles }) {
+            var res;
+            if((!userRoles.includes('manager')) && (!userRoles.includes('administrator')))
+                res = await TeamsQueryAPI.getTeamsWithMe(userUID);
+            else res = await TeamsQueryAPI.getTeams(userUID);
+
             const allUsers = rootGetters['userM/getUsers'];
             
             console.log(allUsers);

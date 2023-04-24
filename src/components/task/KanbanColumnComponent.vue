@@ -1,39 +1,46 @@
 <template>
-    <div class="mr-3">
-        <v-card
-            min-width="350px"
-            max-width="400px"
-            color="rgba(255, 255, 255, 0.4)"
+    <v-card
+        min-width="400px"
+        width="100%"
+        class="mr-3"
+        color="rgba(255, 255, 255, 0.4)"
+    >
+        <v-toolbar
+        color="deep-purple-accent-3"
+        density="compact"
+        dark
         >
-            <v-toolbar
-            color="deep-purple-accent-3"
-            density="compact"
-            dark
-            >
-                <v-toolbar-title>
-                    {{ title }}
-                </v-toolbar-title>
+            <v-toolbar-title>
+                {{ title }}
+            </v-toolbar-title>
 
-                <!-- <v-spacer></v-spacer>
+            <!-- <v-spacer></v-spacer>
 
-                <v-btn icon @click="">
-                    <v-icon>mdi-plus</v-icon>
-                </v-btn> -->
-            </v-toolbar>
+            <v-btn icon @click="">
+                <v-icon>mdi-plus</v-icon>
+            </v-btn> -->
+        </v-toolbar>
 
-            <draggable v-model="myList" class="list-group" group="tasks" tag="transition" item-key="id">
-                <template #item="{ element: task }">
-                    <v-card-item>
-                        <TaskComponent
-                            v-bind:task="task"
-                            v-bind:user="task.executor"
-                            v-bind:subtitle="subtitle">
-                        </TaskComponent>
-                    </v-card-item>
-                </template>
-            </draggable>
-        </v-card>
-    </div>
+        <draggable v-if="this.$route.name === 'dashboard'" v-model="myList" class="list-group" group="tasks" tag="transition" item-key="id">
+            <template #item="{ element: task }">
+                <v-card-item>
+                    <TaskComponent
+                        v-bind:task="task"
+                        v-bind:user="task.executor"
+                        v-bind:subtitle="subtitle">
+                    </TaskComponent>
+                </v-card-item>
+            </template>
+        </draggable>
+        <v-card-item v-else>
+            <TaskComponent
+                v-for="task in tasks"
+                v-bind:task="task"
+                v-bind:user="task.author"
+                v-bind:subtitle="subtitleAuthor">
+            </TaskComponent>
+        </v-card-item>
+    </v-card>
 </template>
   
 <script>
@@ -46,6 +53,7 @@
     data() {
       return {
         subtitle: "Исполнитель",
+        subtitleAuthor: "Автор"
       }
     },
     props: {

@@ -23,7 +23,6 @@ export const ProjectModule = {
 
         addProject(state, project) {
             state.projects.push(project);
-            //localStorage.setItem('projects', state.projects);
         },
 
         editProject(state, newProject) {
@@ -40,13 +39,19 @@ export const ProjectModule = {
             state.projects.forEach((project, i) => {
                 if (project.id === projectID) state.projects.splice(i, 1);
             });
-            //localStorage.setItem('projects', state.projects);
         },
     },
 
     actions: {
-        async queryProjects({ commit, rootGetters, dispatch }, { userUID }) {
-            const res = await ProjectsQueryAPI.getProjectsByUserUID(userUID);
+        async queryProjects({ commit, rootGetters, dispatch }, { userUID, userRoles }) {
+            var res;
+            if((!userRoles.includes('manager')) && (!userRoles.includes('administrator'))) {
+                const teamsID = rootGetters['teamM/getTeams'].map(team => team.id);
+                res = await ProjectsQueryAPI.getProjectsByTeamsID(teamsID);
+            }
+            else res = await ProjectsQueryAPI.getProjectsByUserUID(userUID);
+
+            // const res = await ProjectsQueryAPI.getProjectsByUserUID(userUID);
             console.log(res);
 
             const projects = [];
@@ -108,6 +113,19 @@ export const ProjectModule = {
 
             console.log(projects);
             commit('setProjects', projects);
+        },
+
+        async queryProject({ commit, rootGetters, dispatch }, { projectID }) {
+            var res = await ProjectsQueryAPI.getProject(projectID);
+            console.log(res);
+
+            const project = new Project();
+            project.id = item.id;
+            project.title = item.attributes.title;
+            project.body = (item.attributes.body !== null)? item.attributes.body.value : null;
+            project.team = (!!item.relationships.field_team?.data?.id)? rootGetters['teamM/getTeamByID'](item.relationships.field_team.data.id) : null;
+
+            commit('addProject', project);
         },
 
         getUser({ rootGetters }, { userUID }) {

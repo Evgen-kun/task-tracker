@@ -4,6 +4,16 @@ import store from "@/plugins/store";
 export const ProjectsQueryAPI = {
     /**
      * 
+     * @param {string} teamID
+     * @returns {Promise<AxiosResponse<any>>}
+     */
+    getProject(projectID) {
+        const url = `http://localhost/drupal/web/jsonapi/node/project?filter[id]=${projectID}&fields[node--project]=id,title,body,field_team`;
+        return QueryAPIInstance.get(url);
+    },
+
+    /**
+     * 
      * @param {string} userUID
      * @returns {Promise<AxiosResponse<any>>}
      */
@@ -18,7 +28,19 @@ export const ProjectsQueryAPI = {
      * @returns {Promise<AxiosResponse<any>>}
      */
     getProjectsByTeamID(teamID) {
-        const url = `http://localhost/drupal/web/jsonapi/node/team?filter[id]=${teamID}&fields[node--team]=id,title,body,field_member,field_project&include=field_project.field_task&fields[node--project]=id,title,body,field_task&fields[node--task]=id,title,body,field_ispolnitel,field_status`;
+        const url = `http://localhost/drupal/web/jsonapi/node/project?filter[field_team.id]=${teamID}&fields[node--project]=id,title,body,field_team`;
+        return QueryAPIInstance.get(url);
+    },
+
+    /**
+     * 
+     * @param {Array} teamsID
+     * @returns {Promise<AxiosResponse<any>>}
+     */
+    getProjectsByTeamsID(teamsID) {
+        const str = teamsID.reduce(
+            (acc, item, i) => acc + `&filter[teamsFilter][condition][value][${i + 1}]=${item}`, '');
+        const url = `http://localhost/drupal/web/jsonapi/node/project?fields[node--project]=id,title,body,field_team&filter[teamsFilter][condition][path]=field_team.id&filter[teamsFilter][condition][operator]=IN${str}`;
         return QueryAPIInstance.get(url);
     },
 

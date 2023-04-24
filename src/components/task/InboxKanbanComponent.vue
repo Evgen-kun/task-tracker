@@ -48,7 +48,7 @@
             v-for="column in columns"
             v-bind:key="column.id"
             v-bind:title="column.title"
-            v-bind:tasks="tasks.filter(task => task.status === column.title)"
+            v-bind:tasks="filteredTasks.filter(task => (task.class === column.title) && (task.status !== 'Выполнено'))"
         ></KanbanColumnComponent>
     </div>
 </template>
@@ -66,15 +66,19 @@
         columns: [
             {
                 id: 1,
-                title: "Не выполнено"
+                title: "Просроченные"
             },
             {
                 id: 2,
-                title: "Выполняется"
+                title: "Сегодня - 7 дней"
             },
             {
                 id: 3,
-                title: "Выполнено"
+                title: "8 - 30 дней"
+            },
+            {
+                id: 4,
+                title: "Больше 30 дней"
             },
         ],
       }
@@ -111,6 +115,18 @@
             const ans = filteredTasks.concat(tasksWithProjects.filter(task => filter.includes(task.project.id)));
             console.log(ans);
             return ans;
+        },
+        filteredTasks() {
+            const tasks = this.tasks;
+            tasks.forEach(task => {
+                if(new Date(task.dueDate) < new Date()) task.class = 'Просроченные';
+                if((new Date(task.dueDate) >= new Date()) &&
+                    (new Date(task.dueDate) < new Date().setDate(new Date().getDate() + 7))) task.class = 'Сегодня - 7 дней';
+                if((new Date(task.dueDate) >= new Date().setDate(new Date().getDate() + 8)) &&
+                    (new Date(task.dueDate) < new Date().setDate(new Date().getDate() + 30))) task.class = '8 - 30 дней';
+                if(new Date(task.dueDate) >= new Date().setDate(new Date().getDate() + 31)) task.class = 'Больше 30 дней';
+            });
+            return tasks;
         },
     },
     components: {

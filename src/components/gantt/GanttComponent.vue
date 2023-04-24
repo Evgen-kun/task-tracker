@@ -54,13 +54,13 @@ import {
 import { Bar } from 'vue-chartjs';
 import 'chartjs-adapter-date-fns';
 // import annotationPlugin from 'chartjs-plugin-annotation';
-// import { 
-//   todayLine,
-//   assignedTasks,
-//   status,
-//   weekend,
+import { 
+  todayLine,
+  assignedTasks,
+  status,
+  weekend,
 //   // progressBar
-// } from './plugins/chartPlugins'
+} from './plugins/chartPlugins'
 
 
 ChartJS.register(
@@ -76,10 +76,10 @@ ChartJS.register(
   // status,
   // weekend,
   // annotationPlugin
-  // todayLine,
-  // assignedTasks,
-  // status,
-  // weekend,
+  todayLine,
+  assignedTasks,
+  status,
+  weekend,
   // progressBar
 );
 
@@ -189,7 +189,7 @@ export default {
           }
         },
         plugins: {
-          // plugins: [todayLine, assignedTasks, status, weekend, /*progressBar*/],
+          plugins: [todayLine, assignedTasks, status, weekend, /*progressBar*/],
           weekend: {
             weekendColor: 'rgba(102, 102, 102, 0.2)'
           },

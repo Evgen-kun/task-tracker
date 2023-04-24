@@ -13,7 +13,7 @@
     ></v-img>-->
 
     <v-img
-      src='@/assets/plus-icon-plus.png'
+      src='../assets/plus-icon-plus.png'
       class="align-end"
       height="200px"
     >

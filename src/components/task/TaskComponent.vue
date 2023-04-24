@@ -130,7 +130,7 @@
               Ответы
             </v-btn>
 
-            <v-btn
+            <!-- <v-btn
               rounded="pill"
               variant="tonal"
               v-show="(path == '/inbox') && (task.answers.length !== 0)"
@@ -138,7 +138,7 @@
               @click.stop="showLastAns = !showLastAns"
             >
               Последний ответ
-            </v-btn>
+            </v-btn> -->
 
             <v-btn
               rounded="pill"

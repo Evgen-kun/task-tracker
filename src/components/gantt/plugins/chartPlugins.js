@@ -46,7 +46,7 @@ export const assignedTasks = {
         
         data.datasets[0].data.forEach((item, index) => {
             if(index % 2 === 1) { return; }
-            ctx.fillText(item.name, 10, y.getPixelForValue(index / 2));
+            ctx.fillText(item.name, 40, y.getPixelForValue(index / 2));
         });
         // console.log(data.datasets[0].data[0].name);
         ctx.fillText('Исполнители', 10, top - 15);
@@ -74,15 +74,15 @@ export const status = {
             if(index % 2 === 1) { return; }
             ctx.beginPath();
             ctx.fillStyle = icons.get(item.status).color;
-            ctx.arc(left - 200, y.getPixelForValue(index / 2), 12, 0, angle * 360, false);
+            ctx.arc(left - 140, y.getPixelForValue(index / 2), 12, 0, angle * 360, false);
             ctx.closePath();
             ctx.fill();
             ctx.fillStyle = 'white';
-            ctx.fillText(icons.get(item.status).icon, left - 200, y.getPixelForValue(index / 2));
+            ctx.fillText(icons.get(item.status).icon, left - 140, y.getPixelForValue(index / 2));
         });
         ctx.font = 'bolder 12px sans-serif';
         ctx.fillStyle = 'black';
-        ctx.fillText('Статус', left - 200, top - 15);
+        ctx.fillText('Статус', left - 140, top - 15);
         ctx.restore();
     }
 }

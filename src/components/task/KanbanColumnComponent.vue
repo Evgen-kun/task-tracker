@@ -35,6 +35,7 @@
         <v-card-item v-else>
             <TaskComponent
                 v-for="task in tasks"
+                v-bind:key="task.id"
                 v-bind:task="task"
                 v-bind:user="task.author"
                 v-bind:subtitle="subtitleAuthor">
@@ -45,7 +46,6 @@
   
 <script>
   import draggable from 'vuedraggable';
-  import { mapGetters, mapState } from 'vuex';
   import TaskComponent from './TaskComponent.vue';
   //import EditorComponent from './EditorComponent.vue';
   
@@ -74,14 +74,16 @@
     //     myTasks: 'tasksFromMe',
     //   }),
       myTasks() { 
-        return this.$store.getters['taskM/getTasksFromMeByProjectID'](this.$route.params.projectID); 
+        // return this.$store.getters['taskM/getTasksFromMeByProjectID'](this.$route.params.projectID); 
+        return this.$store.getters['taskM/getTasksFromProjectsByProjectID'](this.$route.params.projectID);
       },
       myList: {
         get() {
             return this.myTasks.filter(task => task.status === this.title);
         },
         set(value) {
-            this.$store.dispatch('taskM/replaceTasksFromMe', { tasks: value, status: this.title });
+            // this.$store.dispatch('taskM/replaceTasksFromMe', { tasks: value, status: this.title });
+            this.$store.dispatch('taskM/replaceTasks', { tasks: value, status: this.title, type: 'fromProjects' });
             // this.$store.commit('taskM/replaceTasksFromMe', { tasks: value, title: this.title });
         }
       },

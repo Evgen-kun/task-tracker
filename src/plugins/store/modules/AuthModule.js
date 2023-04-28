@@ -94,7 +94,7 @@ export const AuthModule = {
         },
 
         async onLogout({ commit }) {
-            const res = await AuthAPI.logout();
+            await AuthAPI.logout();
 
             commit('deleteUser');
             commit('deleteToken');

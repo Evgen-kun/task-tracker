@@ -4,11 +4,12 @@
             <v-col v-for="project in getFilteredProjects" :key="project.id">
                 <ProjectComponent
                     v-bind:project="project"
-                    v-bind:allTeams="teams">
+                    v-bind:allTeams="teams"
+                    v-bind:currentUser="currentUser">
                 </ProjectComponent>
             </v-col>
 
-            <v-col>
+            <v-col v-if="currentUser.roles.includes('administrator') || currentUser.roles.includes('manager')">
                 <CreateProjectComponent :allTeams="teams"/>
             </v-col>
 
@@ -26,7 +27,7 @@ export default {
     name: 'ProjectsComponent',
     data() {
         return {
-
+            
         }
     },
     methods: {
@@ -41,6 +42,9 @@ export default {
             if(this.$route.path === '/') return store.getters['projectM/getProjects'];
             else return store.getters['projectM/getProjectsByTeamID'](this.$route.params.teamID);
         },
+        currentUser() {
+            return store.getters['authM/getUser'];
+        }
     },
     components: {
         ProjectComponent,
@@ -48,11 +52,10 @@ export default {
     },
     async created() {
         const user = store.getters['authM/getUser'];
-        const userUID = user.uid;
         console.log("Параметры роута: ");
         console.log(this.$route.params);
-        await store.dispatch('teamM/queryTeams', { userUID: userUID, userRoles: user.roles });
-        await store.dispatch('projectM/queryProjects', { userUID: userUID, userRoles: user.roles });
+        await store.dispatch('teamM/queryTeams', { userUID: user.uid, userRoles: user.roles });
+        await store.dispatch('projectM/queryProjects', { userUID: user.uid, userRoles: user.roles });
     }
 }
 </script>

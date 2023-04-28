@@ -23,6 +23,7 @@
       <v-menu location="end">
         <template v-slot:activator="{ props }">
           <v-btn
+            v-if="currentUser.roles.includes('manager') || currentUser.roles.includes('administrator')"
             v-bind="props"
             size="small"
             color="surface-variant" 
@@ -46,9 +47,9 @@
     </v-menu>
     </v-card-actions>
 
-    <v-card-title v-text="team.title"></v-card-title>
+    <v-card-title>{{ team.title }}</v-card-title>
 
-    <v-card-subtitle v-text="team.body"></v-card-subtitle>
+    <v-card-subtitle>{{ team.body }}</v-card-subtitle>
 
     <v-dialog
       v-model="showEdit"
@@ -154,7 +155,7 @@ export default {
                 v => v.length <= 30 || 'Название должно быть меньше 30 символов',
             ],
             textRules: [
-                v => (!!v)? v.length <= 300 : true || 'Описание должно быть меньше 300 символов',
+                v => (v)? v.length <= 300 : true || 'Описание должно быть меньше 300 символов',
             ],
         }
     },
@@ -167,6 +168,10 @@ export default {
         type: Array,
         required: true
       },
+      currentUser: {
+        type: Object,
+        required: true
+      }
     },
     methods: {
         async editTeam() {

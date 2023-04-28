@@ -17,6 +17,13 @@ export const QueryAPI = {
         return QueryAPIInstance.get(url);
     },
 
+    getFilteredTasks(projectsID) {
+        const str = projectsID.reduce(
+            (acc, item, i) => acc + `&filter[projectsFilter][condition][value][${i + 1}]=${item}`, '');
+        const url = `http://localhost/drupal/web/jsonapi/node/task?include=uid.user_picture,field_ispolnitel.user_picture&fields[node--task]=id,title,body,field_ispolnitel,field_status,field_difficulty_level,field_begin_date,field_due_date,field_project,uid&fields[user--user]=id,display_name,drupal_internal__uid,user_picture&fields[file--file]=id,uri&filter[projectsFilter][condition][path]=field_project.id&filter[projectsFilter][condition][operator]=IN${str}`;
+        return QueryAPIInstance.get(url);
+    },
+
     getStatuses() {
         const url = `http://localhost/drupal/web/jsonapi/taxonomy_term/status?fields[taxonomy_term--status]=id,name`;
         return QueryAPIInstance.get(url);

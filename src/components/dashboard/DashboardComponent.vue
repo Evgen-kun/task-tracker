@@ -49,13 +49,14 @@ export default {
         // }),
     },
     async created() {
-        const user = store.getters['authM/getUser'];
-        const userUID = user.uid;
-        await store.dispatch('taskM/queryTasksFromMe', { userUID: userUID });
+        // const user = store.getters['authM/getUser'];
+        // await store.dispatch('taskM/queryTasksFromMe', { userUID: userUID });
+        await store.dispatch('taskM/queryTasksFromProjects');
         await store.dispatch('userM/usersQuery');
 
         // this.tasks = store.getters['taskM/getTasksFromMe'];
-        this.tasks = store.getters['taskM/getTasksFromMeByProjectID'](this.$route.params.projectID);
+        // this.tasks = store.getters['taskM/getTasksFromMeByProjectID'](this.$route.params.projectID);
+        this.tasks = store.getters['taskM/getTasksFromProjectsByProjectID'](this.$route.params.projectID);
 
       
         this.items = [

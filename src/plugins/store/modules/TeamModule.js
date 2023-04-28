@@ -57,7 +57,7 @@ export const TeamModule = {
             console.log(allUsers);
 
             const teams = [];
-            res.data.data.forEach((item, i) => {
+            res.data.data.forEach((item) => {
                 const team = new Team();
                 team.id = item.id;
                 team.title = item.attributes.title;

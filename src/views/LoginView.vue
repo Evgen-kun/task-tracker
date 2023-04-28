@@ -9,6 +9,7 @@
       <v-container>
         <v-text-field
           v-model="login"
+          class="loginField"
           :rules="loginRules"
           :counter="15"
           label="Логин"
@@ -17,6 +18,7 @@
             
         <v-text-field
           v-model="password"
+          class="passwordField"
           :append-icon="showPass ? 'mdi-eye' : 'mdi-eye-off'"
           :rules="[passwordRules.required, passwordRules.min]"
           :type="showPass ? 'text' : 'password'"
@@ -28,7 +30,8 @@
         ></v-text-field>
 
         <v-btn 
-          block 
+          block
+          class="loginButton"
           type="submit" 
           color="info" 
           rounded="lg" 
@@ -52,9 +55,8 @@
 </template>
 
 <script>
-    import { RouterLink, RouterView } from 'vue-router'
     export default {
-        //name: "login",
+        name: "LoginView",
         data() {
             return {
                 showPass: false,

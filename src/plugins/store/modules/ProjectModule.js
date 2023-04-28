@@ -43,7 +43,7 @@ export const ProjectModule = {
     },
 
     actions: {
-        async queryProjects({ commit, rootGetters, dispatch }, { userUID, userRoles }) {
+        async queryProjects({ commit, rootGetters }, { userUID, userRoles }) {
             var res;
             if((!userRoles.includes('manager')) && (!userRoles.includes('administrator'))) {
                 const teamsID = rootGetters['teamM/getTeams'].map(team => team.id);
@@ -55,14 +55,14 @@ export const ProjectModule = {
             console.log(res);
 
             const projects = [];
-            res.data.data.forEach((item, i) => { //TODO Поменять сам запрос в API
+            res.data.data.forEach((item) => { //TODO Поменять сам запрос в API
                 const project = new Project();
                 project.id = item.id;
                 project.title = item.attributes.title;
                 project.body = (item.attributes.body !== null)? item.attributes.body.value : null;
                 // const projectTasksID = item.relationships.field_task.data.map(task => task.id);
                 // project.tasks = allTasks.filter(task => projectTasksID.includes(task.id));
-                project.team = (!!item.relationships.field_team?.data?.id)? rootGetters['teamM/getTeamByID'](item.relationships.field_team.data.id) : null;
+                project.team = (item.relationships.field_team?.data?.id)? rootGetters['teamM/getTeamByID'](item.relationships.field_team.data.id) : null;
 
                 // res.data.included.forEach((itemInc) => {
                 //     if(itemInc.type === 'node--task') {
@@ -115,22 +115,21 @@ export const ProjectModule = {
             commit('setProjects', projects);
         },
 
-        async queryProject({ commit, rootGetters, dispatch }, { projectID }) {
+        async queryProject({ commit, rootGetters }, { projectID }) {
             var res = await ProjectsQueryAPI.getProject(projectID);
             console.log(res);
 
             const project = new Project();
-            project.id = item.id;
-            project.title = item.attributes.title;
-            project.body = (item.attributes.body !== null)? item.attributes.body.value : null;
-            project.team = (!!item.relationships.field_team?.data?.id)? rootGetters['teamM/getTeamByID'](item.relationships.field_team.data.id) : null;
+            project.id = res.data.data.id;
+            project.title = res.data.data.attributes.title;
+            project.body = (res.data.data.attributes.body !== null)? res.data.data.attributes.body.value : null;
+            project.team = (res.data.data.relationships.field_team?.data?.id)? rootGetters['teamM/getTeamByID'](res.data.data.relationships.field_team.data.id) : null;
 
             commit('addProject', project);
         },
 
         getUser({ rootGetters }, { userUID }) {
             const allUsers = rootGetters['userM/getUsers'];
-            console.log(res);
 
             const user = allUsers.find(user => user.uid === userUID);
 
@@ -148,7 +147,7 @@ export const ProjectModule = {
             project.id = res.data.data.id;
             project.title = res.data.data.attributes.title;
             project.body = (res.data.data.attributes.body !== null)? res.data.data.attributes.body.value : null;
-            project.team = (!!res.data.data.relationships.field_team?.data?.id)? 
+            project.team = (res.data.data.relationships.field_team?.data?.id)? 
                 rootGetters['teamM/getTeamByID'](res.data.data.relationships.field_team.data.id) : null;
             // project.users = allUsers.filter(user => usersUID.includes(user.id));
 
@@ -166,7 +165,7 @@ export const ProjectModule = {
             const project = getters.getProjectByID(id);
             project.title = res.data.data.attributes.title;
             project.body = (res.data.data.attributes.body !== null)? res.data.data.attributes.body.value : null;
-            project.team = (!!res.data.data.relationships.field_team?.data?.id)? 
+            project.team = (res.data.data.relationships.field_team?.data?.id)? 
                 rootGetters['teamM/getTeamByID'](res.data.data.relationships.field_team.data.id) : null;
 
             console.log(project);

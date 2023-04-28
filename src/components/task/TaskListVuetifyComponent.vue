@@ -92,7 +92,6 @@
 </template>
   
 <script>
-import { mapGetters } from 'vuex';
 import store from '@/plugins/store';
 import CreateTaskDialogComponent from './actions/dialog/CreateTaskDialogComponent.vue';
 import EditTaskDialogComponent from './actions/dialog/EditTaskDialogComponent.vue';
@@ -212,7 +211,9 @@ export default {
       //   tasks: 'getTasksFromMe',
       // }),
       tasks() { 
-        return store.getters['taskM/getTasksFromMeByProjectID'](this.$route.params.projectID); 
+        // return store.getters['taskM/getTasksFromMeByProjectID'](this.$route.params.projectID); 
+        console.log(store.getters['taskM/getTasksFromProjectsByProjectID'](this.$route.params.projectID));
+        return store.getters['taskM/getTasksFromProjectsByProjectID'](this.$route.params.projectID);
       },
       formTitle () {
         return this.editedIndex === -1 ? 'Новая задача' : 'Редактирование задачи'
@@ -231,9 +232,9 @@ export default {
       },
     },
     async created() {
-        const user = store.getters['authM/getUser'];
-        const userUID = user.uid;
-        await store.dispatch('taskM/queryTasksFromMe', { userUID: userUID });
+        // const user = store.getters['authM/getUser'];
+        // await store.dispatch('taskM/queryTasksFromMe', { userUID: user.uid });
+        await store.dispatch('taskM/queryTasksFromProjects');
         await store.dispatch('userM/usersQuery');
     }
 }

@@ -1,7 +1,7 @@
 <template>
   <v-card
     v-if="!show"
-    class="mx-auto mt-3 elevation-0"
+    class="line-task mx-auto mt-3 elevation-0"
     :color="color.get(task.difficulty)"
     max-width="750px"
     min-width="300px"
@@ -15,6 +15,7 @@
     <!-- <v-list-item class="w-100"> -->
     <v-progress-circular
         v-if="(task.progress !== 0) && (task.progress !== 100)"
+        class="line-task-progress-circular"
         :rotate="360"
         :width="7"
         :model-value="task.progress"
@@ -25,7 +26,10 @@
     <!-- </v-list-item> -->
   </v-card-item>
 
-    <v-card-title class="text-h5 py-4 shrink-block" style="text-align:start" >
+    <v-card-title 
+      class="line-task-title text-h5 py-4 shrink-block" 
+      style="text-align:start" 
+    >
       <!-- <v-list-item class="w-100"> -->
         {{ task.title }}
       <!-- </v-list-item> -->
@@ -33,11 +37,12 @@
       
     <v-spacer></v-spacer>
 
-    <v-card-item class="text-h6">{{ user.name }}</v-card-item>
+    <v-card-item class="line-task-user-name text-h6">{{ user.name }}</v-card-item>
 
     <v-card-item>
       <!-- <v-list-item class="w-100"> -->
           <v-avatar
+            class="line-task-user-avatar"
             :image=user.picture.url
           ></v-avatar>
       <!-- </v-list-item> -->
@@ -48,7 +53,7 @@
 
   <v-card
     v-if="show"
-    class="mx-auto mt-3 elevation-0"
+    class="open-task mx-auto mt-3 elevation-0"
     :color="color.get(task.difficulty)"
     max-width="750px"
     min-width="300px"
@@ -60,6 +65,7 @@
     <template v-slot:prepend>
       <v-progress-circular
         v-if="(task.progress !== 0) && (task.progress !== 100)"
+        class="open-task-progress-circular"
         :rotate="360"
         :width="7"
         :model-value="task.progress"
@@ -83,11 +89,11 @@
         </v-chip>
     </template>
 
-    <v-card-text class="text-h4 py-2">
+    <v-card-text class="open-task-title text-h4 py-2">
       {{ task.title }}
     </v-card-text>
 
-    <v-card-text class="text-h5 py-2">
+    <v-card-text class="open-task-body text-h5 py-2">
       {{ task.body }}
     </v-card-text>
 
@@ -95,13 +101,14 @@
       <v-list-item class="w-100">
         <template v-slot:prepend>
           <v-avatar
+            class="open-task-user-avatar"
             :image=user.picture.url
           ></v-avatar>
         </template>
 
-        <v-list-item-title>{{ user.name }}</v-list-item-title>
+        <v-list-item-title class="open-task-user-name">{{ user.name }}</v-list-item-title>
 
-        <v-list-item-subtitle>{{ subtitle }}</v-list-item-subtitle>
+        <v-list-item-subtitle class="open-task-subtitle">{{ subtitle }}</v-list-item-subtitle>
 
         <template v-slot:append>
           <div>
@@ -246,6 +253,7 @@ import LastAnswerComponent from '../answer/LastAnswerComponent.vue';
               const progress = this.task.progress;
               if(progress === 100) return "mdi-check-circle-outline";
               if(progress === 0) return "mdi-alert-circle-outline";
+              return null;
             },
             lastAnswer() {
               if(this.task.answers.length !== 0) return this.task.answers[this.task.answers.length - 1];

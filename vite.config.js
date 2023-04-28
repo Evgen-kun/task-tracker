@@ -18,7 +18,10 @@ export default defineConfig({
     pluginRewriteAll(),
   ],
   test: {
-    environment: 'jsdom'
+    environment: 'jsdom',
+    deps: {
+      inline: ['vuetify']
+    },
   },
   define: { 'process.env': {} },
   resolve: {

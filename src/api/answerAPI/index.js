@@ -66,21 +66,21 @@ export const AnsQueryAPI = {
 
     async createFile(fileName, fileBody) {
         const url = `http://localhost/drupal/web/jsonapi/file/file`;
-        const data = {
-            data: {
-                type: "file--file",
-                meta: {
-                    description: ""
-                }
-            }
-        };
-        const data1 = Buffer.from(fileBody, 'binary');
+        // const data = {
+        //     data: {
+        //         type: "file--file",
+        //         meta: {
+        //             description: ""
+        //         }
+        //     }
+        // };
+        // const data1 = Buffer.from(fileBody, 'binary');
         PostQueryAPIInstance.defaults.headers['Accept'] = 'application/vnd.api+json';
         PostQueryAPIInstance.defaults.headers['Content-Type'] = 'application/octet-stream';
         PostQueryAPIInstance.defaults.headers['Content-Disposition'] = 'file; filename="' + fileName + '"';
         PostQueryAPIInstance.defaults.headers['Authorization'] = `Basic ${await store.getters['authM/getBasicToken']}`;
         PostQueryAPIInstance.defaults.headers['X-CSRF-Token'] = await store.getters['authM/getToken'];
-        return PostQueryAPIInstance.post(url, data1);
+        // return PostQueryAPIInstance.post(url, data1);
     },
 
 }

@@ -4,11 +4,12 @@
             <v-col v-for="team in teams" :key="team.id">
                 <TeamComponent
                     v-bind:team="team"
-                    v-bind:allUsers="users">
+                    v-bind:allUsers="users"
+                    v-bind:currentUser="currentUser">
                 </TeamComponent>
             </v-col>
 
-            <v-col>
+            <v-col v-if="currentUser.roles.includes('administrator') || currentUser.roles.includes('manager')" style="">
                 <CreateTeamComponent :allUsers="users"/>
             </v-col>
 
@@ -36,6 +37,9 @@ export default {
             teams: 'teamM/getTeams',
             users: 'userM/getUsers',
         }),
+        currentUser() {
+            return store.getters['authM/getUser'];
+        }
     },
     components: {
         TeamComponent,
@@ -43,9 +47,8 @@ export default {
     },
     async created() {
         const user = store.getters['authM/getUser'];
-        const userUID = user.uid;
         await store.dispatch('userM/usersQuery');
-        await store.dispatch('teamM/queryTeams', { userUID: userUID, userRoles: user.roles });
+        await store.dispatch('teamM/queryTeams', { userUID: user.uid, userRoles: user.roles });
     }
 }
 </script>

@@ -30,7 +30,8 @@ export const TaskModule = {
         getTasksFromMeByProjectID: (state) => (id) => { return state.tasksFromMe.filter(task => task.project?.id === id) },
 
         getTasksFromProjects: (state) => state.tasksFromProjects,
-        getTasksFromProjectsByID: (state) => (id) => state.tasksFromProjects.filter(task => task.id),
+        getTaskFromProjectsByID: (state) => (id) => { return state.tasksFromProjects.find(task => task.id === id) },
+        getTasksFromProjectsByProjectID: (state) => (id) => state.tasksFromProjects.filter(task => task.project.id === id),
 
         getUsers: (state) => state.users,
         getStatuses: (state) => state.statuses,
@@ -50,8 +51,12 @@ export const TaskModule = {
             state.tasksFromMe = tasks;
         },
 
+        setTasksFromProjects(state, tasks) {
+            state.tasksFromProjects = tasks;
+        },
+
         replaceTasks(state, { tasks, title }) {
-            tasks.forEach((task, i) => {
+            tasks.forEach((task) => {
                 task.status = title;
                 state.tasksToMe.forEach((myTask, j) => {
                     if (task.id === myTask.id) state.tasksToMe[j] = task;
@@ -60,10 +65,19 @@ export const TaskModule = {
         },
 
         replaceTasksFromMe(state, { tasks, title }) {
-            tasks.forEach((task, i) => {
+            tasks.forEach((task) => {
                 task.status = title;
                 state.tasksFromMe.forEach((taskFromMe, j) => {
                     if (task.id === taskFromMe.id) state.tasksFromMe[j] = task;
+                });
+            });
+        },
+
+        replaceTasksFromProjects(state, { tasks, title }) {
+            tasks.forEach((task) => {
+                task.status = title;
+                state.tasksFromProjects.forEach((taskFromProjects, j) => {
+                    if (task.id === taskFromProjects.id) state.tasksFromProjects[j] = task;
                 });
             });
         },
@@ -98,9 +112,19 @@ export const TaskModule = {
             state.tasksFromMe.push(task);
         },
 
+        addTaskFromProjects(state, task) {
+            state.tasksFromProjects.push(task);
+        },
+
         editTaskFromMe(state, newTask) {
             state.tasksFromMe.forEach((task, i) => {
                 if (task.id === newTask.id) state.tasksFromMe[i] = newTask;
+            });
+        },
+
+        editTaskFromProjects(state, newTask) {
+            state.tasksFromProjects.forEach((task, i) => {
+                if (task.id === newTask.id) state.tasksFromProjects[i] = newTask;
             });
         },
 
@@ -110,6 +134,10 @@ export const TaskModule = {
 
         deleteTasksFromMe(state) {
             state.tasksFromMe = null;
+        },
+
+        deleteTasksFromProjects(state) {
+            state.tasksFromProjects = null;
         },
 
         deleteUsers(state) {
@@ -139,6 +167,12 @@ export const TaskModule = {
                 if (task.id === taskID) state.tasksFromMe.splice(i, 1);
             });
         },
+
+        deleteTaskFromProjects(state, taskID) {
+            state.tasksFromProjects.forEach((task, i) => {
+                if (task.id === taskID) state.tasksFromProjects.splice(i, 1);
+            });
+        },
     },
 
     actions: {
@@ -149,7 +183,7 @@ export const TaskModule = {
             // console.log(comments);
 
             const tasks = [];
-            res.data.data.forEach((item, i) => {
+            res.data.data.forEach((item) => {
                 const task = new Task();
                 task.id = item.id;
                 task.title = item.attributes.title;
@@ -163,7 +197,7 @@ export const TaskModule = {
                     rootGetters['projectM/getProjectByID'](item.relationships.field_project.data.id) : null;
 
                 const authorUID = item.relationships.uid.data.id;
-                res.data.included.forEach((itemInc, j) => {
+                res.data.included.forEach((itemInc) => {
                     if(itemInc.type === 'user--user') {
                         if(itemInc.id === authorUID) {
                             const author = new User();
@@ -180,7 +214,7 @@ export const TaskModule = {
                     }
                 });
 
-                res.data.included.forEach((itemInc, j) => {
+                res.data.included.forEach((itemInc) => {
                     if(itemInc.type === 'file--file') {
                         if(itemInc.id === task.author.picture.uid) task.author.picture.url = itemInc.attributes.uri.url;
                     }
@@ -208,7 +242,7 @@ export const TaskModule = {
                     }
                     maxCID = com.attributes.drupal_internal__cid;
 
-                    if(comments.data.hasOwnProperty('included')) {
+                    if(Object.prototype.hasOwnProperty.call(comments.data, 'included')) {
                         comments.data.included.forEach((itemInc) => {
                             if(!answerFilesID.includes(itemInc.id)) { return; }
                             
@@ -237,7 +271,7 @@ export const TaskModule = {
             // console.log(comments);
 
             const tasks = [];
-            res.data.data.forEach((item, i) => {
+            res.data.data.forEach((item) => {
                 // console.log("Новая итерация i");
                 const task = new Task();
                 task.id = item.id;
@@ -252,7 +286,7 @@ export const TaskModule = {
                     rootGetters['projectM/getProjectByID'](item.relationships.field_project.data.id) : null;
 
                 const executorUID = item.relationships.field_ispolnitel.data.id;
-                res.data.included.forEach((itemInc, j) => {
+                res.data.included.forEach((itemInc) => {
                     if(itemInc.type === 'user--user') {
                         if(itemInc.id === executorUID) {
                             const executor = new User();
@@ -269,7 +303,7 @@ export const TaskModule = {
                     }
                 });
 
-                res.data.included.forEach((itemInc, j) => {
+                res.data.included.forEach((itemInc) => {
                     if(itemInc.type === 'file--file') {
                         if(itemInc.id === task.executor.picture.uid) task.executor.picture.url = itemInc.attributes.uri.url;
                     }
@@ -296,7 +330,7 @@ export const TaskModule = {
                     if(maxCID < com.attributes.drupal_internal__cid) maxCID = com.attributes.drupal_internal__cid;
                     
 
-                    if(comments.data.hasOwnProperty('included')) {
+                    if(Object.prototype.hasOwnProperty.call(comments.data, 'included')) {
                         comments.data.included.forEach((itemInc) => {
                             if(!answerFilesID.includes(itemInc.id)) { return; }
 
@@ -320,21 +354,131 @@ export const TaskModule = {
             commit('setTasksFromMe', tasks);
         },
 
-        async replaceTasksFromMe({ commit, getters, dispatch }, { tasks, status }) {
+        async queryTasksFromProjects({ commit, getters, rootGetters }) {
+            const projects = rootGetters['projectM/getProjects'];
+
+            const res = await QueryAPI.getFilteredTasks(projects.map(pr => pr.id));
+            const comments = await AnsQueryAPI.getAnswers();
+            // console.log(res);
+            // console.log(comments);
+
+            const tasks = [];
+            res.data.data.forEach((item) => {
+                // console.log("Новая итерация i");
+                const task = new Task();
+                task.id = item.id;
+                task.title = item.attributes.title;
+                task.body = (item.attributes.body !== null)? item.attributes.body.processed.replace(/(<p>|<\/p>)/g, '') : null;
+                task.status = getters.getStatuses.get(item.relationships.field_status.data.id) ?? 'Не определено';
+                task.difficulty = getters.getDifficulty.get(item.relationships.field_difficulty_level.data.id) ?? 'Легко';
+                task.beginDate = item.attributes.field_begin_date;
+                task.dueDate = item.attributes.field_due_date;
+                task.progress = 0;
+                task.project = (item.relationships.field_project?.data?.id)? 
+                    rootGetters['projectM/getProjectByID'](item.relationships.field_project.data.id) : null;
+
+                const authorUID = item.relationships.uid.data.id;
+                const executorUID = item.relationships.field_ispolnitel.data.id;
+                res.data.included.forEach((itemInc) => {
+                    if(itemInc.type === 'user--user') {
+                        if(itemInc.id === executorUID) {
+                            const executor = new User();
+                            executor.uid = executorUID;
+                            executor.id = itemInc.attributes.drupal_internal__uid;
+                            executor.name = itemInc.attributes.display_name;
+
+                            const picture = new Picture();
+                            picture.uid = itemInc.relationships.user_picture.data.id;
+
+                            executor.picture = picture;
+                            task.executor = executor;
+                        }
+                        if(itemInc.id === authorUID) {
+                            const author = new User();
+                            author.uid = executorUID;
+                            author.id = itemInc.attributes.drupal_internal__uid;
+                            author.name = itemInc.attributes.display_name;
+
+                            const picture = new Picture();
+                            picture.uid = itemInc.relationships.user_picture.data.id;
+
+                            author.picture = picture;
+                            task.author = author;
+                        }
+                    }
+                });
+
+                res.data.included.forEach((itemInc) => {
+                    if(itemInc.type === 'file--file') {
+                        if(itemInc.id === task.executor.picture.uid) task.executor.picture.url = itemInc.attributes.uri.url;
+                        if(itemInc.id === task.author.picture.uid) task.author.picture.url = itemInc.attributes.uri.url;
+                    }
+                });
+
+                var maxCID = -1;
+                comments.data.data.forEach((com) => {
+                    if((com.relationships.entity_id.data.id !== task.id) || (com.attributes.field_name !== 'field_answer')) { return; }
+                    
+                    const answer = new Answer();
+                    answer.id = com.id;
+                    answer.title = com.attributes.subject;
+                    answer.body = com.attributes.comment_body.processed.replace(/(<p>|<\/p>)/g, '');
+                    answer.progress = getters.getProgress.get(com.relationships.field_progress.data.id);
+                    task.progress = (maxCID < com.attributes.drupal_internal__cid)? answer.progress : task.progress;
+
+                    const answerFilesID = [];
+                    // console.log(com.relationships.field_file.data);
+                    if(com.relationships.field_file.data.length !== 0) {
+                        com.relationships.field_file.data.forEach((file) => {
+                            answerFilesID.push(file.id);
+                        });
+                    }
+                    if(maxCID < com.attributes.drupal_internal__cid) maxCID = com.attributes.drupal_internal__cid;
+                    
+
+                    if(Object.prototype.hasOwnProperty.call(comments.data, 'included')) {
+                        comments.data.included.forEach((itemInc) => {
+                            if(!answerFilesID.includes(itemInc.id)) { return; }
+
+                            const file = new File();
+                            file.id = itemInc.id;
+                            file.name = itemInc.attributes.filename;
+                            file.url = itemInc.attributes.uri.url;
+                            // console.log('links: ' + file.link);
+                            answer.files.push(file);
+                        });
+                    }
+
+                    task.answers.push(answer);
+                });
+
+                tasks.push(task);
+                // console.log(task);
+            });
+
+            console.log(tasks);
+            commit('setTasksFromProjects', tasks);
+        },
+
+        async replaceTasks({ rootGetters, dispatch }, { tasks, status, type = 'fromMe' }) {
             console.log("Обновление статуса");
 
             // console.log(tasks);
             // console.log(getters.getTasksFromMe);
 
             await tasks.forEach(async (task) => {
-                const res = await dispatch('editTask', { 
+                const user = rootGetters['authM/getUser'];
+                if((!user.roles.includes('administrator')) && (!user.roles.includes('manager')) 
+                    && (user.uid !== task.executor.uid)) { return; }
+                await dispatch('editTask', { 
                     id: task.id, 
                     title: task.title, 
                     body: task.body, 
                     executorUID: task.executor.uid, 
                     status: status, 
                     difficulty: task.difficulty,
-                    projectID: task.project?.id
+                    projectID: task.project?.id,
+                    type: type
                 });
             });
         
@@ -443,7 +587,7 @@ export const TaskModule = {
             commit('addTaskFromMe', task);
         },
 
-        async editTask({ commit, getters, rootGetters }, { id, title, body, executorUID, status, difficulty, projectID, beginDate, dueDate }) {
+        async editTask({ commit, getters, rootGetters }, { id, title, body, executorUID, status, difficulty, projectID, beginDate, dueDate, type = 'fromMe' }) {
             const statuses = getters.getStatuses;
             const difficulties = getters.getDifficulty;
             const res = await QueryAPI.editTask(
@@ -460,7 +604,7 @@ export const TaskModule = {
             console.log(res);
 
             console.log("executorUID" + executorUID);
-            const task = getters.getTaskFromMeByID(id);
+            const task = (type === 'fromMe')? getters.getTaskFromMeByID(id) : getters.getTaskFromProjectsByID(id);
             const user = rootGetters['userM/getUserByUID'](executorUID);
             const picture = rootGetters['userM/getPictureByUserUID'](executorUID);
 
@@ -484,7 +628,8 @@ export const TaskModule = {
             task.executorPicture = json.data.included[0].attributes.uri.url;*/
 
             console.log(task);
-            commit('editTaskFromMe', task);
+            if(type === 'fromMe') commit('editTaskFromMe', task);
+            else commit('editTaskFromProjects', task);
         },
 
         async deleteTask({ commit }, { id }) {

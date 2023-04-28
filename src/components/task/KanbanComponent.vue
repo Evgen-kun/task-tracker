@@ -10,9 +10,9 @@
 </template>
   
 <script>
-  import draggable from 'vuedraggable';
+  // import draggable from 'vuedraggable';
   import store from '@/plugins/store';
-  import { mapGetters, mapState } from 'vuex';
+  import { mapState } from 'vuex';
   import KanbanColumnComponent from './KanbanColumnComponent.vue';
   //import EditorComponent from './EditorComponent.vue';
   
@@ -43,28 +43,31 @@
       //   tasks: 'getTasksFromMe',
       // }),
       tasks() { 
-        return this.$store.getters['taskM/getTasksFromMeByProjectID'](this.$route.params.projectID); 
+        // return this.$store.getters['taskM/getTasksFromMeByProjectID'](this.$route.params.projectID); 
+        return this.$store.getters['taskM/getTasksFromProjectsByProjectID'](this.$route.params.projectID);
       },
       ...mapState('taskM', {
-        myTasks: 'tasksFromMe',
+        // myTasks: 'tasksFromMe',
+        myTasks: 'tasksFromProjects',
       }),
       myList: {
         get() {
             return this.myTasks;
         },
         set(value) {
-            this.$store.commit('taskM/setTasksFromMe', value);
+            // this.$store.commit('taskM/setTasksFromMe', value);
+            this.$store.commit('taskM/setTasksFromProjects', value);
         }
       },
     },
     components: {
-      draggable,
+      // draggable,
       KanbanColumnComponent
     },
     async created() {
-      const user = store.getters['authM/getUser'];
-      const userUID = user.uid;
-      await store.dispatch('taskM/queryTasksFromMe', { userUID: userUID });
+      // const user = store.getters['authM/getUser'];
+      // await store.dispatch('taskM/queryTasksFromMe', { userUID: user.uid });
+      await store.dispatch('taskM/queryTasksFromProjects');
       await store.dispatch('userM/usersQuery');
     }
   }

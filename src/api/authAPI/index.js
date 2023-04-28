@@ -1,4 +1,4 @@
-import { LoginAPIInstance, DefaultAPIInstance, QueryAPIInstance } from "@/api";
+import { LoginAPIInstance } from "@/api";
 
 export const AuthAPI = {
     /**

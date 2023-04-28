@@ -55,7 +55,7 @@
   
 <script>
   import store from '@/plugins/store';
-  import { mapGetters, mapState } from 'vuex';
+  import { mapGetters } from 'vuex';
   import KanbanColumnComponent from './KanbanColumnComponent.vue';
   //import EditorComponent from './EditorComponent.vue';
   

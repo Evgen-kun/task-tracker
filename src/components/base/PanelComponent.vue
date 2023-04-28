@@ -25,7 +25,6 @@ export default {
     },
     async created() {
       const user = store.getters['authM/getUser'];
-      const userUID = user.uid;
       this.name = user.name;
       // console.log(user);
       console.log(store.getters['authM/getToken']);

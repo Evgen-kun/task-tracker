@@ -143,7 +143,7 @@ import { mapGetters } from 'vuex';
             }),
             getUsers() {
                 const currentUser = store.getters['authM/getUser'];
-                if(!!this.task.project?.id) return [...store.getters['projectM/getProjectByID'](this.selectProject).team.users, currentUser];
+                if(this.task.project?.id) return [...store.getters['projectM/getProjectByID'](this.selectProject).team.users, currentUser];
                 else return [...store.getters['userM/getUsers'], currentUser];
             },
             usersWithID() {

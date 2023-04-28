@@ -3,20 +3,20 @@ import LoginView from "../../views/LoginView.vue";
 
 
 const authGuard = function(to, from, next) {
-  if (!localStorage.hasOwnProperty('token')) next({ name: 'login' });
+  if (!Object.prototype.hasOwnProperty.call(localStorage, 'token')) next({ name: 'login' });
   else next();
 }
 
 const managerAuthGuard = function(to, from, next) {
   const roles = JSON.parse(localStorage.getItem('user')).roles;
-  if (!localStorage.hasOwnProperty('token')) next({ name: 'login' });
+  if (!Object.prototype.hasOwnProperty.call(localStorage, 'token')) next({ name: 'login' });
   else if (!roles.includes('manager') && (!roles.includes('administrator'))) next({ name: 'home' });
   else next();
 }
 
 const adminAuthGuard = function(to, from, next) {
   const roles = JSON.parse(localStorage.getItem('user')).roles;
-  if (!localStorage.hasOwnProperty('token')) next({ name: 'login' });
+  if (!Object.prototype.hasOwnProperty.call(localStorage, 'token')) next({ name: 'login' });
   else if (!roles.includes('administrator')) next({ name: 'home' });
   else next();
 }
@@ -48,7 +48,8 @@ const routes = [
   {
     path: "/teams",
     name: "teams",
-    beforeEnter: managerAuthGuard,
+    // beforeEnter: managerAuthGuard,
+    beforeEnter: authGuard,
     children: [
       {
         path: '',
@@ -57,7 +58,8 @@ const routes = [
       {
         path: ":teamID",
         name: "team",
-        beforeEnter: managerAuthGuard,
+        // beforeEnter: managerAuthGuard,
+        beforeEnter: authGuard,
         children: [
           {
             path: 'projects',
@@ -66,13 +68,15 @@ const routes = [
                 path: '',
                 name: 'projects',
                 component: () => import("@/views/ProjectsView.vue"),
-                beforeEnter: managerAuthGuard,
+                // beforeEnter: managerAuthGuard,
+                beforeEnter: authGuard,
               },
               {
                 path: ":projectID",
                 name: "dashboard",
                 component: () => import("@/views/DashboardView.vue"),
-                beforeEnter: managerAuthGuard,
+                // beforeEnter: managerAuthGuard,
+                beforeEnter: authGuard,
               }
             ]
           },

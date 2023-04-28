@@ -98,7 +98,6 @@ import { mapGetters } from 'vuex';
                 show: false,
 
                 title: "Создать задачу",
-                show: false,
                 taskTitle: "",
                 text: "",
                 executor: "",

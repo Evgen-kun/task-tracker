@@ -35,6 +35,7 @@
             <div class="text-center">
                 <v-chip
                     v-for="file in answer.files"
+                    v-bind:key="file.id"
                     class="ma-2"
                     color="primary"
                     variant="outlined"

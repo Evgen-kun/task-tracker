@@ -35,7 +35,7 @@
                 <v-list-item prepend-icon="mdi-comment-text-outline" title="Мои задачи" value="shared"></v-list-item>
             </router-link>
             <router-link to="/teams">
-                <v-list-item v-if="isManagerOrAdmin" prepend-icon="mdi-account-multiple-outline" title="Команды" value="myteams"></v-list-item>
+                <v-list-item prepend-icon="mdi-account-multiple-outline" title="Команды" value="myteams"></v-list-item>
             </router-link>
             <router-link to="/panel">
                 <v-list-item v-if="isAdmin" prepend-icon="mdi-view-dashboard" title="Статистика" value="panel"></v-list-item>
@@ -47,7 +47,6 @@
 
 <script>
 import { mapGetters } from 'vuex';
-import { RouterLink, RouterView } from 'vue-router'
     export default { 
         data() {
             return {
@@ -64,7 +63,7 @@ import { RouterLink, RouterView } from 'vue-router'
         },
         computed: {
             isAuth() {
-                return localStorage.hasOwnProperty('token');
+                return Object.prototype.hasOwnProperty.call(localStorage, 'token');
             },
             isManagerOrAdmin() {
                 const roles = JSON.parse(localStorage.getItem('user'))?.roles ?? [];

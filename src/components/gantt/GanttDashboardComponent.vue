@@ -218,8 +218,7 @@ export default {
     // TableTaskComponent,
 },
     async created() {
-        const user = store.getters['authM/getUser'];
-        const userUID = user.uid;
+        // const user = store.getters['authM/getUser'];
         console.log(store.getters['authM/getToken']);
     }
 }

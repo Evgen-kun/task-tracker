@@ -13,6 +13,7 @@
             <v-menu location="end">
                 <template v-slot:activator="{ props }">
                     <v-btn
+                    v-if="currentUser.roles.includes('manager') || currentUser.roles.includes('administrator')"
                     v-bind="props"
                     size="small"
                     color="surface-variant" 
@@ -36,9 +37,9 @@
             </v-menu>
         </v-card-actions>
   
-        <v-card-title v-text="project.title"></v-card-title>
+        <v-card-title>{{ project.title }}</v-card-title>
   
-        <v-card-subtitle v-text="project.body"></v-card-subtitle>
+        <v-card-subtitle>{{ project.body }}</v-card-subtitle>
   
         <v-dialog
             v-model="showEdit"
@@ -143,7 +144,7 @@
                   v => v.length <= 30 || 'Название должно быть меньше 30 символов',
               ],
               textRules: [
-                  v => (!!v)? v.length <= 300 : true || 'Описание должно быть меньше 300 символов',
+                  v => (v)? v.length <= 300 : true || 'Описание должно быть меньше 300 символов',
               ],
           }
       },
@@ -156,6 +157,10 @@
           type: Array,
           required: true
         },
+        currentUser: {
+          type: Object,
+          required: true
+        }
       },
       methods: {
           async editProject() {

@@ -74,6 +74,15 @@
                     v-model="projectTeamID"
                   >
                   </v-select>
+
+                  <v-text-field
+                    label="Ограничение на количество задач со статусом 'Выполняется'"
+                    v-model="projectInProgressRestriction"
+                    type="number"
+                    :rules="inProgressRestrictionRules"
+                    placeholder="Оставьте пустым для неограниченного колличества"
+                  >
+                  </v-text-field>
   
                   <div><small>*обязательное поле</small></div>
   
@@ -138,6 +147,7 @@
               projectTitle: this.project.title,
               projectSubtitle: this.project.body,
               projectTeamID: this.project.team?.id,
+              projectInProgressRestriction: this.project?.inProgressRestriction,
   
               titleRules: [
                   v => !!v || 'Требуется название',
@@ -145,6 +155,11 @@
               ],
               textRules: [
                   v => (v)? v.length <= 300 : true || 'Описание должно быть меньше 300 символов',
+              ],
+              inProgressRestrictionRules: [
+                  v => (v)? Number.isInteger(v) : true || 'Число должно быть целым',
+                  v => (v)? v >= 0 : true || 'Ограничение на количество задач должно начинаться от 0',
+                  v => (v)? v <= 1000 : true || 'Ограничение на количество задач должно быть меньше 1000',
               ],
           }
       },
@@ -169,7 +184,8 @@
               if(valid) {
                   await store.dispatch('projectM/editProject', { id: this.project.id,
                     title: this.projectTitle, 
-                    body: this.projectSubtitle, 
+                    body: this.projectSubtitle,
+                    inProgressRestriction: this.projectInProgressRestriction,
                     teamID: this.projectTeamID
                 });
               }

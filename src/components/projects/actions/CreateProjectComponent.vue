@@ -50,6 +50,15 @@
                 >
                 </v-select>
 
+                <v-text-field
+                  label="Ограничение на количество задач со статусом 'Выполняется'"
+                  v-model="projectInProgressRestriction"
+                  type="number"
+                  :rules="inProgressRestrictionRules"
+                  placeholder="Оставьте пустым для неограниченного колличества"
+                >
+                </v-text-field>
+
                 <div><small>*обязательное поле</small></div>
 
                 <v-card-actions class="justify-end">
@@ -85,6 +94,7 @@ import store from '@/plugins/store';
                 projectTitle: "",
                 projectSubtitle: "",
                 projectTeamID: this.$route.params?.teamID,
+                projectInProgressRestriction: null,
 
                 titleRules: [
                     v => !!v || 'Требуется название',
@@ -92,6 +102,11 @@ import store from '@/plugins/store';
                 ],
                 textRules: [
                     v => (v)? v.length <= 300 : true || 'Описание должно быть меньше 300 символов',
+                ],
+                inProgressRestrictionRules: [
+                  v => (v)? Number.isInteger(v) : true || 'Число должно быть целым',
+                  v => (v)? v >= 0 : true || 'Ограничение на количество задач должно начинаться от 0',
+                  v => (v)? v <= 1000 : true || 'Ограничение на количество задач должно быть меньше 1000',
                 ],
             }
         },
@@ -108,7 +123,8 @@ import store from '@/plugins/store';
                 if(valid) {
                     await store.dispatch('projectM/createProject', { 
                       title: this.projectTitle, 
-                      body: this.projectSubtitle, 
+                      body: this.projectSubtitle,
+                      inProgressRestriction: this.projectInProgressRestriction,
                       teamID: this.projectTeamID 
                     });
                     this.$refs.createProjectForm.reset();

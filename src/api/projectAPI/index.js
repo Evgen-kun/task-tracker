@@ -8,7 +8,7 @@ export const ProjectsQueryAPI = {
      * @returns {Promise<AxiosResponse<any>>}
      */
     getProject(projectID) {
-        const url = `http://localhost/drupal/web/jsonapi/node/project?filter[id]=${projectID}&fields[node--project]=id,title,body,field_team`;
+        const url = `http://localhost/drupal/web/jsonapi/node/project?filter[id]=${projectID}&fields[node--project]=id,title,body,field_team,field_inprogress_restriction`;
         return QueryAPIInstance.get(url);
     },
 
@@ -18,7 +18,7 @@ export const ProjectsQueryAPI = {
      * @returns {Promise<AxiosResponse<any>>}
      */
     getProjectsByUserUID(userUID) {
-        const url = `http://localhost/drupal/web/jsonapi/node/project?filter[uid.id]=${userUID}&fields[node--project]=id,title,body,field_team`;
+        const url = `http://localhost/drupal/web/jsonapi/node/project?filter[uid.id]=${userUID}&fields[node--project]=id,title,body,field_team,field_inprogress_restriction`;
         return QueryAPIInstance.get(url);
     },
 
@@ -28,7 +28,7 @@ export const ProjectsQueryAPI = {
      * @returns {Promise<AxiosResponse<any>>}
      */
     getProjectsByTeamID(teamID) {
-        const url = `http://localhost/drupal/web/jsonapi/node/project?filter[field_team.id]=${teamID}&fields[node--project]=id,title,body,field_team`;
+        const url = `http://localhost/drupal/web/jsonapi/node/project?filter[field_team.id]=${teamID}&fields[node--project]=id,title,body,field_team,field_inprogress_restriction`;
         return QueryAPIInstance.get(url);
     },
 
@@ -40,11 +40,11 @@ export const ProjectsQueryAPI = {
     getProjectsByTeamsID(teamsID) {
         const str = teamsID.reduce(
             (acc, item, i) => acc + `&filter[teamsFilter][condition][value][${i + 1}]=${item}`, '');
-        const url = `http://localhost/drupal/web/jsonapi/node/project?fields[node--project]=id,title,body,field_team&filter[teamsFilter][condition][path]=field_team.id&filter[teamsFilter][condition][operator]=IN${str}`;
+        const url = `http://localhost/drupal/web/jsonapi/node/project?fields[node--project]=id,title,body,field_team,field_inprogress_restriction&filter[teamsFilter][condition][path]=field_team.id&filter[teamsFilter][condition][operator]=IN${str}`;
         return QueryAPIInstance.get(url);
     },
 
-    async createProject(title, body, teamID) {
+    async createProject(title, body, inProgressRestriction, teamID) {
         const url = `http://localhost/drupal/web/jsonapi/node/project`;
         const data = { 
             data: {
@@ -54,7 +54,8 @@ export const ProjectsQueryAPI = {
                     body: {
                         value: body,
                         format: "plain_text"
-                    }
+                    },
+                    field_inprogress_restriction: inProgressRestriction,
                 },
                 relationships: {
                     field_team: {
@@ -74,7 +75,7 @@ export const ProjectsQueryAPI = {
         return PostQueryAPIInstance.post(url, data);
     },
 
-    async editProject(id, title, body, teamID) {
+    async editProject(id, title, body, inProgressRestriction, teamID) {
         const url = `http://localhost/drupal/web/jsonapi/node/project/${id}`;
         const data = { 
             data: {
@@ -85,7 +86,8 @@ export const ProjectsQueryAPI = {
                     body: {
                         value: body,
                         format: "plain_text"
-                    }
+                    },
+                    field_inprogress_restriction: inProgressRestriction,
                 },
                 relationships: {
                     field_team: {

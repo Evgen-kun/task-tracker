@@ -11,9 +11,17 @@
         dark
         >
             <v-toolbar-title>
-                {{ title }}
+                {{ column.title }}
             </v-toolbar-title>
 
+            <template v-slot:append>
+                <v-badge
+                    v-if="inProgressRestrictionCheck"
+                    color="error"
+                    :content="inProgressRestriction"
+                    inline
+                ></v-badge>
+            </template>
             <!-- <v-spacer></v-spacer>
 
             <v-btn icon @click="">
@@ -57,8 +65,8 @@
       }
     },
     props: {
-        title: {
-            type: String,
+        column: {
+            type: Object,
             required: true
         },
         tasks: {
@@ -79,14 +87,26 @@
       },
       myList: {
         get() {
-            return this.myTasks.filter(task => task.status === this.title);
+            return this.myTasks.filter(task => task.status === this.column.title);
         },
         set(value) {
-            // this.$store.dispatch('taskM/replaceTasksFromMe', { tasks: value, status: this.title });
-            this.$store.dispatch('taskM/replaceTasks', { tasks: value, status: this.title, type: 'fromProjects' });
-            // this.$store.commit('taskM/replaceTasksFromMe', { tasks: value, title: this.title });
+            // this.$store.dispatch('taskM/replaceTasksFromMe', { tasks: value, status: this.column.title });
+            const project = this.$store.getters['projectM/getProjectByID'](this.$route.params.projectID);
+            if((project?.inProgressRestriction)
+                && (value.filter(task => task.status === 'Выполняется').length + 1 > project.inProgressRestriction)) return;
+            this.$store.dispatch('taskM/replaceTasks', { tasks: value, status: this.column.title, type: 'fromProjects' });
+            // this.$store.commit('taskM/replaceTasksFromMe', { tasks: value, title: this.column.title });
         }
       },
+      inProgressRestrictionCheck() {
+        const project = this.$store.getters['projectM/getProjectByID'](this.$route.params.projectID);
+        return !!((this.column.title === 'Выполняется') && (project?.inProgressRestriction));
+      },
+      inProgressRestriction() {
+        const project = this.$store.getters['projectM/getProjectByID'](this.$route.params.projectID);
+        if(project.inProgressRestriction) return `${this.tasks.length}/${project.inProgressRestriction}`;
+        else return null;
+      }
     },
     components: {
       draggable,

@@ -47,7 +47,7 @@
         <KanbanColumnComponent
             v-for="column in columns"
             v-bind:key="column.id"
-            v-bind:title="column.title"
+            v-bind:column="column"
             v-bind:tasks="filteredTasks.filter(task => (task.class === column.title) && (task.status !== 'Выполнено'))"
         ></KanbanColumnComponent>
     </div>

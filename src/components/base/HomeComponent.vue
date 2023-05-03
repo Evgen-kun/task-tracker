@@ -141,7 +141,7 @@ export default {
     console.log(user.roles);
     await store.dispatch('projectM/queryProjects', { userUID: user.uid, userRoles: user.roles });
     await store.dispatch('taskM/queryTasksToMe', { userUID: user.uid });
-    // await store.dispatch('taskM/queryTasksFromProjects');
+    // store.dispatch('taskM/queryTasksFromProjects').then((res) => {});
   }
 }
 

@@ -5,7 +5,7 @@
     @click="goToProjects"
     height="200"
     rounded="xl"
-    class="elevation-0"
+    class="team-card elevation-0"
   >
     <!-- <v-img
       :src="card.src"
@@ -20,11 +20,12 @@
     <v-card-actions>
       <v-spacer></v-spacer>
 
-      <v-menu location="end">
+      <v-menu class="team-card-menu" location="end">
         <template v-slot:activator="{ props }">
           <v-btn
             v-if="currentUser.roles.includes('manager') || currentUser.roles.includes('administrator')"
             v-bind="props"
+            class="team-card-menu-btn"
             size="small"
             color="surface-variant" 
             variant="text" 
@@ -33,12 +34,14 @@
         </template>
       <v-list>
         <v-list-item
+          class="team-card-menu-list-item-edit"
           @click="showEdit = !showEdit"
         >
           <v-list-item-title>Изменить</v-list-item-title>
         </v-list-item>
 
         <v-list-item
+          class="team-card-menu-list-item-delete"
           @click="showDelete = !showDelete"
         >
           <v-list-item-title>Удалить</v-list-item-title>
@@ -47,12 +50,13 @@
     </v-menu>
     </v-card-actions>
 
-    <v-card-title>{{ team.title }}</v-card-title>
+    <v-card-title class="team-card-title">{{ team.title }}</v-card-title>
 
-    <v-card-subtitle>{{ team.body }}</v-card-subtitle>
+    <v-card-subtitle class="team-card-subtitle">{{ team.body }}</v-card-subtitle>
 
     <v-dialog
       v-model="showEdit"
+      class="team-card-dialog-edit"
       max-width="1000"
       transition="dialog-top-transition"
     >
@@ -107,6 +111,7 @@
 
     <v-dialog
       v-model="showDelete"
+      class="team-card-dialog-delete"
       max-width="500"
       transition="dialog-top-transition"
     >

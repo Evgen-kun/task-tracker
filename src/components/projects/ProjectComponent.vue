@@ -5,44 +5,48 @@
       @click="goToDashboard"
       height="200"
       rounded="xl"
-      class="elevation-0"
+      class="project-card elevation-0"
     >
         <v-card-actions>
             <v-spacer></v-spacer>
   
-            <v-menu location="end">
+            <v-menu class="project-card-menu" location="end">
                 <template v-slot:activator="{ props }">
-                    <v-btn
+                  <v-btn
                     v-if="currentUser.roles.includes('manager') || currentUser.roles.includes('administrator')"
                     v-bind="props"
+                    class="project-card-menu-btn"
                     size="small"
                     color="surface-variant" 
                     variant="text" 
                     icon="mdi-dots-horizontal"
-                    ></v-btn>
+                  ></v-btn>
                 </template>
                 <v-list>
                     <v-list-item
-                        @click="showEdit = !showEdit"
+                      class="project-card-menu-list-item-edit"
+                      @click="showEdit = !showEdit"
                     >
-                        <v-list-item-title>Изменить</v-list-item-title>
+                      <v-list-item-title>Изменить</v-list-item-title>
                     </v-list-item>
             
                     <v-list-item
-                        @click="showDelete = !showDelete"
+                      class="project-card-menu-list-item-delete"
+                      @click="showDelete = !showDelete"
                     >
-                        <v-list-item-title>Удалить</v-list-item-title>
+                      <v-list-item-title>Удалить</v-list-item-title>
                     </v-list-item>
                 </v-list>
             </v-menu>
         </v-card-actions>
   
-        <v-card-title>{{ project.title }}</v-card-title>
+        <v-card-title class="project-card-title">{{ project.title }}</v-card-title>
   
-        <v-card-subtitle>{{ project.body }}</v-card-subtitle>
+        <v-card-subtitle class="project-card-subtitle">{{ project.body }}</v-card-subtitle>
   
         <v-dialog
             v-model="showEdit"
+            class="project-card-dialog-edit"
             max-width="1000"
             transition="dialog-top-transition"
         >
@@ -105,6 +109,7 @@
   
       <v-dialog
         v-model="showDelete"
+        class="project-card-dialog-delete"
         max-width="500"
         transition="dialog-top-transition"
       >

@@ -7,7 +7,8 @@
     "preview": "vite preview",
     "test": "vitest",
     "coverage": "vitest run --coverage",
-    "lint": "eslint --max-warnings=0 src"
+    "lint": "eslint --max-warnings=0 src",
+    "ui": "vitest --ui"
   },
   "dependencies": {
     "@mdi/font": "^7.2.96",
@@ -33,6 +34,7 @@
   "devDependencies": {
     "@vitejs/plugin-vue": "^3.0.3",
     "@vitest/coverage-c8": "^0.29.8",
+    "@vitest/ui": "^0.30.1",
     "@vue/test-utils": "^2.3.2",
     "eslint": "^8.39.0",
     "eslint-plugin-vue": "^9.11.0",

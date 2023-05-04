@@ -1,9 +1,10 @@
 <template>
-    <v-form ref="lastAnsForm" disabled>
+    <v-form ref="lastAnsForm">
         <v-container>
             <v-text-field
                 label="Заголовок"
                 v-model="lastAnswer.title"
+                readonly
             >
             </v-text-field>
 
@@ -11,6 +12,7 @@
 
             <v-text-field
                 label="Прогресс выполнения"
+                readonly
             >
                 {{ lastAnswer.progress }}%
             </v-text-field>
@@ -20,6 +22,7 @@
                 v-model="lastAnswer.files"
                 label="Файлы"
                 multiple
+                readonly
                 prepend-icon="mdi-paperclip"
             >
                 <template v-slot:selection="{ fileNames }">
@@ -62,7 +65,7 @@ import Answer from '@/model/Answer';
         computed: {
             lastAnswer() {
               if(this.answers.length !== 0) return this.answers[this.answers.length - 1];
-              else return new Answer();
+              else return null;//new Answer();
             },
         },
     }

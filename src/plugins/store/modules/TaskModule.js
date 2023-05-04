@@ -254,9 +254,10 @@ export const TaskModule = {
                             answer.files.push(file);
                         });
                     }
+
+                    if(!task.answers.map(ans => ans.uid).includes(answer.uid)) task.answers.push(answer);
                 });
 
-                task.answers.push(answer);
                 tasks.push(task);
             });
 

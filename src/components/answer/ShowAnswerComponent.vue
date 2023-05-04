@@ -2,6 +2,7 @@
     <v-card
         class="ma-2"
         rounded="xl"
+        color="#c2dcfc"
     >
 
         <div class="d-flex flex-row" @click="show = !show" style="cursor: pointer;">
@@ -12,11 +13,13 @@
         <v-spacer></v-spacer>
         <v-btn
             :icon="show ? 'mdi-chevron-up' : 'mdi-chevron-down'"
+            color="#c2dcfc"
+            elevation="0"
         ></v-btn>
         </div>
 
         <v-expand-transition >
-        <div v-show="show">
+        <div v-show="show" class="text-center">
             <v-divider></v-divider>
 
             <v-card-title>

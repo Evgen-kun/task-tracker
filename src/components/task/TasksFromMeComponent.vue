@@ -5,7 +5,7 @@
         <!-- <EditorComponent /> -->
         <v-btn
           color="deep-purple-accent-3"
-          rounded="lg"
+          rounded="pill"
         >
           Создать задачу
           <CreateTaskDialogComponent />

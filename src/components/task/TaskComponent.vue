@@ -132,9 +132,9 @@
               v-show="path == '/about'"
               :disabled="task.answers.length === 0"
               color="blue"
-              @click.stop="showAnswers = !showAnswers"
             >
               Ответы
+              <ShowAnswerDialogComponent :task="task" />
             </v-btn>
 
             <!-- <v-btn
@@ -152,9 +152,9 @@
               variant="tonal"
               v-show="path == '/inbox'"
               color="blue"
-              @click.stop="showCreateAns = !showCreateAns"
             >
               Добавить ответ
+              <CreateAnswerDialogComponent :task="task" />
             </v-btn>
             <!-- <v-btn @click.stop="showEdit = !showEdit">{{ btnText }}</v-btn> -->
           </div>
@@ -162,16 +162,16 @@
       </v-list-item>
     </v-card-actions>
 
-    <v-expand-transition>
+    <!-- <v-expand-transition>
       <div v-show="showLastAns">
         <v-divider></v-divider>
         <v-card-text>
             <LastAnswerComponent :answers="task.answers" />
         </v-card-text>
       </div>
-    </v-expand-transition>
+    </v-expand-transition> -->
 
-    <v-expand-transition>
+    <!-- <v-expand-transition>
       <div v-show="showAnswers">
         <v-divider></v-divider>
           <ShowAnswerComponent
@@ -182,24 +182,26 @@
           >
           </ShowAnswerComponent>
       </div>
-    </v-expand-transition>
+    </v-expand-transition> -->
 
-    <v-expand-transition>
+    <!-- <v-expand-transition>
       <div v-show="showCreateAns">
         <v-divider></v-divider>
         <v-card-text>
             <CreateAnswerComponent :taskID="task.id" />
         </v-card-text>
       </div>
-    </v-expand-transition>
+    </v-expand-transition> -->
   </v-card>
 </template>
 
 <script>
-import ShowAnswerComponent from '../answer/ShowAnswerComponent.vue';
-import CreateAnswerComponent from '../answer/actions/CreateAnswerComponent.vue';
+// import ShowAnswerComponent from '../answer/ShowAnswerComponent.vue';
+import ShowAnswerDialogComponent from '../answer/ShowAnswerDialogComponent.vue';
+// import CreateAnswerComponent from '../answer/actions/CreateAnswerComponent.vue';
 import EditTaskDialogComponent from './actions/dialog/EditTaskDialogComponent.vue';
 import LastAnswerComponent from '../answer/LastAnswerComponent.vue';
+import CreateAnswerDialogComponent from '../answer/actions/CreateAnswerDialogComponent.vue';
 // import { mapGetters } from 'vuex';
 
     export default {
@@ -265,10 +267,12 @@ import LastAnswerComponent from '../answer/LastAnswerComponent.vue';
             },
         },
         components: {
-            ShowAnswerComponent,
-            CreateAnswerComponent,
+            // ShowAnswerComponent,
+            ShowAnswerDialogComponent,
+            // CreateAnswerComponent,
             EditTaskDialogComponent,
             LastAnswerComponent,
+            CreateAnswerDialogComponent,
         },
     }
 </script>

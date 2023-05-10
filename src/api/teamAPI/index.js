@@ -8,30 +8,30 @@ export const TeamsQueryAPI = {
      * @returns {Promise<AxiosResponse<any>>}
      */
     getTeams(userUID) {
-        const url = `http://localhost/drupal/web/jsonapi/node/team?include=field_member.user_picture&filter[uid.id]=${userUID}&fields[node--team]=id,title,body,field_member&fields[user--user]=id,display_name,user_picture`;
+        const url = `http://localhost/drupal9/web/jsonapi/node/team?include=field_member.user_picture&filter[uid.id]=${userUID}&fields[node--team]=id,title,body,field_member&fields[user--user]=id,display_name,user_picture`;
         return QueryAPIInstance.get(url);
     },
 
     getTeamsWithMe(userUID) {
-        const url = `http://localhost/drupal/web/jsonapi/node/team?include=field_member.user_picture&filter[field_member.id]=${userUID}&fields[node--team]=id,title,body,field_member&fields[user--user]=id,display_name,user_picture`;
+        const url = `http://localhost/drupal9/web/jsonapi/node/team?include=field_member.user_picture&filter[field_member.id]=${userUID}&fields[node--team]=id,title,body,field_member&fields[user--user]=id,display_name,user_picture`;
         return QueryAPIInstance.get(url);
     },
 
     getAllUsers() {
-        const url = `http://localhost/drupal/web/jsonapi/user/user?include=user_picture&fields[user--user]=drupal_internal__uid,display_name,user_picture&fields[file--file]=uri`;
+        const url = `http://localhost/drupal9/web/jsonapi/user/user?include=user_picture&fields[user--user]=drupal_internal__uid,display_name,user_picture&fields[file--file]=uri`;
         return QueryAPIInstance.get(url);
     },
 
     async createTeam(title, body, usersUID) {
-        const url = `http://localhost/drupal/web/jsonapi/node/team`;
+        const url = `http://localhost/drupal9/web/jsonapi/node/team`;
         const data = { 
             data: {
                 type: "node--team",
                 attributes: {
                     title: title,
                     body: {
-                        value: body,
-                        format: "plain_text"
+                        value: `<p>${body}</p>`,
+                        format: "basic_html"
                     }
                 },
                 relationships: {
@@ -52,7 +52,7 @@ export const TeamsQueryAPI = {
     },
 
     async editTeam(id, title, body, usersUID) {
-        const url = `http://localhost/drupal/web/jsonapi/node/team/${id}`;
+        const url = `http://localhost/drupal9/web/jsonapi/node/team/${id}`;
         const data = { 
             data: {
                 type: "node--team",
@@ -60,8 +60,8 @@ export const TeamsQueryAPI = {
                 attributes: {
                     title: title,
                     body: {
-                        value: body,
-                        format: "plain_text"
+                        value: `<p>${body}</p>`,
+                        format: "basic_html"
                     }
                 },
                 relationships: {
@@ -82,7 +82,7 @@ export const TeamsQueryAPI = {
     },
     
     async deleteTeam(id) {
-        const url = `http://localhost/drupal/web/jsonapi/node/team/${id}`;
+        const url = `http://localhost/drupal9/web/jsonapi/node/team/${id}`;
 
         PostQueryAPIInstance.defaults.headers['X-CSRF-Token'] = await store.getters['authM/getToken'];
         PostQueryAPIInstance.defaults.headers['Content-Type'] = 'application/vnd.api+json';

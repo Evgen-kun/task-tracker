@@ -49,7 +49,7 @@ export const assignedTasks = {
             ctx.fillText(item.name, 40, y.getPixelForValue(index / 2));
         });
         // console.log(data.datasets[0].data[0].name);
-        ctx.fillText('Исполнители', 10, top - 15);
+        ctx.fillText('Исполнитель', 25, top - 15);
         ctx.restore();
     }
 }
@@ -74,15 +74,27 @@ export const status = {
             if(index % 2 === 1) { return; }
             ctx.beginPath();
             ctx.fillStyle = icons.get(item.status).color;
-            ctx.arc(left - 140, y.getPixelForValue(index / 2), 12, 0, angle * 360, false);
+            ctx.arc(left - 250, y.getPixelForValue(index / 2), 12, 0, angle * 360, false);
             ctx.closePath();
             ctx.fill();
             ctx.fillStyle = 'white';
-            ctx.fillText(icons.get(item.status).icon, left - 140, y.getPixelForValue(index / 2));
+            ctx.fillText(icons.get(item.status).icon, left - 250, y.getPixelForValue(index / 2));
         });
         ctx.font = 'bolder 12px sans-serif';
         ctx.fillStyle = 'black';
-        ctx.fillText('Статус', left - 140, top - 15);
+        ctx.fillText('Статус', left - 250, top - 15);
+        ctx.restore();
+    }
+}
+
+export const taskName = {
+    id: 'taskName',
+    beforeDatasetsDraw(chart, args, pluginOptions) {
+        const { ctx, data, chartArea: { top, bottom, left, right }, scales: { x, y } } = chart;
+
+        ctx.font = 'bolder 12px sans-serif';
+        ctx.fillStyle = 'black';
+        ctx.fillText('Название', left - 60, top - 13);
         ctx.restore();
     }
 }

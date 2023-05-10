@@ -13,6 +13,6 @@ export default class Picture {
     constructor(item) {
         this.uid = item?.uid ?? null;
         this.id = item?.id ?? null;
-        this.url = item?.url ?? '/drupal/web/sites/default/files/inline-images/anonym.png';
+        this.url = item?.url ?? '/drupal9/web/sites/default/files/inline-images/anonym.png';
     }
 }

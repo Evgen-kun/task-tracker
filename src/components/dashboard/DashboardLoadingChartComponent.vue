@@ -75,7 +75,10 @@
       mounted() {
         // this.allTasks = store.getters['taskM/getTasksFromMe'];
         // this.allUsers = store.getters['userM/getUsers'];
-        this.allTasks = store.getters['taskM/getTasksFromMeByProjectID'](this.$route.params.projectID);
+        // this.allTasks = store.getters['taskM/getTasksFromMeByProjectID'](this.$route.params.projectID);
+        this.allTasks = store.getters['taskM/getTasksFromProjectsByProjectID'](this.$route.params.projectID);
+        console.log("Все задачи");
+        console.log(this.allTasks);
         const allUsers = new Map();
         this.allTasks.forEach((task) => {
           allUsers.set(task.executor.uid, task.executor);

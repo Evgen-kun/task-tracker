@@ -73,7 +73,7 @@ export default {
             {
                 id: 3,
                 title: "Просроченные задачи",
-                value: 0  // TODO
+                value: this.tasks.filter(task => new Date(task.dueDate) < new Date()).length
             },
             {
                 id: 4,

@@ -59,7 +59,7 @@ import {
   assignedTasks,
   status,
   weekend,
-//   // progressBar
+  taskName,
 } from './plugins/chartPlugins'
 
 
@@ -80,7 +80,7 @@ ChartJS.register(
   assignedTasks,
   status,
   weekend,
-  // progressBar
+  taskName,
 );
 
 import store from '@/plugins/store';
@@ -186,10 +186,15 @@ export default {
             min: 0,
             max: 10,
             labels: [],
-          }
+            ticks: {
+              font: {
+                weight: 'bold'
+              }
+            }
+          },
         },
         plugins: {
-          plugins: [todayLine, assignedTasks, status, weekend, /*progressBar*/],
+          plugins: [/*todayLine, assignedTasks, status, weekend*/],
           weekend: {
             weekendColor: 'rgba(102, 102, 102, 0.2)'
           },
@@ -248,14 +253,14 @@ export default {
       this.key += 1;
       // this.dynamicHeight(this.data.datasets[0].data.length);
     },
-    // dynamicHeight(rowsCount) {
-    //   let rowHeight = 50;
-    //   const chartBox = document.querySelector('canvas');
-    //   console.log(chartBox);
-    //   console.log(chartBox.parentNode);
+    dynamicHeight(rowsCount) {
+      let rowHeight = 50;
+      const chartBox = document.querySelector('canvas');
+      console.log(chartBox);
+      console.log(chartBox.parentNode);
 
-    //   chartBox.parentNode.style.height = rowHeight * rowsCount + 'px';
-    // },
+      chartBox.parentNode.style.height = rowHeight * rowsCount + 'px';
+    },
   },
   watch: {
     dateStart() {

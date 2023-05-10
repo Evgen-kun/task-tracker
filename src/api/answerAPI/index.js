@@ -8,18 +8,22 @@ export const AnsQueryAPI = {
      * @returns {Promise<AxiosResponse<any>>}
      */
     getAnswers() {
-        const url = `http://localhost/drupal/web/jsonapi/comment/answer?include=field_file`;
+        const url = `http://localhost/drupal9/web/jsonapi/comment/answer?include=field_file`;
         return QueryAPIInstance.get(url);
     },
 
     getMyAnswers(userUID) {
-        const url = `http://localhost/drupal/web/jsonapi/comment/answer?include=field_file&filter[uid.id]=${userUID}`;
+        const url = `http://localhost/drupal9/web/jsonapi/comment/answer?include=field_file&filter[uid.id]=${userUID}`;
         return QueryAPIInstance.get(url);
     },
 
-    async createAnswer(title, body, progressUID, taskUID, files = []) {
-        const url = `http://localhost/drupal/web/jsonapi/comment/answer`;
-        console.log('Files: ' + files);
+    getFile(fileID) {
+        const url = `http://localhost/drupal9/web/jsonapi/file/file?filter[id]=${fileID}`;
+        return QueryAPIInstance.get(url);
+    },
+
+    async createAnswer(title, body, progressUID, taskUID, filesID = []) {
+        const url = `http://localhost/drupal9/web/jsonapi/comment/answer`;
         const data = { 
             data: {
                 type: "comment--answer",
@@ -32,8 +36,8 @@ export const AnsQueryAPI = {
                         value:"node"
                     },
                     comment_body: {
-                        value: body,
-                        format: "plain_text"
+                        value: `<p>${body}</p>`,
+                        format: "basic_html"
                     }
                 },
                 relationships: {
@@ -48,10 +52,10 @@ export const AnsQueryAPI = {
                             type: "taxonomy_term--progress",
                             id: progressUID
                         }
+                    },
+                    field_file: {
+                        data: (filesID.length > 0)? filesID.map(fileID => ({type: "file--file", id: fileID})) : []
                     }
-                    // field_file: {
-                    //     data: files
-                    // }
                 }
             }
         };
@@ -65,22 +69,16 @@ export const AnsQueryAPI = {
     },
 
     async createFile(fileName, fileBody) {
-        const url = `http://localhost/drupal/web/jsonapi/file/file`;
-        // const data = {
-        //     data: {
-        //         type: "file--file",
-        //         meta: {
-        //             description: ""
-        //         }
-        //     }
-        // };
-        // const data1 = Buffer.from(fileBody, 'binary');
+        const url = `http://localhost/drupal9/web/jsonapi/file/file`;
+        // const data = Buffer.from(fileBody, 'binary');
+        let formData = new FormData();
+        formData.append(fileName, fileBody);
         PostQueryAPIInstance.defaults.headers['Accept'] = 'application/vnd.api+json';
         PostQueryAPIInstance.defaults.headers['Content-Type'] = 'application/octet-stream';
         PostQueryAPIInstance.defaults.headers['Content-Disposition'] = 'file; filename="' + fileName + '"';
         PostQueryAPIInstance.defaults.headers['Authorization'] = `Basic ${await store.getters['authM/getBasicToken']}`;
         PostQueryAPIInstance.defaults.headers['X-CSRF-Token'] = await store.getters['authM/getToken'];
-        // return PostQueryAPIInstance.post(url, data1);
+        return PostQueryAPIInstance.post(url, formData);
     },
 
 }

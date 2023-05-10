@@ -15,12 +15,13 @@
             </v-toolbar-title>
 
             <template v-slot:append>
-                <v-badge
+                <v-chip
                     v-if="inProgressRestrictionCheck"
-                    color="error"
-                    :content="inProgressRestriction"
-                    inline
-                ></v-badge>
+                    :color="inProgressRestrictionColor"
+                    size="large"
+                    variant='elevated'
+                    class="elevation-0 text-h6"
+                >{{ inProgressRestriction }}</v-chip>
             </template>
             <!-- <v-spacer></v-spacer>
 
@@ -106,6 +107,11 @@
         const project = this.$store.getters['projectM/getProjectByID'](this.$route.params.projectID);
         if(project.inProgressRestriction) return `${this.tasks.length}/${project.inProgressRestriction}`;
         else return null;
+      },
+      inProgressRestrictionColor() {
+        const project = this.$store.getters['projectM/getProjectByID'](this.$route.params.projectID);
+        if(project.inProgressRestriction == this.tasks.length) return 'error';
+        else return 'secondary';
       }
     },
     components: {

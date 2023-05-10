@@ -59,7 +59,7 @@
                             size="small"
                             label
                             color="white"
-                            text-color="white"
+                            text-color="black"
                             class="me-2"
                             >
                             {{ fileName }}
@@ -95,6 +95,7 @@
 </template>
 
 <script>
+import store from '@/plugins/store';
 import { mapGetters } from 'vuex';
 import LastAnswerDialogComponent from '../LastAnswerDialogComponent.vue';
 // import LastAnswerComponent from '../LastAnswerComponent.vue';
@@ -130,24 +131,15 @@ import LastAnswerDialogComponent from '../LastAnswerDialogComponent.vue';
         async addAns() {
             const { valid } = await this.$refs.ansForm.validate();
             if (valid) {
-                // await store.dispatch('taskM/createAnswer', {
-                //     title: this.ansTitle, 
-                //     body: this.ansText, 
-                //     taskUID: this.taskID, 
-                //     progress: this.select, 
-                //     files: this.files
-                // });
-                console.log({
-                    title: this.ansTitle,
-                    body: this.ansText,
-                    taskUID: this.task.id,
-                    progress: this.select,
+                await store.dispatch('taskM/createAnswer', {
+                    title: this.ansTitle, 
+                    body: this.ansText, 
+                    taskUID: this.taskID, 
+                    progress: this.select, 
                     files: this.files
                 });
             }
-            else
-                alert("Ans is NOT validate");
-            console.log(this.files);
+            else alert("Ans is NOT validate");
         },
         resetAns() {
             this.ansTitle = this.ansText = "";
@@ -163,6 +155,6 @@ import LastAnswerDialogComponent from '../LastAnswerDialogComponent.vue';
             progress: "getProgress",
         }),
     },
-    components: { /*LastAnswerComponent, */LastAnswerDialogComponent }
+    components: { LastAnswerDialogComponent }
 }
 </script>

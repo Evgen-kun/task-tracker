@@ -45,7 +45,6 @@
 </template>
 
 <script>
-import Answer from '@/model/Answer';
 
     export default {
         data() {
@@ -65,7 +64,7 @@ import Answer from '@/model/Answer';
         computed: {
             lastAnswer() {
               if(this.answers.length !== 0) return this.answers[this.answers.length - 1];
-              else return null;//new Answer();
+              else return null;
             },
         },
     }

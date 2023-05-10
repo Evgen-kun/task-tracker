@@ -8,7 +8,7 @@ export const AuthAPI = {
      * @returns {Promise<AxiosResponse<any>>}
      */
     login(login, password) {
-        const url = 'http://localhost/drupal/web/user/login';
+        const url = 'http://localhost/drupal9/web/user/login';
         var bodyFormData = new FormData();
         bodyFormData.append('name', login);
         bodyFormData.append('pass', password);
@@ -24,7 +24,7 @@ export const AuthAPI = {
      * @returns {Promise<AxiosResponse<any>>}
      */
     getToken() {
-        const url = `http://localhost/drupal/web/session/token`;
+        const url = `http://localhost/drupal9/web/session/token`;
         return LoginAPIInstance.get(url);
     },
 
@@ -33,7 +33,7 @@ export const AuthAPI = {
      * @returns {Promise<AxiosResponse<any>>}
      */
     getUserUID() {
-        const url = `http://localhost/drupal/web/jsonapi`;
+        const url = `http://localhost/drupal9/web/jsonapi`;
         return LoginAPIInstance.get(url);
     },
 
@@ -42,7 +42,7 @@ export const AuthAPI = {
      * @returns {Promise<AxiosResponse<any>>}
      */
     logout() {
-        const url = 'http://localhost/drupal/web/user/logout';
+        const url = 'http://localhost/drupal9/web/user/logout';
         //console.log("logout отработал " + name);
         return LoginAPIInstance.get(url);
     }

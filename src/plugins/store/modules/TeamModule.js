@@ -61,7 +61,7 @@ export const TeamModule = {
                 const team = new Team();
                 team.id = item.id;
                 team.title = item.attributes.title;
-                team.body = (item.attributes.body !== null)? item.attributes.body.value : null;
+                team.body = (item.attributes.body !== null)? item.attributes.body.value.replace(/(<p>|<\/p>)/g, '') : null;
                 const teamUsersUID = item.relationships.field_member.data.map(user => user.id);
                 team.users = allUsers.filter(user => teamUsersUID.includes(user.uid));
                 console.log(team.users);

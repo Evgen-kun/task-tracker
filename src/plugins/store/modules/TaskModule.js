@@ -179,8 +179,6 @@ export const TaskModule = {
         async queryTasksToMe({ commit, getters, rootGetters }, { userUID }) {
             const res = await QueryAPI.getTasks(userUID);
             const comments = await AnsQueryAPI.getMyAnswers(userUID);
-            // console.log(res);
-            // console.log(comments);
 
             const tasks = [];
             res.data.data.forEach((item) => {
@@ -204,10 +202,8 @@ export const TaskModule = {
                             author.uid = authorUID;
                             author.id = itemInc.attributes.drupal_internal__uid;
                             author.name = itemInc.attributes.display_name;
-
                             const picture = new Picture();
                             picture.uid = itemInc.relationships.user_picture.data.id;
-
                             author.picture = picture;
                             task.author = author;
                         }
@@ -234,7 +230,6 @@ export const TaskModule = {
                     task.progress = answer.progress ?? 0;
 
                     const answerFilesID = [];
-                    // console.log(com.relationships.field_file.data);
                     if(com.relationships.field_file.data.length !== 0) {
                         com.relationships.field_file.data.forEach((file) => {
                             answerFilesID.push(file.id);
@@ -245,12 +240,10 @@ export const TaskModule = {
                     if(Object.prototype.hasOwnProperty.call(comments.data, 'included')) {
                         comments.data.included.forEach((itemInc) => {
                             if(!answerFilesID.includes(itemInc.id)) { return; }
-                            
                             const file = new File();
                             file.id = itemInc.id;
                             file.name = itemInc.attributes.filename;
                             file.url = itemInc.attributes.uri;
-
                             answer.files.push(file);
                         });
                     }
@@ -261,19 +254,15 @@ export const TaskModule = {
                 tasks.push(task);
             });
 
-            console.log(tasks);
             commit('setTasksToMe', tasks);
         },
 
         async queryTasksFromMe({ commit, getters, rootGetters }, { userUID }) {
             const res = await QueryAPI.getMyTasks(userUID);
             const comments = await AnsQueryAPI.getAnswers();
-            // console.log(res);
-            // console.log(comments);
 
             const tasks = [];
             res.data.data.forEach((item) => {
-                // console.log("Новая итерация i");
                 const task = new Task();
                 task.id = item.id;
                 task.title = item.attributes.title;
@@ -294,10 +283,8 @@ export const TaskModule = {
                             executor.uid = executorUID;
                             executor.id = itemInc.attributes.drupal_internal__uid;
                             executor.name = itemInc.attributes.display_name;
-
                             const picture = new Picture();
                             picture.uid = itemInc.relationships.user_picture.data.id;
-
                             executor.picture = picture;
                             task.executor = executor;
                         }
@@ -322,7 +309,6 @@ export const TaskModule = {
                     task.progress = (maxCID < com.attributes.drupal_internal__cid)? answer.progress : task.progress;
 
                     const answerFilesID = [];
-                    // console.log(com.relationships.field_file.data);
                     if(com.relationships.field_file.data.length !== 0) {
                         com.relationships.field_file.data.forEach((file) => {
                             answerFilesID.push(file.id);
@@ -330,16 +316,13 @@ export const TaskModule = {
                     }
                     if(maxCID < com.attributes.drupal_internal__cid) maxCID = com.attributes.drupal_internal__cid;
                     
-
                     if(Object.prototype.hasOwnProperty.call(comments.data, 'included')) {
                         comments.data.included.forEach((itemInc) => {
                             if(!answerFilesID.includes(itemInc.id)) { return; }
-
                             const file = new File();
                             file.id = itemInc.id;
                             file.name = itemInc.attributes.filename;
                             file.url = itemInc.attributes.uri.url;
-                            // console.log('links: ' + file.link);
                             answer.files.push(file);
                         });
                     }
@@ -348,10 +331,8 @@ export const TaskModule = {
                 });
 
                 tasks.push(task);
-                // console.log(task);
             });
 
-            console.log(tasks);
             commit('setTasksFromMe', tasks);
         },
 
@@ -360,12 +341,9 @@ export const TaskModule = {
 
             const res = await QueryAPI.getFilteredTasks(projects.map(pr => pr.id));
             const comments = await AnsQueryAPI.getAnswers();
-            // console.log(res);
-            // console.log(comments);
 
             const tasks = [];
             res.data.data.forEach((item) => {
-                // console.log("Новая итерация i");
                 const task = new Task();
                 task.id = item.id;
                 task.title = item.attributes.title;
@@ -387,10 +365,8 @@ export const TaskModule = {
                             executor.uid = executorUID;
                             executor.id = itemInc.attributes.drupal_internal__uid;
                             executor.name = itemInc.attributes.display_name;
-
                             const picture = new Picture();
                             picture.uid = itemInc.relationships.user_picture.data.id;
-
                             executor.picture = picture;
                             task.executor = executor;
                         }
@@ -399,10 +375,8 @@ export const TaskModule = {
                             author.uid = executorUID;
                             author.id = itemInc.attributes.drupal_internal__uid;
                             author.name = itemInc.attributes.display_name;
-
                             const picture = new Picture();
                             picture.uid = itemInc.relationships.user_picture.data.id;
-
                             author.picture = picture;
                             task.author = author;
                         }
@@ -428,7 +402,6 @@ export const TaskModule = {
                     task.progress = (maxCID < com.attributes.drupal_internal__cid)? answer.progress : task.progress;
 
                     const answerFilesID = [];
-                    // console.log(com.relationships.field_file.data);
                     if(com.relationships.field_file.data.length !== 0) {
                         com.relationships.field_file.data.forEach((file) => {
                             answerFilesID.push(file.id);
@@ -454,19 +427,12 @@ export const TaskModule = {
                 });
 
                 tasks.push(task);
-                // console.log(task);
             });
 
-            console.log(tasks);
             commit('setTasksFromProjects', tasks);
         },
 
         async replaceTasks({ rootGetters, dispatch }, { tasks, status, type = 'fromMe' }) {
-            console.log("Обновление статуса");
-
-            // console.log(tasks);
-            // console.log(getters.getTasksFromMe);
-
             await tasks.forEach(async (task) => {
                 const user = rootGetters['authM/getUser'];
                 if((!user.roles.includes('administrator')) && (!user.roles.includes('manager')) 
@@ -482,67 +448,40 @@ export const TaskModule = {
                     type: type
                 });
             });
-        
-            // commit('replaceTasksFromMe', { tasks: tasks, title: status });
         },
 
         async getStatuses({ commit }) {
             const res = await QueryAPI.getStatuses();
-            //console.log(res);
 
             const statuses = new Map();
             res.data.data.forEach((item) => {
                 statuses.set(item.id, item.attributes.name);
             });
 
-            //console.log(statuses);
             commit('setStatuses', statuses);
         },
 
         async getProgress({ commit }) {
             const res = await QueryAPI.getProgress();
-            //console.log(res);
 
             const progress = new Map();
             res.data.data.forEach((item) => {
                 progress.set(item.id, Number(item.attributes.name.slice(0, -1)));
             });
 
-            //console.log(progress);
             commit('setProgress', progress);
         },
 
         async getDifficulty({ commit }) {
             const res = await QueryAPI.getDifficulty();
-            //console.log(res);
 
             const difficulty = new Map();
             res.data.data.forEach((item) => {
                 difficulty.set(item.id, item.attributes.name);
             });
 
-            //console.log(statuses);
             commit('setDifficulty', difficulty);
         },
-
-        /*async getUsers({ commit }) {
-            const res = await QueryAPI.getUsers();
-            console.log(res);
-
-            const users = [];
-            //console.log(res.data.data.length);
-            res.data.data.forEach((item) => {
-                if(item.id === ADMIN_ID || item.id === GUEST_ID) { return; }
-                const user = new User();
-                user.uid = item.id;
-                user.id = item.attributes.drupal_internal__uid;
-                user.name = item.attributes.display_name;
-                users.push(user);
-            });
-
-            console.log(users);
-            commit('setUsers', users);
-        },*/
 
         async createNewTask({ commit, dispatch, getters, rootGetters }, { title, body, executorUID, difficultyValue, projectID, beginDate, dueDate }) {
             var executor;
@@ -565,9 +504,6 @@ export const TaskModule = {
                 beginDate,
                 dueDate
             );
-            
-            // console.log(res);
-            // console.log(executor);
 
             const task = new Task();
             task.id = res.data.data.id;
@@ -602,7 +538,6 @@ export const TaskModule = {
                 beginDate,
                 dueDate
             );
-            console.log(res);
 
             console.log("executorUID" + executorUID);
             const task = (type === 'fromMe')? getters.getTaskFromMeByID(id) : getters.getTaskFromProjectsByID(id);
@@ -619,16 +554,6 @@ export const TaskModule = {
             task.project = (res.data.data.relationships.field_project?.data?.id)? 
                 rootGetters['projectM/getProjectByID'](res.data.data.relationships.field_project.data.id) : null;
 
-            /*const task = {};
-            task.id = id;
-            task.title = res.data.data.attributes.title;
-            task.body = (res.data.data.attributes.body !== null)? res.data.data.attributes.body.processed.replace(/(<p>|<\/p>)/g, '') : null;
-            task.executorUID = res.data.data.relationships.field_ispolnitel.data.id;*/
-            /*const json = await QueryAPI.getUserData(res.data.data.relationships.field_ispolnitel.data.id);
-            task.executor = json.data.data.attributes.display_name;
-            task.executorPicture = json.data.included[0].attributes.uri.url;*/
-
-            console.log(task);
             if(type === 'fromMe') commit('editTaskFromMe', task);
             else commit('editTaskFromProjects', task);
         },
@@ -641,11 +566,15 @@ export const TaskModule = {
             commit('deleteTaskFromMe', id);
         },
 
-        async createAnswer({ commit, getters }, { title, body, taskUID, progress, files }) { // TODO
+        async createAnswer({ commit, getters }, { title, body, taskUID, progress, files }) {
+            const filesID = [];
+            if(files.length > 0) {
+                for (const file of files) {
+                    filesID.push((await AnsQueryAPI.createFile(file.name, file.File)).data.data.id) ;
+                }
+            }
             const progressMap = getters.getProgress;
-            const res = await AnsQueryAPI.createAnswer(title, body, [...progressMap.keys()].find((key) => progressMap.get(key) === progress), taskUID);
-            console.log(res);
-            console.log('Файлы:' + files)
+            const res = await AnsQueryAPI.createAnswer(title, body, [...progressMap.keys()].find((key) => progressMap.get(key) === progress), taskUID, filesID);
 
             const task = getters.getUserTaskByID(taskUID);
 
@@ -655,30 +584,21 @@ export const TaskModule = {
             answer.body = res.data.data.attributes.comment_body.processed.replace(/(<p>|<\/p>)/g, '');
             answer.progress = progress;
 
-            // answer.filesID = [];
-            // answer.files = files;
-            // if(res.data.data.relationships.field_file.data.length !== 0) {
-            //     res.data.data.relationships.field_file.data.forEach((item) => {
-            //         const file = new File();
-            //         file.uid = item.id;
-            //         file.id = item.meta.drupal_internal__target_id;
-            //         file.name = 
-            //         answer.filesID.push(item.id);
-            //     });
-            // }
+            if(res.data.data.relationships.field_file.data.length !== 0) {
+                for (const item of res.data.data.relationships.field_file.data) {
+                    const file = new File();
+                    file.uid = item.id;
+                    file.id = item.meta.drupal_internal__target_id;
+                    const includedFile = await AnsQueryAPI.getFile(file.uid);
+                    file.name = includedFile.attributes.filename;
+                    file.url = includedFile.attributes.uri.url;
+                    answer.files.push(file);
+                }
+            }
             task.progress = progress;
             task.answers.push(answer);
 
-            console.log(task);
-            // comments.data.included.forEach((itemInc) => {
-            //     if(task.ans.filesID.includes(itemInc.id)) {
-            //         task.ans.files.push(itemInc.attributes.filename);
-            //     }
-            //     else { return; }
-            // });
-
             commit('addAnswer', task);
         },
-
     }
 }

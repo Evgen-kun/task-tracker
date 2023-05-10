@@ -9,7 +9,7 @@
                 </TeamComponent>
             </v-col>
 
-            <v-col v-if="currentUser.roles.includes('administrator') || currentUser.roles.includes('manager')" style="">
+            <v-col v-if="currentUser.roles.includes('administrator') || currentUser.roles.includes('manager')">
                 <CreateTeamComponent :allUsers="users"/>
             </v-col>
 
@@ -52,6 +52,3 @@ export default {
     }
 }
 </script>
-
-<style>
-</style>

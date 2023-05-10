@@ -56,7 +56,7 @@ export const AuthModule = {
     },
 
     actions: {
-        async onLogin({ commit }, { login, password }) {
+        async onLogin({ commit, dispatch }, { login, password }) {
             const auth = await AuthAPI.login(login, password);
             //const userID = Number(auth.headers.link.split(';')[0].substr(-2, 1));
             console.log("Auth: " + auth);
@@ -81,7 +81,7 @@ export const AuthModule = {
             const token = await AuthAPI.getToken();
             console.log("X token: " + token.data);
 
-            const basicToken = btoa(user.name + ":" + password);
+            const basicToken = btoa(dispatch('toBinary', user.name) + ":" + password);
 
             commit('setUser', user);
             commit('setToken', token.data);
@@ -102,6 +102,20 @@ export const AuthModule = {
             // console.log("разлогинен");
             //commit('deleteUserRole');
             //delete DefaultAPIInstance.defaults.headers['Cookie'];
-        }
+        },
+
+        toBinary(context, string) {
+            const codeUnits = Uint16Array.from(
+              { length: string.length },
+              (element, index) => string.charCodeAt(index)
+            );
+            const charCodes = new Uint8Array(codeUnits.buffer);
+          
+            let result = "";
+            charCodes.forEach((char) => {
+              result += String.fromCharCode(char);
+            });
+            return result;
+          }
     }
 }

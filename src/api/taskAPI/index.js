@@ -8,47 +8,47 @@ export const QueryAPI = {
      * @returns {Promise<AxiosResponse<any>>}
      */
     getTasks(userUID) {
-        const url = `http://localhost/drupal/web/jsonapi/node/task?include=uid.user_picture,field_project&filter[field_ispolnitel.id]=${userUID}&fields[node--task]=id,title,body,uid,field_status,field_difficulty_level,field_begin_date,field_due_date,field_project&fields[user--user]=id,display_name,drupal_internal__uid,user_picture&fields[file--file]=id,uid,uri`;
+        const url = `http://localhost/drupal9/web/jsonapi/node/task?include=uid.user_picture,field_project&filter[field_ispolnitel.id]=${userUID}&fields[node--task]=id,title,body,uid,field_status,field_difficulty_level,field_begin_date,field_due_date,field_project&fields[user--user]=id,display_name,drupal_internal__uid,user_picture&fields[file--file]=id,uid,uri`;
         return QueryAPIInstance.get(url);
     },
 
     getMyTasks(userUID) {
-        const url = `http://localhost/drupal/web/jsonapi/node/task?include=field_ispolnitel.user_picture&filter[uid.id]=${userUID}&fields[node--task]=id,title,body,field_ispolnitel,field_status,field_difficulty_level,field_begin_date,field_due_date,field_project&fields[user--user]=id,display_name,drupal_internal__uid,user_picture&fields[file--file]=id,uri`;
+        const url = `http://localhost/drupal9/web/jsonapi/node/task?include=field_ispolnitel.user_picture&filter[uid.id]=${userUID}&fields[node--task]=id,title,body,field_ispolnitel,field_status,field_difficulty_level,field_begin_date,field_due_date,field_project&fields[user--user]=id,display_name,drupal_internal__uid,user_picture&fields[file--file]=id,uri`;
         return QueryAPIInstance.get(url);
     },
 
     getFilteredTasks(projectsID) {
         const str = projectsID.reduce(
             (acc, item, i) => acc + `&filter[projectsFilter][condition][value][${i + 1}]=${item}`, '');
-        const url = `http://localhost/drupal/web/jsonapi/node/task?include=uid.user_picture,field_ispolnitel.user_picture&fields[node--task]=id,title,body,field_ispolnitel,field_status,field_difficulty_level,field_begin_date,field_due_date,field_project,uid&fields[user--user]=id,display_name,drupal_internal__uid,user_picture&fields[file--file]=id,uri&filter[projectsFilter][condition][path]=field_project.id&filter[projectsFilter][condition][operator]=IN${str}`;
+        const url = `http://localhost/drupal9/web/jsonapi/node/task?include=uid.user_picture,field_ispolnitel.user_picture&fields[node--task]=id,title,body,field_ispolnitel,field_status,field_difficulty_level,field_begin_date,field_due_date,field_project,uid&fields[user--user]=id,display_name,drupal_internal__uid,user_picture&fields[file--file]=id,uri&filter[projectsFilter][condition][path]=field_project.id&filter[projectsFilter][condition][operator]=IN${str}`;
         return QueryAPIInstance.get(url);
     },
 
     getStatuses() {
-        const url = `http://localhost/drupal/web/jsonapi/taxonomy_term/status?fields[taxonomy_term--status]=id,name`;
+        const url = `http://localhost/drupal9/web/jsonapi/taxonomy_term/status?fields[taxonomy_term--status]=id,name`;
         return QueryAPIInstance.get(url);
     },
 
     getProgress() {
-        const url = `http://localhost/drupal/web/jsonapi/taxonomy_term/progress?fields[taxonomy_term--progress]=id,name`;
+        const url = `http://localhost/drupal9/web/jsonapi/taxonomy_term/progress?fields[taxonomy_term--progress]=id,name`;
         return QueryAPIInstance.get(url);
     },
 
     getDifficulty() {
-        const url = `http://localhost/drupal/web/jsonapi/taxonomy_term/difficulty_level?fields[taxonomy_term--difficulty_level]=id,name`;
+        const url = `http://localhost/drupal9/web/jsonapi/taxonomy_term/difficulty_level?fields[taxonomy_term--difficulty_level]=id,name`;
         return QueryAPIInstance.get(url);
     },
 
     async createTask(title, body, executorUID, difficultyID, projectID, beginDate, dueDate) {
-        const url = `http://localhost/drupal/web/jsonapi/node/task`;
+        const url = `http://localhost/drupal9/web/jsonapi/node/task`;
         const data = { 
             data: {
                 type: "node--task",
                 attributes: {
                     title: title,
                     body: {
-                        value: body,
-                        format: "plain_text"
+                        value: `<p>${body}</p>`,
+                        format: "basic_html"
                     },
                     field_begin_date: beginDate,
                     field_due_date: dueDate
@@ -87,7 +87,7 @@ export const QueryAPI = {
     },
 
     async editTask(id, title, body, executorUID, statusUID, difficultyID, projectID, beginDate, dueDate) {
-        const url = `http://localhost/drupal/web/jsonapi/node/task/${id}`;
+        const url = `http://localhost/drupal9/web/jsonapi/node/task/${id}`;
         const data = { 
             data: {
                 type: "node--task",
@@ -95,8 +95,8 @@ export const QueryAPI = {
                 attributes: {
                     title: title,
                     body: {
-                        value: body,
-                        format: "plain_text"
+                        value: `<p>${body}</p>`,
+                        format: "basic_html"
                     },
                     field_begin_date: beginDate,
                     field_due_date: dueDate
@@ -140,7 +140,7 @@ export const QueryAPI = {
     },
 
     async deleteTask(id) {
-        const url = `http://localhost/drupal/web/jsonapi/node/task/${id}`;
+        const url = `http://localhost/drupal9/web/jsonapi/node/task/${id}`;
 
         PostQueryAPIInstance.defaults.headers['X-CSRF-Token'] = await store.getters['authM/getToken'];
         PostQueryAPIInstance.defaults.headers['Content-Type'] = 'application/vnd.api+json';

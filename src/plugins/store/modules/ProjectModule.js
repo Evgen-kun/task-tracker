@@ -59,7 +59,7 @@ export const ProjectModule = {
                 const project = new Project();
                 project.id = item.id;
                 project.title = item.attributes.title;
-                project.body = (item.attributes.body !== null)? item.attributes.body.value : null;
+                project.body = (item.attributes.body !== null)? item.attributes.body.value.replace(/(<p>|<\/p>)/g, '') : null;
                 // const projectTasksID = item.relationships.field_task.data.map(task => task.id);
                 // project.tasks = allTasks.filter(task => projectTasksID.includes(task.id));
                 project.team = (item.relationships.field_team?.data?.id)? rootGetters['teamM/getTeamByID'](item.relationships.field_team.data.id) : null;
@@ -123,7 +123,7 @@ export const ProjectModule = {
             const project = new Project();
             project.id = res.data.data.id;
             project.title = res.data.data.attributes.title;
-            project.body = (res.data.data.attributes.body !== null)? res.data.data.attributes.body.value : null;
+            project.body = (res.data.data.attributes.body !== null)? res.data.data.attributes.body.value.replace(/(<p>|<\/p>)/g, '') : null;
             project.team = (res.data.data.relationships.field_team?.data?.id)? rootGetters['teamM/getTeamByID'](res.data.data.relationships.field_team.data.id) : null;
             project.inProgressRestriction = res.data.data.attributes.field_inprogress_restriction;
 

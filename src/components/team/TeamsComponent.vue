@@ -25,12 +25,7 @@ import CreateTeamComponent from './actions/CreateTeamComponent.vue';
 
 export default {
     data() {
-        return {
-
-        }
-    },
-    methods: {
-
+        return {}
     },
     computed: {
         ...mapGetters({

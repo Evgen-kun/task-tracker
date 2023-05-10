@@ -79,5 +79,4 @@ export const UsersQueryAPI = {
         const url = `http://localhost/drupal9/web/jsonapi/user/user?filter[id]=${userUID}&fields[user--user]=id,name,mail,user_picture,roles`;
         return QueryAPIInstance.get(url);
     },
-
 }

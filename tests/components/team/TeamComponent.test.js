@@ -6,7 +6,6 @@ import { describe, expect, it } from "vitest";
 import Team from "@/model/Team";
 import User from "@/model/User";
 
-
 const allUsers = [
     new User({ uid: '1', name: "Test John", roles: ['developer'] }),
     new User({ uid: '2', name: "Test John 2", roles: ['developer'] }),
@@ -21,8 +20,6 @@ const team = new Team({
 });
 
 describe('TeamComponent.vue', () => {
-    
-
     it('correct team-card view', async () => {
         const wrapper = mount(TeamComponent, {
             props: {
@@ -34,7 +31,6 @@ describe('TeamComponent.vue', () => {
                 plugins: [store, vuetify],
             },
         });
-
         const teamCard = wrapper.find('.team-card');
         expect(teamCard.exists()).toBe(true);
         expect(teamCard.find('.team-card-title').text()).toBe(team.title);
@@ -53,12 +49,8 @@ describe('TeamComponent.vue', () => {
                 plugins: [store, vuetify],
             },
         });
-
         expect(wrapper.find('.team-card-menu-btn').exists()).toBeTruthy();
         expect(wrapper.find('.team-card-menu-btn').isDisabled()).toBeFalsy();
-        // expect(wrapper.find('.team-card-menu-list-item-edit').exists()).toBeFalsy();
-        // await wrapper.find('.team-card-menu-btn').trigger('click');
-        // expect(wrapper.find('.team-card-menu-list-item-edit').exists()).toBeTruthy();
     });
 
     it('correct team-card-menu-btn view for manager', async () => {
@@ -72,7 +64,6 @@ describe('TeamComponent.vue', () => {
                 plugins: [store, vuetify],
             },
         });
-
         expect(wrapper.find('.team-card-menu-btn').exists()).toBeTruthy();
         expect(wrapper.find('.team-card-menu-btn').isDisabled()).toBeFalsy();
     });
@@ -88,7 +79,6 @@ describe('TeamComponent.vue', () => {
                 plugins: [store, vuetify],
             },
         });
-
         expect(wrapper.find('.team-card-menu-btn').exists()).toBeFalsy();
     });
 });

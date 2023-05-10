@@ -50,76 +50,22 @@ export const ProjectModule = {
                 res = await ProjectsQueryAPI.getProjectsByTeamsID(teamsID);
             }
             else res = await ProjectsQueryAPI.getProjectsByUserUID(userUID);
-
-            // const res = await ProjectsQueryAPI.getProjectsByUserUID(userUID);
-            console.log(res);
-
             const projects = [];
-            res.data.data.forEach((item) => { //TODO Поменять сам запрос в API
+            res.data.data.forEach((item) => {
                 const project = new Project();
                 project.id = item.id;
                 project.title = item.attributes.title;
                 project.body = (item.attributes.body !== null)? item.attributes.body.value.replace(/(<p>|<\/p>)/g, '') : null;
-                // const projectTasksID = item.relationships.field_task.data.map(task => task.id);
-                // project.tasks = allTasks.filter(task => projectTasksID.includes(task.id));
                 project.team = (item.relationships.field_team?.data?.id)? rootGetters['teamM/getTeamByID'](item.relationships.field_team.data.id) : null;
                 project.inProgressRestriction = item.attributes.field_inprogress_restriction;
-
-                // res.data.included.forEach((itemInc) => {
-                //     if(itemInc.type === 'node--task') {
-                //         if(projectTasksID.includes(itemInc.id)) {
-                //             const task = new Task();
-                //             task.id = itemInc.id;
-                //             task.title = itemInc.attributes.title;
-                //             task.body = (item.attributes.body !== null)? item.attributes.body.value : null;
-
-                //             const executorUID = itemInc.relationships.field_ispolnitel.data.id;
-                //             const executor = dispatch('getUser', { userUID: executorUID }) ?? null;
-                //             task.executor = executor;
-
-                //             project.tasks.push(task);
-                //         }
-                //     }
-                // });
-
-                /*const executorsUID = [...new Set([...project.tasks.values()].map(task => task.executorUID))];
-                console.log(executorsUID);
-                var tasksWithExecutors = [];
-
-                res.data.included.forEach((itemInc) => {
-                    if(itemInc.type === 'user--user') {
-                        if(executorsUID.includes(itemInc.id)) {
-                            tasksWithExecutors = 
-                                [...project.tasks.values()]
-                                .filter(task => task.executorUID === itemInc.id)
-                                .map(task => { 
-                                    task.executor = itemInc.attributes.display_name;
-                                    task.executorPictureID = itemInc.relationships.user_picture.data.id;
-                                    project.tasks.set(task.id, task);
-                                    return task;
-                                });
-                            
-                        }
-                    }
-                });
-
-                res.data.included.forEach((itemInc) => {
-                    if(itemInc.type === 'file--file') {
-                        if(itemInc.id === task.executorPictureID) task.executorPicture = itemInc.attributes.uri.url;
-                    }
-                });*/
-
                 projects.push(project);
             });
 
-            console.log(projects);
             commit('setProjects', projects);
         },
 
         async queryProject({ commit, rootGetters }, { projectID }) {
             var res = await ProjectsQueryAPI.getProject(projectID);
-            console.log(res);
-
             const project = new Project();
             project.id = res.data.data.id;
             project.title = res.data.data.attributes.title;
@@ -132,19 +78,12 @@ export const ProjectModule = {
 
         getUser({ rootGetters }, { userUID }) {
             const allUsers = rootGetters['userM/getUsers'];
-
             const user = allUsers.find(user => user.uid === userUID);
-
-            console.log("USER: " + user);
             return user;
         },
 
         async createProject({ commit, rootGetters }, { title, body, inProgressRestriction, teamID }) {
             const res = await ProjectsQueryAPI.createProject(title, body, inProgressRestriction, teamID);
-            // const allUsers = rootGetters['userM/getUsers'];
-            // console.log(res);
-            // console.log(allUsers);
-
             const project = new Project();
             project.id = res.data.data.id;
             project.title = res.data.data.attributes.title;
@@ -152,19 +91,12 @@ export const ProjectModule = {
             project.team = (res.data.data.relationships.field_team?.data?.id)? 
                 rootGetters['teamM/getTeamByID'](res.data.data.relationships.field_team.data.id) : null;
             project.inProgressRestriction = res.data.data.attributes.field_inprogress_restriction;
-            // project.users = allUsers.filter(user => usersUID.includes(user.id));
 
-            console.log(project);
             commit('addProject', project);
         },
 
         async editProject({ getters, rootGetters, commit }, { id, title, body, inProgressRestriction, teamID }) {
             const res = await ProjectsQueryAPI.editProject(id, title, body, inProgressRestriction, teamID);
-            // const allUsers = rootGetters['userM/getUsers'];
-            // const allTasks = rootGetters['taskM/getTasks'];
-            // console.log(res);
-            // console.log(allUsers);
-
             const project = getters.getProjectByID(id);
             project.title = res.data.data.attributes.title;
             project.body = (res.data.data.attributes.body !== null)? res.data.data.attributes.body.value : null;
@@ -172,15 +104,11 @@ export const ProjectModule = {
                 rootGetters['teamM/getTeamByID'](res.data.data.relationships.field_team.data.id) : null;
             project.inProgressRestriction = res.data.data.attributes.field_inprogress_restriction;
 
-            console.log(project);
             commit('editProject', project);
         },
 
         async deleteProject({ commit }, { id }) {
-            console.log("Project id: " + id);
             const res = await ProjectsQueryAPI.deleteProject(id);
-            console.log(res);
-
             commit('deleteProject', id);
         },
     }

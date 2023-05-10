@@ -53,7 +53,6 @@ import {
 } from 'chart.js';
 import { Bar } from 'vue-chartjs';
 import 'chartjs-adapter-date-fns';
-// import annotationPlugin from 'chartjs-plugin-annotation';
 import { 
   todayLine,
   assignedTasks,
@@ -61,7 +60,6 @@ import {
   weekend,
   taskName,
 } from './plugins/chartPlugins'
-
 
 ChartJS.register(
   CategoryScale,
@@ -71,11 +69,6 @@ ChartJS.register(
   Title,
   Tooltip,
   Legend,
-  // todayLine,
-  // assignedTasks,
-  // status,
-  // weekend,
-  // annotationPlugin
   todayLine,
   assignedTasks,
   status,
@@ -109,7 +102,6 @@ export default {
       allTasks: [],
       allUsers: [],
       data: {
-        // labels: ['Выполненные', 'В процессе', 'Назначенные'],
         datasets: [
           {
             label: 'Задачи',
@@ -121,32 +113,11 @@ export default {
                 case "Сложно": return this.borderColors[2];
               }
             },
-            // borderColor: (ctx) => {
-            //   return this.borderColors[ctx.raw.status];
-            // },
-            // borderWidth: 1,
             borderSkipped: false,
             borderRadius: 10,
             barPercentage: 0.5,
             categoryPercentage: 0.9
           },
-          // {
-          //   label: 'Проекты',
-          //   data: [
-          //     { x: ['2023-03-11', '2023-04-09'], y: 'Project 1', name: 'John', status: 0 },
-          //     { x: ['2023-03-21', '2023-04-09'], y: 'Project 2', name: 'Jack', status: 0 },
-          //   ],
-          //   backgroundColor: (ctx) => {
-          //     return this.colors[ctx.raw.status];
-          //   },
-          //   borderColor: (ctx) => {
-          //     return this.borderColors[ctx.raw.status];
-          //   },
-          //   borderWidth: 1,
-          //   borderSkipped: false,
-          //   borderRadius: 10,
-          //   barPercentage: 0.5,
-          // }
         ],
       },
       options: {
@@ -170,7 +141,6 @@ export default {
             position: 'top',
             type: 'time',
             time: {
-              // unit: 'day',
               displayFormats: {
                 day: 'dd.MM'
               }
@@ -194,7 +164,7 @@ export default {
           },
         },
         plugins: {
-          plugins: [/*todayLine, assignedTasks, status, weekend*/],
+          plugins: [todayLine, assignedTasks, status, weekend],
           weekend: {
             weekendColor: 'rgba(102, 102, 102, 0.2)'
           },
@@ -204,14 +174,12 @@ export default {
           tooltip: {
             callbacks: {
               title: (ctx) => {
-                // console.log(ctx[0].raw.x[0]);
                 const startDate = new Date(ctx[0].raw.x[0]);
                 const endDate = new Date(ctx[0].raw.x[1]);
                 const formattedStartDate = startDate.toLocaleString([], {
                   year: 'numeric',
                   month: 'short',
                   day: 'numeric',
-                  // hour12: true
                 });
                 const formattedEndDate = endDate.toLocaleString([], {
                   year: 'numeric',
@@ -234,31 +202,22 @@ export default {
       return new Date(year, month, 0).getDate();
     },
     chartFilterDate() {
-      // console.log("Update!");
       this.options.scales.x.min = this.minDate;
       this.options.scales.x.max = this.maxDate;
 
       this.options = Object.assign({}, this.options);
     },
     chartFilterExecutor() {
-      console.log(this.filterExecutors);
-      console.log(this.data.datasets[0].data);
       if(this.filterExecutors.length === 0) { this.data.datasets[0].data = this.allTasks; }
       else { this.data.datasets[0].data = this.allTasks.filter(task => this.filterExecutors.includes(task.executorUID)); }
       this.options.scales.y.labels = this.data.datasets[0].data.filter(task => task.type === "task").map(task => task.y);
 
-      console.log(this.data.datasets[0].data);
       this.dynamicHeight(this.data.datasets[0].data.length);
-      // this.data = Object.assign({}, this.data);
       this.key += 1;
-      // this.dynamicHeight(this.data.datasets[0].data.length);
     },
     dynamicHeight(rowsCount) {
       let rowHeight = 50;
       const chartBox = document.querySelector('canvas');
-      console.log(chartBox);
-      console.log(chartBox.parentNode);
-
       chartBox.parentNode.style.height = rowHeight * rowsCount + 'px';
     },
   },
@@ -275,12 +234,8 @@ export default {
   },
   computed: {
     chartData() {
-      // if(this.filterExecutors.length === 0) { this.data.datasets[0].data = this.allTasks; }
-      // else { this.data.datasets[0].data = this.allTasks.filter(task => this.filterExecutors.includes(task.executorUID)); }
-
       return this.data;
     },
-
     startYear() {
       return this.dateStart.substring(0, 4);
     },
@@ -299,7 +254,6 @@ export default {
     maxDate() {
       return `${this.endYear}-${this.endMonth}-${this.lastDay(this.endYear, this.endMonth)}`
     },
-
     progressDate() {
       this.data.datasets[0].data.forEach(item => {
         const mutate = item;
@@ -317,12 +271,8 @@ export default {
     this.options = Object.assign({}, this.options);
   },
   created() {
-    // const tasks = store.getters['taskM/getTasksFromMe'];
-    // const tasks = store.getters['taskM/getTasksFromMeByProjectID'](this.$route.params.projectID); 
-    const tasks = store.getters['taskM/getTasksFromProjectsByProjectID'](this.$route.params.projectID); 
-    console.log(tasks);
+    const tasks = store.getters['taskM/getTasksFromProjectsByProjectID'](this.$route.params.projectID);
     this.allUsers = store.getters['userM/getUsers'].map(user => ({ ...user, nameWithID: `${user.name} (${user.id})` }));
-    // this.filterExecutors = this.allUsers.map(user => user.uid);
     this.options.scales.y.labels = tasks.map(task => task.title);
 
     const data = [];
@@ -338,20 +288,11 @@ export default {
           difficulty: task.difficulty,
           type: "task"
         });
-
         const beginDate = new Date(task.beginDate);
         const dueDate = new Date(task.dueDate);
-
         const timestamp = dueDate - beginDate;
-        console.log("timestamp: " + timestamp);
         const done = timestamp * task.progress * 0.01;
-        console.log("done: " + done);
         const doneTime = Number(beginDate) + done;
-        console.log("doneTime: " + doneTime);
-        console.log("res: " + beginDate);
-        console.log("res: " + dueDate);
-        console.log("res: " + new Date(doneTime));
-
         data.push({ 
           x: [task.beginDate, doneTime], 
           y: task.title, 
@@ -363,8 +304,6 @@ export default {
           type: "progress"
         });
       });
-
-    console.log("Dataset: " + data);
     this.allTasks = data;
     this.data.datasets[0].data = data;
     this.data.datasets[0].backgroundColor = (ctx) => {

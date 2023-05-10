@@ -68,7 +68,6 @@ export const ProjectsQueryAPI = {
             }
         };
         PostQueryAPIInstance.defaults.headers['X-CSRF-Token'] = await store.getters['authM/getToken'];
-        //PostQueryAPIInstance.defaults.headers['X-CSRF-Token'] = token.data;
         PostQueryAPIInstance.defaults.headers['Content-Type'] = 'application/vnd.api+json';
         PostQueryAPIInstance.defaults.headers['Accept'] = 'application/vnd.api+json';
         PostQueryAPIInstance.defaults.headers['Authorization'] = `Basic ${await store.getters['authM/getBasicToken']}`;
@@ -100,7 +99,6 @@ export const ProjectsQueryAPI = {
             }
         };
         PostQueryAPIInstance.defaults.headers['X-CSRF-Token'] = await store.getters['authM/getToken'];
-        //PostQueryAPIInstance.defaults.headers['X-CSRF-Token'] = token.data;
         PostQueryAPIInstance.defaults.headers['Content-Type'] = 'application/vnd.api+json';
         PostQueryAPIInstance.defaults.headers['Accept'] = 'application/vnd.api+json';
         PostQueryAPIInstance.defaults.headers['Authorization'] = `Basic ${await store.getters['authM/getBasicToken']}`;
@@ -109,12 +107,10 @@ export const ProjectsQueryAPI = {
     
     async deleteProject(id) {
         const url = `http://localhost/drupal9/web/jsonapi/node/project/${id}`;
-
         PostQueryAPIInstance.defaults.headers['X-CSRF-Token'] = await store.getters['authM/getToken'];
         PostQueryAPIInstance.defaults.headers['Content-Type'] = 'application/vnd.api+json';
         PostQueryAPIInstance.defaults.headers['Accept'] = 'application/vnd.api+json';
         PostQueryAPIInstance.defaults.headers['Authorization'] = `Basic ${await store.getters['authM/getBasicToken']}`;
         return PostQueryAPIInstance.delete(url);
     },
-
 }

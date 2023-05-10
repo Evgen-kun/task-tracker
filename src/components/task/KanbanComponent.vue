@@ -1,76 +1,62 @@
 <template>
-    <div class="d-flex flex-row">
-        <KanbanColumnComponent
-            v-for="column in columns"
-            v-bind:key="column.id"
-            v-bind:column="column"
-            v-bind:tasks="tasks.filter(task => task.status === column.title)"
-        ></KanbanColumnComponent>
-    </div>
+  <div class="d-flex flex-row">
+    <KanbanColumnComponent
+      v-for="column in columns"
+      v-bind:key="column.id"
+      v-bind:column="column"
+      v-bind:tasks="tasks.filter(task => task.status === column.title)"
+    ></KanbanColumnComponent>
+  </div>
 </template>
   
 <script>
-  // import draggable from 'vuedraggable';
-  import store from '@/plugins/store';
-  import { mapState } from 'vuex';
-  import KanbanColumnComponent from './KanbanColumnComponent.vue';
-  //import EditorComponent from './EditorComponent.vue';
+import store from '@/plugins/store';
+import { mapState } from 'vuex';
+import KanbanColumnComponent from './KanbanColumnComponent.vue';
   
-  export default {
-    data() {
-      return {
-        columns: [
-            {
-                id: 1,
-                title: "Не выполнено"
-            },
-            {
-                id: 2,
-                title: "Выполняется"
-            },
-            {
-                id: 3,
-                title: "Выполнено"
-            },
-        ],
+export default {
+  data() {
+    return {
+      columns: [
+          {
+              id: 1,
+              title: "Не выполнено"
+          },
+          {
+              id: 2,
+              title: "Выполняется"
+          },
+          {
+              id: 3,
+              title: "Выполнено"
+          },
+      ],
+    }
+  },
+  computed: {
+    tasks() {
+      return this.$store.getters['taskM/getTasksFromProjectsByProjectID'](this.$route.params.projectID);
+    },
+    ...mapState('taskM', {
+      myTasks: 'tasksFromProjects',
+    }),
+    myList: {
+      get() {
+          return this.myTasks;
+      },
+      set(value) {
+          this.$store.commit('taskM/setTasksFromProjects', value);
       }
     },
-    methods: {
-  
-    },
-    computed: {
-      // ...mapGetters('taskM', {
-      //   tasks: 'getTasksFromMe',
-      // }),
-      tasks() { 
-        // return this.$store.getters['taskM/getTasksFromMeByProjectID'](this.$route.params.projectID); 
-        return this.$store.getters['taskM/getTasksFromProjectsByProjectID'](this.$route.params.projectID);
-      },
-      ...mapState('taskM', {
-        // myTasks: 'tasksFromMe',
-        myTasks: 'tasksFromProjects',
-      }),
-      myList: {
-        get() {
-            return this.myTasks;
-        },
-        set(value) {
-            // this.$store.commit('taskM/setTasksFromMe', value);
-            this.$store.commit('taskM/setTasksFromProjects', value);
-        }
-      },
-    },
-    components: {
-      // draggable,
-      KanbanColumnComponent
-    },
-    async created() {
-      // const user = store.getters['authM/getUser'];
-      // await store.dispatch('taskM/queryTasksFromMe', { userUID: user.uid });
-      await store.dispatch('taskM/queryTasksFromProjects');
-      await store.dispatch('userM/usersQuery');
-    }
+  },
+  components: {
+    KanbanColumnComponent
+  },
+  async created() {
+    await store.dispatch('taskM/queryTasksFromProjects');
+    await store.dispatch('userM/usersQuery');
   }
+}
 </script>
   
 <style>

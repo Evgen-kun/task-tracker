@@ -2,11 +2,6 @@ import { QueryAPIInstance, PostQueryAPIInstance } from "@/api";
 import store from "@/plugins/store";
 
 export const QueryAPI = {
-    /**
-     * 
-     * @param {string} userUID
-     * @returns {Promise<AxiosResponse<any>>}
-     */
     getTasks(userUID) {
         const url = `http://localhost/drupal9/web/jsonapi/node/task?include=uid.user_picture,field_project&filter[field_ispolnitel.id]=${userUID}&fields[node--task]=id,title,body,uid,field_status,field_difficulty_level,field_begin_date,field_due_date,field_project&fields[user--user]=id,display_name,drupal_internal__uid,user_picture&fields[file--file]=id,uid,uri`;
         return QueryAPIInstance.get(url);
@@ -75,14 +70,10 @@ export const QueryAPI = {
                 }
             }
         };
-        console.log(data);
         PostQueryAPIInstance.defaults.headers['X-CSRF-Token'] = await store.getters['authM/getToken'];
-        //PostQueryAPIInstance.defaults.headers['X-CSRF-Token'] = token.data;
         PostQueryAPIInstance.defaults.headers['Content-Type'] = 'application/vnd.api+json';
         PostQueryAPIInstance.defaults.headers['Accept'] = 'application/vnd.api+json';
         PostQueryAPIInstance.defaults.headers['Authorization'] = `Basic ${await store.getters['authM/getBasicToken']}`;
-        console.log(PostQueryAPIInstance.defaults.headers['X-CSRF-Token']);
-        console.log(PostQueryAPIInstance.defaults.headers['Authorization']);
         return PostQueryAPIInstance.post(url, data);
     },
 
@@ -129,25 +120,19 @@ export const QueryAPI = {
                 }
             }
         };
-        console.log(data);
         PostQueryAPIInstance.defaults.headers['X-CSRF-Token'] = await store.getters['authM/getToken'];
         PostQueryAPIInstance.defaults.headers['Content-Type'] = 'application/vnd.api+json';
         PostQueryAPIInstance.defaults.headers['Accept'] = 'application/vnd.api+json';
         PostQueryAPIInstance.defaults.headers['Authorization'] = `Basic ${await store.getters['authM/getBasicToken']}`;
-        console.log(PostQueryAPIInstance.defaults.headers['X-CSRF-Token']);
-        console.log(PostQueryAPIInstance.defaults.headers['Authorization']);
         return PostQueryAPIInstance.patch(url, data);
     },
 
     async deleteTask(id) {
         const url = `http://localhost/drupal9/web/jsonapi/node/task/${id}`;
-
         PostQueryAPIInstance.defaults.headers['X-CSRF-Token'] = await store.getters['authM/getToken'];
         PostQueryAPIInstance.defaults.headers['Content-Type'] = 'application/vnd.api+json';
         PostQueryAPIInstance.defaults.headers['Accept'] = 'application/vnd.api+json';
         PostQueryAPIInstance.defaults.headers['Authorization'] = `Basic ${await store.getters['authM/getBasicToken']}`;
-        console.log(PostQueryAPIInstance.defaults.headers['X-CSRF-Token']);
-        console.log(PostQueryAPIInstance.defaults.headers['Authorization']);
         return PostQueryAPIInstance.delete(url);
     },
 

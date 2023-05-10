@@ -112,8 +112,6 @@ import { mapGetters } from 'vuex';
             async editTask() {
               const { valid } = await this.$refs.taskForm.validate();
 
-              console.log("Выбранный проект: " + this.selectProject);
-
               if(valid) {
                     await store.dispatch('taskM/editTask', {
                         id: this.task.id, 
@@ -130,9 +128,6 @@ import { mapGetters } from 'vuex';
             async deleteTask() {
               await store.dispatch('taskM/deleteTask', {id: this.task.id});
             },
-            showExecutorUID() {
-              console.log(this.executorUID);
-            },
         },
         computed: {
             ...mapGetters({
@@ -147,7 +142,6 @@ import { mapGetters } from 'vuex';
                 else return [...store.getters['userM/getUsers'], currentUser];
             },
             usersWithID() {
-                console.log(this.getUsers);
                 if(!this.getUsers.map(user => user.uid).includes(this.executorUID)) this.executorUID = null;
                 return this.getUsers.map(user => ({ ...user, nameWithID: `${user.name} (${user.id})` }));
             },

@@ -8,9 +8,8 @@
 </template>
 
 <script setup>
-  import { RouterView } from 'vue-router'
-  //import HomeComponent from '@/components/HomeComponent.vue'
-  import NavigationComponent from '@/components/base/NavigationComponent.vue'
+import { RouterView } from 'vue-router'
+import NavigationComponent from '@/components/base/NavigationComponent.vue'
 </script>
 
 <style>

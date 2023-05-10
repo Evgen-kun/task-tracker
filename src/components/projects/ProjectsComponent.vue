@@ -26,12 +26,7 @@ import CreateProjectComponent from './actions/CreateProjectComponent.vue';
 export default {
     name: 'ProjectsComponent',
     data() {
-        return {
-            
-        }
-    },
-    methods: {
-
+        return {}
     },
     computed: {
         ...mapGetters({
@@ -52,8 +47,6 @@ export default {
     },
     async created() {
         const user = store.getters['authM/getUser'];
-        console.log("Параметры роута: ");
-        console.log(this.$route.params);
         await store.dispatch('teamM/queryTeams', { userUID: user.uid, userRoles: user.roles });
         await store.dispatch('projectM/queryProjects', { userUID: user.uid, userRoles: user.roles });
     }

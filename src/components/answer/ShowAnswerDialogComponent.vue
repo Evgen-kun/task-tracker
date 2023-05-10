@@ -44,9 +44,6 @@ import ShowAnswerComponent from '../answer/ShowAnswerComponent.vue';
                 required: true
             },
         },
-        methods: {
-            
-        },
         components: {
             ShowAnswerComponent,
         }

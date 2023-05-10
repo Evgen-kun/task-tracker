@@ -1,5 +1,5 @@
 <template>
-    <v-card
+  <v-card
     color="#A5A8E9"
     width="100%"
     @click="show = !show"
@@ -7,11 +7,6 @@
     rounded="xl"
     class="elevation-0"
   >
-
-    <!--<v-img
-      src="../assets/plus4.png"
-    ></v-img>-->
-
     <v-img
       src='../assets/plus-icon-plus.png'
       class="align-end"
@@ -74,61 +69,52 @@
         </v-card>
       </template>
     </v-dialog>
-
   </v-card>
-
 </template>
 
 <script>
 import store from '@/plugins/store';
 
-    export default {
-        data() {
-            return {
-                show: false,
-                title: "Создать команду",
+export default {
+  data() {
+    return {
+      show: false,
+      title: "Создать команду",
+      teamTitle: "",
+      teamSubtitle: "",
+      teamExecutors: [],
 
-                teamTitle: "",
-                teamSubtitle: "",
-                teamExecutors: [],
-
-                titleRules: [
-                    v => !!v || 'Требуется название',
-                    v => v.length <= 30 || 'Название должно быть меньше 30 символов',
-                ],
-                textRules: [
-                    v => (v)? v.length <= 300 : true || 'Описание должно быть меньше 300 символов',
-                ],
-            }
-        },
-        props: {
-            allUsers: {
-              type: Array,
-              required: true
-            },
-        },
-        methods: {
-            async createTeam() {
-                const { valid } = await this.$refs.createTeamForm.validate();
-
-                if(valid) {
-                    await store.dispatch('teamM/createTeam', { title: this.teamTitle, body: this.teamSubtitle, usersUID: this.teamExecutors});
-                    this.$refs.createTeamForm.reset();
-                    this.$refs.createTeamForm.resetValidation();
-                }
-                else alert("NOT validate");
-                console.log(this.teamExecutors);
-            },
-            showTeam() {
-                console.log(this.teamTitle);
-                console.log(this.teamSubtitle);
-                console.log(this.teamExecutors);
-            },
-        },
-        computed: {
-            usersWithID() {
-                return this.allUsers.map(user => ({ ...user, nameWithID: `${user.name} (${user.id})` }));
-            },
-        }
+      titleRules: [
+          v => !!v || 'Требуется название',
+          v => v.length <= 30 || 'Название должно быть меньше 30 символов',
+      ],
+      textRules: [
+          v => (v)? v.length <= 300 : true || 'Описание должно быть меньше 300 символов',
+      ],
     }
+  },
+  props: {
+    allUsers: {
+      type: Array,
+      required: true
+    },
+  },
+  methods: {
+    async createTeam() {
+      const { valid } = await this.$refs.createTeamForm.validate();
+
+      if(valid) {
+          await store.dispatch('teamM/createTeam', { title: this.teamTitle, body: this.teamSubtitle, usersUID: this.teamExecutors});
+          this.$refs.createTeamForm.reset();
+          this.$refs.createTeamForm.resetValidation();
+      }
+      else alert("NOT validate");
+    },
+  },
+  computed: {
+    usersWithID() {
+      return this.allUsers.map(user => ({ ...user, nameWithID: `${user.name} (${user.id})` }));
+    },
+  }
+}
 </script>

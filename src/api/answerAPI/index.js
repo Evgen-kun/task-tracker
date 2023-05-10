@@ -2,11 +2,6 @@ import { QueryAPIInstance, PostQueryAPIInstance } from "@/api";
 import store from "@/plugins/store";
 
 export const AnsQueryAPI = {
-    /**
-     * 
-     * @param {string} userUID
-     * @returns {Promise<AxiosResponse<any>>}
-     */
     getAnswers() {
         const url = `http://localhost/drupal9/web/jsonapi/comment/answer?include=field_file`;
         return QueryAPIInstance.get(url);
@@ -63,8 +58,6 @@ export const AnsQueryAPI = {
         PostQueryAPIInstance.defaults.headers['Content-Type'] = 'application/vnd.api+json';
         PostQueryAPIInstance.defaults.headers['Accept'] = 'application/vnd.api+json';
         PostQueryAPIInstance.defaults.headers['Authorization'] = `Basic ${await store.getters['authM/getBasicToken']}`;
-        console.log(PostQueryAPIInstance.defaults.headers['X-CSRF-Token']);
-        console.log(PostQueryAPIInstance.defaults.headers['Authorization']);
         return PostQueryAPIInstance.post(url, data);
     },
 
@@ -80,5 +73,4 @@ export const AnsQueryAPI = {
         PostQueryAPIInstance.defaults.headers['X-CSRF-Token'] = await store.getters['authM/getToken'];
         return PostQueryAPIInstance.post(url, formData);
     },
-
 }

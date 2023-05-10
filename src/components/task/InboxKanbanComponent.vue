@@ -1,31 +1,4 @@
 <template>
-    <!-- <v-sheet
-        class="mx-auto"
-        max-width="600"
-        rounded="pill"
-    >
-        <v-slide-group
-            v-model="projectsFilter"
-            show-arrows
-            selected-class="bg-primary"
-            multiple
-        >
-            <v-slide-group-item
-                v-for="project in projects"
-                :key="project.id"
-                v-slot="{ isSelected, toggle }"
-            >
-                <v-btn
-                    class="ma-2"
-                    rounded
-                    :color="isSelected ? 'primary' : undefined"
-                    @click="toggle"
-                >
-                    {{ project.title }}
-                </v-btn>
-            </v-slide-group-item>
-        </v-slide-group>
-    </v-sheet> -->
     <v-sheet
         class="mx-auto"
         max-width="500"
@@ -54,43 +27,36 @@
 </template>
   
 <script>
-  import store from '@/plugins/store';
-  import { mapGetters } from 'vuex';
-  import KanbanColumnComponent from './KanbanColumnComponent.vue';
-  //import EditorComponent from './EditorComponent.vue';
+import store from '@/plugins/store';
+import { mapGetters } from 'vuex';
+import KanbanColumnComponent from './KanbanColumnComponent.vue';
   
-  export default {
+export default {
     data() {
-      return {
-        projectsFilter: [],
-        columns: [
-            {
-                id: 1,
-                title: "Просроченные"
-            },
-            {
-                id: 2,
-                title: "Сегодня - 7 дней"
-            },
-            {
-                id: 3,
-                title: "8 - 30 дней"
-            },
-            {
-                id: 4,
-                title: "Больше 30 дней"
-            },
-        ],
-      }
-    },
-    methods: {
-  
+        return {
+            projectsFilter: [],
+            columns: [
+                {
+                    id: 1,
+                    title: "Просроченные"
+                },
+                {
+                    id: 2,
+                    title: "Сегодня - 7 дней"
+                },
+                {
+                    id: 3,
+                    title: "8 - 30 дней"
+                },
+                {
+                    id: 4,
+                    title: "Больше 30 дней"
+                },
+            ],
+        }
     },
     computed: {
-      // ...mapGetters('taskM', {
-      //   tasks: 'getTasksFromMe',
-      // }),
-      ...mapGetters({
+        ...mapGetters({
             myTasks: 'taskM/getUserTasks',
         }),
         projects() {
@@ -105,15 +71,12 @@
         },
         tasks() {
             if(this.projectsFilter.length === 0) return this.myTasks;
-            console.log(this.myTasks);
-            console.log(this.projectsFilter);
             const filteredTasks = [];
             const filter = this.projectsFilter;
             const tasks = this.myTasks;
             if(filter.includes('tasks-without-project')) filteredTasks.push(...tasks.filter(task => task.project === null));
             const tasksWithProjects = tasks.filter(task => task.project !== null);
             const ans = filteredTasks.concat(tasksWithProjects.filter(task => filter.includes(task.project.id)));
-            console.log(ans);
             return ans;
         },
         filteredTasks() {
@@ -130,15 +93,15 @@
         },
     },
     components: {
-      KanbanColumnComponent
+        KanbanColumnComponent
     },
     async created() {
-      const user = store.getters['authM/getUser'];
-      const userUID = user.uid;
-      await store.dispatch('taskM/queryTasksToMe', { userUID: userUID });
-      await store.dispatch('userM/usersQuery');
+        const user = store.getters['authM/getUser'];
+        const userUID = user.uid;
+        await store.dispatch('taskM/queryTasksToMe', { userUID: userUID });
+        await store.dispatch('userM/usersQuery');
     }
-  }
+}
 </script>
   
 <style scoped>

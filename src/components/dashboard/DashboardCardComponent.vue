@@ -7,9 +7,6 @@
     >
         <v-card-item>
         <div>
-            <!-- <div class="text-overline mb-1">
-            OVERLINE
-            </div> -->
             <div class="text-h6 mb-1">
                 {{ item.title }}
             </div>
@@ -24,21 +21,13 @@
 export default {
     name: "DashboardCardComponent",
     data() {
-        return {
-            
-        }
+        return {}
     },
     props: {
         item: {
             type: Object,
             required: true
         },
-    },
-    methods: {
-        
-    },
-    computed: {
-        
     },
   }
 </script>

@@ -1,7 +1,5 @@
 <template>
-    <v-container class="fill-height">
-
-    </v-container>
+    <v-container class="fill-height"></v-container>
 </template>
   
 <script>
@@ -10,24 +8,11 @@ import store from '@/plugins/store';
 export default {
     name: 'PanelComponent',
     data() {
-      return {
-        
-      }
-    },
-    methods: {
-  
-    },
-    computed: {
-        
-    },
-    components: {
-      
+      return {}
     },
     async created() {
       const user = store.getters['authM/getUser'];
       this.name = user.name;
-      // console.log(user);
-      console.log(store.getters['authM/getToken']);
     }
 }
 

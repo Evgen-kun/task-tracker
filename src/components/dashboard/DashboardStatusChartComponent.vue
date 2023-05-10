@@ -62,9 +62,6 @@ export default {
         options: {
           responsive: true,
           maintainAspectRatio: false,
-          // legend: {
-          //   display: false
-          // },
           scales: {
             y: {
               ticks: {
@@ -82,17 +79,8 @@ export default {
         },
       }
     },
-    methods: {
-        
-    },
-    computed: {
-
-    },
     mounted() {
-      // this.allTasks = store.getters['taskM/getTasksFromMe'];
-      // this.allTasks = store.getters['taskM/getTasksFromMeByProjectID'](this.$route.params.projectID);
       this.allTasks = store.getters['taskM/getTasksFromProjectsByProjectID'](this.$route.params.projectID);
-      console.log(this.allTasks);
       const data = [
         this.allTasks.filter(task => task.status === "Не выполнено").length,
         this.allTasks.filter(task => task.status === "Выполняется").length,

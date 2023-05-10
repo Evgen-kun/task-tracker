@@ -7,7 +7,6 @@ import Project from "@/model/Project";
 import User from "@/model/User";
 import Team from "@/model/Team";
 
-
 const user = new User({ uid: '123', name: "Test John", roles: [] });
 
 const allTeams = [
@@ -25,8 +24,6 @@ const project = new Project({
 });
 
 describe('ProjectComponent.vue', () => {
-    
-
     it('correct project-card view', async () => {
         const wrapper = mount(ProjectComponent, {
             props: {
@@ -38,7 +35,6 @@ describe('ProjectComponent.vue', () => {
                 plugins: [store, vuetify],
             },
         });
-
         const projectCard = wrapper.find('.project-card');
         expect(projectCard.exists()).toBe(true);
         expect(projectCard.find('.project-card-title').text()).toBe(project.title);
@@ -57,12 +53,8 @@ describe('ProjectComponent.vue', () => {
                 plugins: [store, vuetify],
             },
         });
-
         expect(wrapper.find('.project-card-menu-btn').exists()).toBeTruthy();
         expect(wrapper.find('.project-card-menu-btn').isDisabled()).toBeFalsy();
-        // expect(wrapper.find('.project-card-menu-list-item-edit').exists()).toBeFalsy();
-        // await wrapper.find('.project-card-menu-btn').trigger('click');
-        // expect(wrapper.find('.project-card-menu-list-item-edit').exists()).toBeTruthy();
     });
 
     it('correct project-card-menu-btn view for manager', async () => {
@@ -76,7 +68,6 @@ describe('ProjectComponent.vue', () => {
                 plugins: [store, vuetify],
             },
         });
-
         expect(wrapper.find('.project-card-menu-btn').exists()).toBeTruthy();
         expect(wrapper.find('.project-card-menu-btn').isDisabled()).toBeFalsy();
     });
@@ -92,7 +83,6 @@ describe('ProjectComponent.vue', () => {
                 plugins: [store, vuetify],
             },
         });
-
         expect(wrapper.find('.project-card-menu-btn').exists()).toBeFalsy();
     });
 });

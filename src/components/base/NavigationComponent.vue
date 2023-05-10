@@ -4,7 +4,6 @@
         :title="currentTime"
         density="compact"
     >
-      <!-- <v-spacer></v-spacer> -->
     </v-app-bar>
 
     <v-navigation-drawer
@@ -31,7 +30,7 @@
             <router-link to="/inbox">
                 <v-list-item prepend-icon="mdi-bell-outline" title="Входящие" value="inbox"></v-list-item>
             </router-link>
-            <router-link to="/about">
+            <router-link to="/outbox">
                 <v-list-item prepend-icon="mdi-comment-text-outline" title="Мои задачи" value="shared"></v-list-item>
             </router-link>
             <router-link to="/teams">
@@ -57,7 +56,6 @@ import { mapGetters } from 'vuex';
         methods: {
             async onLogoutButtonClick() {
                 await this.$store.dispatch('authM/onLogout');
-                //await this.$router.push({ name: 'login' });
                 location.reload();
             },
         },
@@ -77,12 +75,10 @@ import { mapGetters } from 'vuex';
                 user: 'getUser',
             }),
             getTime() {
-
                 const date = new Date().toLocaleTimeString('ru-RU', {
                   hour: 'numeric',
                   minute: 'numeric'
                 });
-                console.log(date);
                 return date;
             }
         },

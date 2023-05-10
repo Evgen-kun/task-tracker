@@ -48,7 +48,6 @@ export const assignedTasks = {
             if(index % 2 === 1) { return; }
             ctx.fillText(item.name, 40, y.getPixelForValue(index / 2));
         });
-        // console.log(data.datasets[0].data[0].name);
         ctx.fillText('Исполнитель', 25, top - 15);
         ctx.restore();
     }

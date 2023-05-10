@@ -2,11 +2,6 @@ import { QueryAPIInstance, PostQueryAPIInstance } from "@/api";
 import store from "@/plugins/store";
 
 export const TeamsQueryAPI = {
-    /**
-     * 
-     * @param {string} userUID
-     * @returns {Promise<AxiosResponse<any>>}
-     */
     getTeams(userUID) {
         const url = `http://localhost/drupal9/web/jsonapi/node/team?include=field_member.user_picture&filter[uid.id]=${userUID}&fields[node--team]=id,title,body,field_member&fields[user--user]=id,display_name,user_picture`;
         return QueryAPIInstance.get(url);
@@ -42,12 +37,9 @@ export const TeamsQueryAPI = {
             }
         };
         PostQueryAPIInstance.defaults.headers['X-CSRF-Token'] = await store.getters['authM/getToken'];
-        //PostQueryAPIInstance.defaults.headers['X-CSRF-Token'] = token.data;
         PostQueryAPIInstance.defaults.headers['Content-Type'] = 'application/vnd.api+json';
         PostQueryAPIInstance.defaults.headers['Accept'] = 'application/vnd.api+json';
         PostQueryAPIInstance.defaults.headers['Authorization'] = `Basic ${await store.getters['authM/getBasicToken']}`;
-        console.log(PostQueryAPIInstance.defaults.headers['X-CSRF-Token']);
-        console.log(PostQueryAPIInstance.defaults.headers['Authorization']);
         return PostQueryAPIInstance.post(url, data);
     },
 
@@ -72,25 +64,18 @@ export const TeamsQueryAPI = {
             }
         };
         PostQueryAPIInstance.defaults.headers['X-CSRF-Token'] = await store.getters['authM/getToken'];
-        //PostQueryAPIInstance.defaults.headers['X-CSRF-Token'] = token.data;
         PostQueryAPIInstance.defaults.headers['Content-Type'] = 'application/vnd.api+json';
         PostQueryAPIInstance.defaults.headers['Accept'] = 'application/vnd.api+json';
         PostQueryAPIInstance.defaults.headers['Authorization'] = `Basic ${await store.getters['authM/getBasicToken']}`;
-        console.log(PostQueryAPIInstance.defaults.headers['X-CSRF-Token']);
-        console.log(PostQueryAPIInstance.defaults.headers['Authorization']);
         return PostQueryAPIInstance.patch(url, data);
     },
     
     async deleteTeam(id) {
         const url = `http://localhost/drupal9/web/jsonapi/node/team/${id}`;
-
         PostQueryAPIInstance.defaults.headers['X-CSRF-Token'] = await store.getters['authM/getToken'];
         PostQueryAPIInstance.defaults.headers['Content-Type'] = 'application/vnd.api+json';
         PostQueryAPIInstance.defaults.headers['Accept'] = 'application/vnd.api+json';
         PostQueryAPIInstance.defaults.headers['Authorization'] = `Basic ${await store.getters['authM/getBasicToken']}`;
-        console.log(PostQueryAPIInstance.defaults.headers['X-CSRF-Token']);
-        console.log(PostQueryAPIInstance.defaults.headers['Authorization']);
         return PostQueryAPIInstance.delete(url);
     },
-
 }

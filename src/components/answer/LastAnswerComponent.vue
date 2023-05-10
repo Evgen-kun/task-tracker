@@ -48,18 +48,13 @@
 
     export default {
         data() {
-            return {
-
-            }
+            return {}
         },
         props: {
             answers: {
                 type: Array,
                 required: true
             },
-        },
-        methods: {
-            
         },
         computed: {
             lastAnswer() {

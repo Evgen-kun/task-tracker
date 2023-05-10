@@ -1,7 +1,6 @@
 import { createRouter, createWebHistory } from "vue-router";
 import LoginView from "../../views/LoginView.vue";
 
-
 const authGuard = function(to, from, next) {
   if (!Object.prototype.hasOwnProperty.call(localStorage, 'token')) next({ name: 'login' });
   else next();
@@ -40,15 +39,14 @@ const routes = [
     component: LoginView,
   },
   {
-    path: "/about",
-    name: "about",
-    component: () => import("@/views/AboutView.vue"),
+    path: "/outbox",
+    name: "outbox",
+    component: () => import("@/views/OutboxView.vue"),
     beforeEnter: authGuard,
   },
   {
     path: "/teams",
     name: "teams",
-    // beforeEnter: managerAuthGuard,
     beforeEnter: authGuard,
     children: [
       {
@@ -58,7 +56,6 @@ const routes = [
       {
         path: ":teamID",
         name: "team",
-        // beforeEnter: managerAuthGuard,
         beforeEnter: authGuard,
         children: [
           {
@@ -68,14 +65,12 @@ const routes = [
                 path: '',
                 name: 'projects',
                 component: () => import("@/views/ProjectsView.vue"),
-                // beforeEnter: managerAuthGuard,
                 beforeEnter: authGuard,
               },
               {
                 path: ":projectID",
                 name: "dashboard",
                 component: () => import("@/views/DashboardView.vue"),
-                // beforeEnter: managerAuthGuard,
                 beforeEnter: authGuard,
               }
             ]
@@ -83,11 +78,7 @@ const routes = [
           
         ]
       }
-      
     ]
-  },
-  {
-    
   },
   {
     path: "/panel",

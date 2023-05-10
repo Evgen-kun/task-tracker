@@ -62,8 +62,6 @@ describe('TaskComponent.vue', () => {
                 },
             },
         });
-
-        // console.log(wrapper.find('.line-task-progress-circular'));
         const taskCard = wrapper.find('.line-task');
         expect(taskCard.exists()).toBe(true);
         expect(taskCard.find('.open-task').exists()).toBe(false);
@@ -87,7 +85,6 @@ describe('TaskComponent.vue', () => {
                 },
             },
         });
-
         await wrapper.find('.line-task').trigger('click');
         const taskCard = wrapper.find('.open-task');
         expect(taskCard.exists()).toBe(true);
@@ -113,8 +110,6 @@ describe('TaskComponent.vue', () => {
                 },
             },
         });
-
-        // console.log(wrapper.find('.line-task-progress-circular'));
         const taskCard = wrapper.find('.line-task');
         expect(taskCard.exists()).toBe(true);
         expect(taskCard.find('.open-task').exists()).toBe(false);
@@ -138,7 +133,6 @@ describe('TaskComponent.vue', () => {
                 },
             },
         });
-
         await wrapper.find('.line-task').trigger('click');
         const taskCard = wrapper.find('.open-task');
         expect(taskCard.exists()).toBe(true);

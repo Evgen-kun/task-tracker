@@ -7,19 +7,8 @@
     rounded="xl"
     class="team-card elevation-0"
   >
-    <!-- <v-img
-      :src="card.src"
-      class="align-end"
-      gradient="to bottom, rgba(100,50,0,.1), rgba(0,100,80,.5)"
-      height="200px"
-      cover
-    >
-      <v-card-title class="text-white" v-text="card.title"></v-card-title>
-    </v-img> -->
-
     <v-card-actions>
       <v-spacer></v-spacer>
-
       <v-menu class="team-card-menu" location="end">
         <template v-slot:activator="{ props }">
           <v-btn
@@ -139,72 +128,63 @@
         </v-card>
       </template>
     </v-dialog>
-
   </v-card>
 </template>
-  
+
 <script>
 import store from '@/plugins/store';
 
 export default {
-    data() {
-        return {
-            showEdit: false,
-            showDelete: false,
-            teamTitle: this.team.title,
-            teamSubtitle: this.team.body,
-            teamExecutorsID: this.team.users.map(user => user.uid),
+  data() {
+      return {
+          showEdit: false,
+          showDelete: false,
+          teamTitle: this.team.title,
+          teamSubtitle: this.team.body,
+          teamExecutorsID: this.team.users.map(user => user.uid),
 
-            titleRules: [
-                v => !!v || 'Требуется название',
-                v => v.length <= 30 || 'Название должно быть меньше 30 символов',
-            ],
-            textRules: [
-                v => (v)? v.length <= 300 : true || 'Описание должно быть меньше 300 символов',
-            ],
-        }
-    },
-    props: {
-      team: {
-        type: Object,
-        required: true
-      },
-      allUsers: {
-        type: Array,
-        required: true
-      },
-      currentUser: {
-        type: Object,
-        required: true
+          titleRules: [
+              v => !!v || 'Требуется название',
+              v => v.length <= 30 || 'Название должно быть меньше 30 символов',
+          ],
+          textRules: [
+              v => (v)? v.length <= 300 : true || 'Описание должно быть меньше 300 символов',
+          ],
       }
+  },
+  props: {
+    team: {
+      type: Object,
+      required: true
     },
-    methods: {
-        async editTeam() {
-            const { valid } = await this.$refs.editTeamForm.validate();
-
-            if(valid) {
-                await store.dispatch('teamM/editTeam', { id: this.team.id, title: this.teamTitle, body: this.teamSubtitle, usersUID: this.teamExecutorsID});
-            }
-            else alert("NOT validate");
-        },
-        async deleteTeam() {
-            await store.dispatch('teamM/deleteTeam', { id: this.team.id });
-        },
-        showTeam() {
-            console.log(this.teamTitle);
-            console.log(this.teamSubtitle);
-            console.log(this.teamExecutorsID);
-        },
-        goToProjects() {
-            // this.$router.push({ name: 'team', params: { teamID: this.team.id } });
-            this.$router.push({ name: 'projects', params: { teamID: this.team.id } });
-        },
+    allUsers: {
+      type: Array,
+      required: true
     },
-    computed: {
-        usersWithID() {
-            console.log("Все пользователи: " + this.allUsers);
-            return this.allUsers.map(user => ({ ...user, nameWithID: `${user.name} (${user.id})` }));
-        },
+    currentUser: {
+      type: Object,
+      required: true
+    }
+  },
+  methods: {
+    async editTeam() {
+      const { valid } = await this.$refs.editTeamForm.validate();
+      if(valid) {
+        await store.dispatch('teamM/editTeam', { id: this.team.id, title: this.teamTitle, body: this.teamSubtitle, usersUID: this.teamExecutorsID});
+      }
+      else alert("NOT validate");
     },
+    async deleteTeam() {
+      await store.dispatch('teamM/deleteTeam', { id: this.team.id });
+    },
+    goToProjects() {
+      this.$router.push({ name: 'projects', params: { teamID: this.team.id } });
+    },
+  },
+  computed: {
+    usersWithID() {
+      return this.allUsers.map(user => ({ ...user, nameWithID: `${user.name} (${user.id})` }));
+    },
+  },
 }
 </script>

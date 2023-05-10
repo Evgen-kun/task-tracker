@@ -29,18 +29,18 @@
                 prepend-icon="mdi-paperclip"
             >
                 <template v-slot:selection="{ fileNames }">
-                <template v-for="fileName in fileNames" :key="fileName">
-                    <v-chip
-                    variant="outlined"
-                    size="small"
-                    label
-                    color="white"
-                    text-color="white"
-                    class="me-2"
-                    >
-                    {{ fileName }}
-                    </v-chip>
-                </template>
+                    <template v-for="fileName in fileNames" :key="fileName">
+                        <v-chip
+                            variant="outlined"
+                            size="small"
+                            label
+                            color="white"
+                            text-color="white"
+                            class="me-2"
+                        >
+                        {{ fileName }}
+                        </v-chip>
+                    </template>
                 </template>
             </v-file-input>
 
@@ -93,7 +93,6 @@ import { mapGetters } from 'vuex';
                     });
                 }
                 else alert("Ans is NOT validate");
-                console.log(this.files);
             },
             resetAns () {
               this.ansTitle = this.ansText = "";

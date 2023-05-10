@@ -1,21 +1,16 @@
 <template>
   <v-data-table
-      v-model="selected"
-      v-model:items-per-page="itemsPerPage"
-      :headers="headers"
-      :items="tasks"
-      :search="search"
-      item-value="title"
-      
-      class="elevation-1 rounded-lg"
+    v-model="selected"
+    v-model:items-per-page="itemsPerPage"
+    :headers="headers"
+    :items="tasks"
+    :search="search"
+    item-value="title"
+    class="elevation-1 rounded-lg"
   >
-  <!-- show-select -->
     <template v-slot:item.executor="{ item }">
-      <v-chip
-        pill
-      >
+      <v-chip pill>
         <v-avatar start :image="item.raw.executor.picture.url"></v-avatar>
-
         {{ item.raw.executor.name }}
       </v-chip>
     </template>
@@ -78,7 +73,7 @@
         </v-btn>
       </v-toolbar>
     </template>
-    <template v-slot:item.actions="{ item }">
+    <template v-if="isManagerOrAdmin" v-slot:item.actions="{ item }">
       <v-btn
         variant="text"
       ><v-icon>mdi-pencil</v-icon>
@@ -111,7 +106,6 @@ export default {
             sortable: false,
             key: 'title'
         },
-        //   { title: 'Проект', align: 'center', key: 'project' },
           { title: 'Исполнитель', align: 'center', key: 'executor' },
           { title: 'Статус', align: 'center', key: 'status' },
           { title: 'Прогресс', align: 'center', key: 'progress' },
@@ -163,24 +157,20 @@ export default {
         if (answers === 0) return 'red';
         else return 'teal';
       },
-
       editItem (item) {
         this.editedIndex = this.tasks.indexOf(item);
         this.editedItem = Object.assign({}, item);
         this.dialog = true;
       },
-
       deleteItem (item) {
         this.editedIndex = this.tasks.indexOf(item);
         this.editedItem = Object.assign({}, item);
         this.dialogDelete = true;
       },
-
       deleteItemConfirm () {
         this.tasks.splice(this.editedIndex, 1);
         this.closeDelete();
       },
-
       close () {
         this.dialog = false
         this.$nextTick(() => {
@@ -188,7 +178,6 @@ export default {
           this.editedIndex = -1;
         })
       },
-
       closeDelete () {
         this.dialogDelete = false
         this.$nextTick(() => {
@@ -196,27 +185,20 @@ export default {
           this.editedIndex = -1;
         })
       },
-
       save () {
-        // if (this.editedIndex > -1) {
-        //   Object.assign(this.tasks[this.editedIndex], this.editedItem);
-        // } else {
-        //   this.tasks.push(this.editedItem);
-        // }
         this.close()
       },
     },
     computed: {
-      //   ...mapGetters('taskM', {
-      //   tasks: 'getTasksFromMe',
-      // }),
-      tasks() { 
-        // return store.getters['taskM/getTasksFromMeByProjectID'](this.$route.params.projectID); 
-        console.log(store.getters['taskM/getTasksFromProjectsByProjectID'](this.$route.params.projectID));
+      tasks() {
         return store.getters['taskM/getTasksFromProjectsByProjectID'](this.$route.params.projectID);
       },
       formTitle () {
         return this.editedIndex === -1 ? 'Новая задача' : 'Редактирование задачи'
+      },
+      isManagerOrAdmin() {
+          const roles = JSON.parse(localStorage.getItem('user'))?.roles ?? [];
+          return !!((roles.includes('manager')) || (roles.includes('administrator')));
       },
     },
     components: {
@@ -232,8 +214,6 @@ export default {
       },
     },
     async created() {
-        // const user = store.getters['authM/getUser'];
-        // await store.dispatch('taskM/queryTasksFromMe', { userUID: user.uid });
         await store.dispatch('taskM/queryTasksFromProjects');
         await store.dispatch('userM/usersQuery');
     }

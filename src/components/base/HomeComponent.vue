@@ -108,9 +108,6 @@ export default {
       toggleValue: "toMe",
     }
   },
-  methods: {
-
-  },
   computed: {
     ...mapGetters('taskM', {
       tasks: 'getUserTasks',
@@ -120,7 +117,6 @@ export default {
       const weekday = ["Воскресенье", "Понедельник", "Вторник", "Среда", "Четверг", "Пятница", "Суббота"];
       return `${weekday[new Date().getDay()]}, ${date}`;
     },
-    //sortedTasks: store.getters['taskM/getSortedUserTasks'](this.selectedField),
   },
   components: {
     InboxListComponent,
@@ -131,20 +127,15 @@ export default {
   async created() {
     const user = store.getters['authM/getUser'];
     this.name = user.name;
-    // console.log(user);
-    console.log(store.getters['authM/getToken']);
     await store.dispatch('userM/usersQuery');
     await store.dispatch('taskM/getStatuses');
     await store.dispatch('taskM/getProgress');
     await store.dispatch('taskM/getDifficulty');
     await store.dispatch('teamM/queryTeams', { userUID: user.uid, userRoles: user.roles });
-    console.log(user.roles);
     await store.dispatch('projectM/queryProjects', { userUID: user.uid, userRoles: user.roles });
     await store.dispatch('taskM/queryTasksToMe', { userUID: user.uid });
-    // store.dispatch('taskM/queryTasksFromProjects').then((res) => {});
   }
 }
-
 </script>
 
 <style scoped>

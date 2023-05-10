@@ -53,18 +53,18 @@
                         prepend-icon="mdi-paperclip"
                     >
                         <template v-slot:selection="{ fileNames }">
-                        <template v-for="fileName in fileNames" :key="fileName">
-                            <v-chip
-                            variant="outlined"
-                            size="small"
-                            label
-                            color="white"
-                            text-color="black"
-                            class="me-2"
-                            >
-                            {{ fileName }}
-                            </v-chip>
-                        </template>
+                            <template v-for="fileName in fileNames" :key="fileName">
+                                <v-chip
+                                    variant="outlined"
+                                    size="small"
+                                    label
+                                    color="white"
+                                    text-color="black"
+                                    class="me-2"
+                                >
+                                {{ fileName }}
+                                </v-chip>
+                            </template>
                         </template>
                     </v-file-input>
 
@@ -98,7 +98,6 @@
 import store from '@/plugins/store';
 import { mapGetters } from 'vuex';
 import LastAnswerDialogComponent from '../LastAnswerDialogComponent.vue';
-// import LastAnswerComponent from '../LastAnswerComponent.vue';
 
     export default {
     data() {

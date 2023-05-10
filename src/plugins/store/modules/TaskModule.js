@@ -179,7 +179,6 @@ export const TaskModule = {
         async queryTasksToMe({ commit, getters, rootGetters }, { userUID }) {
             const res = await QueryAPI.getTasks(userUID);
             const comments = await AnsQueryAPI.getMyAnswers(userUID);
-
             const tasks = [];
             res.data.data.forEach((item) => {
                 const task = new Task();
@@ -247,10 +246,8 @@ export const TaskModule = {
                             answer.files.push(file);
                         });
                     }
-
                     if(!task.answers.map(ans => ans.uid).includes(answer.uid)) task.answers.push(answer);
                 });
-
                 tasks.push(task);
             });
 
@@ -260,7 +257,6 @@ export const TaskModule = {
         async queryTasksFromMe({ commit, getters, rootGetters }, { userUID }) {
             const res = await QueryAPI.getMyTasks(userUID);
             const comments = await AnsQueryAPI.getAnswers();
-
             const tasks = [];
             res.data.data.forEach((item) => {
                 const task = new Task();
@@ -326,10 +322,8 @@ export const TaskModule = {
                             answer.files.push(file);
                         });
                     }
-
                     task.answers.push(answer);
                 });
-
                 tasks.push(task);
             });
 
@@ -338,10 +332,8 @@ export const TaskModule = {
 
         async queryTasksFromProjects({ commit, getters, rootGetters }) {
             const projects = rootGetters['projectM/getProjects'];
-
             const res = await QueryAPI.getFilteredTasks(projects.map(pr => pr.id));
             const comments = await AnsQueryAPI.getAnswers();
-
             const tasks = [];
             res.data.data.forEach((item) => {
                 const task = new Task();
@@ -408,7 +400,6 @@ export const TaskModule = {
                         });
                     }
                     if(maxCID < com.attributes.drupal_internal__cid) maxCID = com.attributes.drupal_internal__cid;
-                    
 
                     if(Object.prototype.hasOwnProperty.call(comments.data, 'included')) {
                         comments.data.included.forEach((itemInc) => {
@@ -418,14 +409,11 @@ export const TaskModule = {
                             file.id = itemInc.id;
                             file.name = itemInc.attributes.filename;
                             file.url = itemInc.attributes.uri.url;
-                            // console.log('links: ' + file.link);
                             answer.files.push(file);
                         });
                     }
-
                     task.answers.push(answer);
                 });
-
                 tasks.push(task);
             });
 
@@ -452,7 +440,6 @@ export const TaskModule = {
 
         async getStatuses({ commit }) {
             const res = await QueryAPI.getStatuses();
-
             const statuses = new Map();
             res.data.data.forEach((item) => {
                 statuses.set(item.id, item.attributes.name);
@@ -463,7 +450,6 @@ export const TaskModule = {
 
         async getProgress({ commit }) {
             const res = await QueryAPI.getProgress();
-
             const progress = new Map();
             res.data.data.forEach((item) => {
                 progress.set(item.id, Number(item.attributes.name.slice(0, -1)));
@@ -474,7 +460,6 @@ export const TaskModule = {
 
         async getDifficulty({ commit }) {
             const res = await QueryAPI.getDifficulty();
-
             const difficulty = new Map();
             res.data.data.forEach((item) => {
                 difficulty.set(item.id, item.attributes.name);
@@ -491,7 +476,6 @@ export const TaskModule = {
             else {
                 executor = rootGetters['userM/getUserByUID'](executorUID);
             }
-
             const author = rootGetters['authM/getUser'];
             const difficulties = getters.getDifficulty;
 
@@ -520,7 +504,6 @@ export const TaskModule = {
             task.difficulty = getters.getDifficulty.get(res.data.data.relationships.field_difficulty_level.data.id);
             task.answers = [];
 
-            console.log(task);
             commit('addTaskFromMe', task);
         },
 
@@ -539,7 +522,6 @@ export const TaskModule = {
                 dueDate
             );
 
-            console.log("executorUID" + executorUID);
             const task = (type === 'fromMe')? getters.getTaskFromMeByID(id) : getters.getTaskFromProjectsByID(id);
             const user = rootGetters['userM/getUserByUID'](executorUID);
             const picture = rootGetters['userM/getPictureByUserUID'](executorUID);
@@ -548,7 +530,6 @@ export const TaskModule = {
             task.body = (res.data.data.attributes.body !== null)? res.data.data.attributes.body.processed.replace(/(<p>|<\/p>)/g, '') : null;
             task.executor = user;
             task.executor.picture = picture;
-            console.log("executor" + task.executor);
             task.status = status;
             task.difficulty = difficulty;
             task.project = (res.data.data.relationships.field_project?.data?.id)? 
@@ -559,10 +540,7 @@ export const TaskModule = {
         },
 
         async deleteTask({ commit }, { id }) {
-            console.log("Task id: " + id);
             const res = await QueryAPI.deleteTask(id);
-            console.log(res);
-
             commit('deleteTaskFromMe', id);
         },
 
@@ -575,7 +553,6 @@ export const TaskModule = {
             }
             const progressMap = getters.getProgress;
             const res = await AnsQueryAPI.createAnswer(title, body, [...progressMap.keys()].find((key) => progressMap.get(key) === progress), taskUID, filesID);
-
             const task = getters.getUserTaskByID(taskUID);
 
             const answer = new Answer();

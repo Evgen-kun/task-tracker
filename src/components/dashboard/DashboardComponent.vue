@@ -29,36 +29,15 @@ export default {
             inProgressTasks: [],
         }
     },
-    // props: {
-        // team: {
-        //     type: Object,
-        //     required: true
-        // },
-    // },
     components: {
         DashboardCardComponent,
         DashboardStatusChartComponent,
         DashboardLoadingChartComponent
     },
-    methods: {
-        
-    },
-    computed: {
-        // ...mapState('taskM', {
-        //     tasks: 'tasksFromMe',
-        // }),
-    },
     async created() {
-        // const user = store.getters['authM/getUser'];
-        // await store.dispatch('taskM/queryTasksFromMe', { userUID: userUID });
         await store.dispatch('taskM/queryTasksFromProjects');
         await store.dispatch('userM/usersQuery');
-
-        // this.tasks = store.getters['taskM/getTasksFromMe'];
-        // this.tasks = store.getters['taskM/getTasksFromMeByProjectID'](this.$route.params.projectID);
         this.tasks = store.getters['taskM/getTasksFromProjectsByProjectID'](this.$route.params.projectID);
-
-      
         this.items = [
             {
                 id: 1,

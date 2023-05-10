@@ -52,8 +52,6 @@ export const UserModule = {
     actions: {
         async usersQuery({ commit, dispatch }) {
             const res = await UsersQueryAPI.getUsers();
-            // console.log(res);
-
             const pictures = res.data.included.filter(item => item.type === 'file--file');
             const users = res.data.data
                 .filter(item => (item.id !== GUEST_ID && item.id !== ADMIN_ID))
@@ -66,19 +64,12 @@ export const UserModule = {
                     roles: user.relationships.roles.data.map(role => role.meta.drupal_internal__target_id)
                 }));
 
-            console.log(users);
             commit('setUsers', users);
         },
 
         async addNewUser({ commit, dispatch }, { uid }) {
-            /*if(!(await dispatch('isUserExistsOnServer', { uid: uid }))) {
-                throw new Error('User does not exist on server');
-            }*/
-                
             const res = await UsersQueryAPI.getUser(uid);
-
             const userData = res.data.data;
-
             const user = new User({
                 uid: userData.id,
                 id: userData.attributes.drupal_internal__uid,
@@ -88,26 +79,22 @@ export const UserModule = {
                 roles: userData.relationships.roles.data.map(role => role.meta.drupal_internal__target_id)
             });
 
-            console.log("New User! => " + user.name);
             commit('addUser', user);
             return user;
         },
 
         deleteUser({ commit }, { uid }) {
-            console.log("Not Found User " + uid);
             commit('deleteUser', uid);
         },
 
         getUserPicture(context, { user, pictures }) {
             const res = pictures.find(picture => picture.id === user.relationships.user_picture.data.id);
-
             const picture = new Picture({ 
                 uid: res.id,
                 url: res.attributes.uri.url
             });
 
             context.commit('addPicture', { picture, user });
-
             return picture;
         },
 

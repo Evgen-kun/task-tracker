@@ -1,5 +1,5 @@
 <template>
-  <v-container class="about">
+  <v-container class="outbox">
     <v-responsive class="d-flex align-center text-center fill-height">
       <TasksFromMeComponent />
     </v-responsive>
@@ -7,13 +7,10 @@
 </template>
 
 <script>
-// @ is an alias to /src
 import TasksFromMeComponent from "@/components/task/TasksFromMeComponent.vue";
 
 export default {
-  name: "AboutView",
-  components: {
-    TasksFromMeComponent,
-  },
+  name: "OutboxView",
+  components: { TasksFromMeComponent }
 };
 </script>

@@ -84,9 +84,6 @@ export default {
             required: true
         },
     },
-    methods: {
-        
-    },
     computed: {
         lastAnswer() {
           if(this.answers.length !== 0) return this.answers[this.answers.length - 1];

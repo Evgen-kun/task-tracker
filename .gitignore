@@ -4,6 +4,7 @@ coverage
 /dist
 /html
 yarn.lock
+settings.js
 
 
 # local env files

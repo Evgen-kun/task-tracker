@@ -1,24 +1,25 @@
 import { QueryAPIInstance, PostQueryAPIInstance } from "@/api";
+import { API_LINK } from "/settings";
 import store from "@/plugins/store";
 
 export const AnsQueryAPI = {
     getAnswers() {
-        const url = `http://localhost/drupal9/web/jsonapi/comment/answer?include=field_file`;
+        const url = API_LINK + `/jsonapi/comment/answer?include=field_file`;
         return QueryAPIInstance.get(url);
     },
 
     getMyAnswers(userUID) {
-        const url = `http://localhost/drupal9/web/jsonapi/comment/answer?include=field_file&filter[uid.id]=${userUID}`;
+        const url = API_LINK + `/jsonapi/comment/answer?include=field_file&filter[uid.id]=${userUID}`;
         return QueryAPIInstance.get(url);
     },
 
     getFile(fileID) {
-        const url = `http://localhost/drupal9/web/jsonapi/file/file?filter[id]=${fileID}`;
+        const url = API_LINK + `/jsonapi/file/file?filter[id]=${fileID}`;
         return QueryAPIInstance.get(url);
     },
 
     async createAnswer(title, body, progressUID, taskUID, filesID = []) {
-        const url = `http://localhost/drupal9/web/jsonapi/comment/answer`;
+        const url = API_LINK + `/jsonapi/comment/answer`;
         const data = { 
             data: {
                 type: "comment--answer",
@@ -62,7 +63,7 @@ export const AnsQueryAPI = {
     },
 
     async createFile(fileName, fileBody) {
-        const url = `http://localhost/drupal9/web/jsonapi/file/file`;
+        const url = API_LINK + `/jsonapi/file/file`;
         // const data = Buffer.from(fileBody, 'binary');
         let formData = new FormData();
         formData.append(fileName, fileBody);

@@ -1,8 +1,7 @@
 import { UsersQueryAPI } from "@/api/usersAPI";
+import { ADMIN_ID, GUEST_ID } from "/settings";
 import User from "@/model/User";
 import Picture from "@/model/Picture";
-const ADMIN_ID = '942548ec-63ed-4261-b7b4-3eccb88d8af2';
-const GUEST_ID = '521b4952-f102-4716-9071-913303d1baa5';
 
 export const UserModule = {
     namespaced: true,

@@ -84,6 +84,7 @@ export const ProjectModule = {
 
         async createProject({ commit, rootGetters }, { title, body, inProgressRestriction, teamID }) {
             const res = await ProjectsQueryAPI.createProject(title, body, inProgressRestriction, teamID);
+            // console.log(res);
             const project = new Project();
             project.id = res.data.data.id;
             project.title = res.data.data.attributes.title;
@@ -97,6 +98,7 @@ export const ProjectModule = {
 
         async editProject({ getters, rootGetters, commit }, { id, title, body, inProgressRestriction, teamID }) {
             const res = await ProjectsQueryAPI.editProject(id, title, body, inProgressRestriction, teamID);
+            // console.log(res);
             const project = getters.getProjectByID(id);
             project.title = res.data.data.attributes.title;
             project.body = (res.data.data.attributes.body !== null)? res.data.data.attributes.body.value : null;
@@ -109,6 +111,7 @@ export const ProjectModule = {
 
         async deleteProject({ commit }, { id }) {
             const res = await ProjectsQueryAPI.deleteProject(id);
+            // console.log(res);
             commit('deleteProject', id);
         },
     }

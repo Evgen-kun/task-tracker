@@ -1,43 +1,57 @@
 <template>
-  <v-sheet rounded="lg">
-    <div class="container">
-      <Bar
-        id="gantt-component-id" 
-        ref="bar"
-        :key="key" 
-        :data="chartData" 
-        :options="options" 
-      ></Bar>
-    </div>
-    <div class="d-flex flex-row">
-      <v-text-field 
-        v-model="dateStart" 
-        class="mx-2"
-        type="month" 
-        variant="outlined" 
-        label="Начальная дата"
-      ></v-text-field>
-      <v-text-field 
-        v-model="dateEnd" 
-        class="mx-2"
-        type="month" 
-        variant="outlined" 
-        label="Конечная дата"
-      ></v-text-field>
+  <v-container>
+    <v-row>
+      <v-col :cols="(showEdit)? 9 : 12">
+        <v-sheet rounded="lg">
+          <div class="container">
+            <Bar
+              id="gantt-component-id" 
+              ref="bar"
+              :key="key" 
+              :data="chartData" 
+              :options="options" 
+            ></Bar>
+          </div>
+          <div class="d-flex flex-row">
+            <v-text-field 
+              v-model="dateStart" 
+              class="mx-2"
+              type="month" 
+              variant="outlined" 
+              label="Начальная дата"
+            ></v-text-field>
+            <v-text-field 
+              v-model="dateEnd" 
+              class="mx-2"
+              type="month" 
+              variant="outlined" 
+              label="Конечная дата"
+            ></v-text-field>
 
-      <v-autocomplete
-        v-model="filterExecutors"
-        label="Фильтр по исполнителям"
-        :items="allUsers"
-        item-title="nameWithID"
-        item-value="uid"
-        chips
-        closable-chips
-        clearable
-        multiple
-      ></v-autocomplete>
-    </div>
-  </v-sheet>
+            <v-autocomplete
+              v-model="filterExecutors"
+              label="Фильтр по исполнителям"
+              :items="allUsers"
+              item-title="nameWithID"
+              item-value="uid"
+              chips
+              closable-chips
+              clearable
+              multiple
+            ></v-autocomplete>
+          </div>
+        </v-sheet>
+      </v-col>
+      <v-col cols="3" v-if="showEdit">
+        <EditTaskComponent 
+          :key="editKey" 
+          :task="currentTask" 
+          :userUID="currentTask?.executor.uid"
+          @closeEvent="showEdit = !showEdit"
+        ></EditTaskComponent>
+      </v-col>
+    </v-row>
+  </v-container>
 </template>
 
 <script lang="ts">
@@ -53,12 +67,14 @@ import {
 } from 'chart.js';
 import { Bar } from 'vue-chartjs';
 import 'chartjs-adapter-date-fns';
+// import ChartJSdragDataPlugin from 'chartjs-plugin-dragdata';
 import { 
   todayLine,
   assignedTasks,
   status,
   weekend,
   taskName,
+  // drag,
 } from './plugins/chartPlugins'
 
 ChartJS.register(
@@ -69,23 +85,28 @@ ChartJS.register(
   Title,
   Tooltip,
   Legend,
+  // ChartJSdragDataPlugin,
   todayLine,
   assignedTasks,
   status,
   weekend,
   taskName,
+  // drag,
 );
-
 import store from '@/plugins/store';
+import EditTaskComponent from '../task/actions/cards/EditTaskComponent.vue';
 
 export default {
   name: 'GanttComponent',
   components: {
     Bar,
+    EditTaskComponent,
   },
   data() {
     return {
       key: 0,
+      editKey: 0,
+      showEdit: false,
       dateStart: new Date().toLocaleDateString("ru-RU", { year: 'numeric', month: '2-digit' }).toString().split('.').reverse().join('-'),
       dateEnd: new Date().toLocaleDateString("ru-RU", { year: 'numeric', month: '2-digit' }).toString().split('.').reverse().join('-'),
       filterExecutors: [],
@@ -99,8 +120,10 @@ export default {
         'rgba(46, 144, 255, 1)',
         'rgba(255, 26, 104, 1)'
       ],
+      currentTask: {},
       allTasks: [],
       allUsers: [],
+      chartItems: [],
       data: {
         datasets: [
           {
@@ -116,11 +139,23 @@ export default {
             borderSkipped: false,
             borderRadius: 10,
             barPercentage: 0.5,
-            categoryPercentage: 0.9
+            categoryPercentage: 0.9,
+            borderWidth: 1,
+            pointHitRadius: 25,
+            dragData: true,
           },
         ],
       },
       options: {
+        onHover: (event, chartElement) => {
+          event.native.target.style.cursor = chartElement[0] ? 'pointer' : 'default';
+          // console.log(chartElement[0]);
+        },
+        onClick: (event, chartElement) => {
+          const element = chartElement[0] ? chartElement[0].element.$context.raw : null;
+          this.showEditTask(element.id);
+          console.log(element);
+        },
         legend: {
           display: false
         },
@@ -142,8 +177,8 @@ export default {
             type: 'time',
             time: {
               displayFormats: {
-                day: 'dd.MM'
-              }
+                day: 'dd.MM',
+              },
             },
             min: '2023-03-01',
             max: '2023-05-01',
@@ -160,10 +195,45 @@ export default {
               font: {
                 weight: 'bold'
               }
-            }
+            },
           },
         },
         plugins: {
+          // dragData: {
+          //   round: 0,
+          //   onDragStart: function (e, datasetIndex) {
+          //     console.log("drag start!");
+
+          //     // chart
+          //     // this.$refs.bar.chart.data.datasets[datasetIndex].data[index].x = [new Date(), new Date().setDate(new Date().getDate() + 8)];
+          //     // this.$refs.bar.chart.update();
+          //     console.log({event: e});
+          //   },
+          //   onDrag: function (e, datasetIndex, index, value) {
+          //     console.log("drag!");
+          //     e.target.style.cursor = 'grabbing';
+
+          //     // this.$refs.bar.chart.data.datasets[datasetIndex].data[index].x = [new Date(), new Date().setDate(new Date().getDate() + 8)];
+          //     // this.$refs.bar.chart.update();
+          //     console.log({event: e, index: index, value: value});
+          //   },
+          //   onDragEnd: function (e, datasetIndex, index, value) {
+          //     console.log("drag end!");
+          //     e.target.style.cursor = 'default';
+
+          //     console.log({event: e, index: index, value: value});
+          //     // const xScale = chart.scales["x-axis-1"];
+          //     // const xValue = xScale.getValueForPixel(value.x);
+
+          //     // if (isNaN(xValue) || !isFinite(xValue)) {
+          //     //   console.error("Ошибка значения времени: ", xValue);
+          //     //   return;
+          //     // }
+
+          //     // chart.data.datasets[datasetIndex].data[index].x = [new Date(), new Date().setDate(new Date().getDate() + 8)];
+          //     // chart.update();
+          //   },
+          // },
           plugins: [todayLine, assignedTasks, status, weekend],
           weekend: {
             weekendColor: 'rgba(102, 102, 102, 0.2)'
@@ -172,6 +242,7 @@ export default {
             display: false
           },
           tooltip: {
+            enabled: false,
             callbacks: {
               title: (ctx) => {
                 const startDate = new Date(ctx[0].raw.x[0]);
@@ -198,6 +269,24 @@ export default {
     showMonth() {
       console.log(this.month);
     },
+    addDay(taskID = "1") {
+      console.log(this.$refs.bar.chart);
+      const taskIndex = this.data.datasets[0].data.findIndex(task => (task.type === "task" && task.id === taskID));
+      const progressIndex = this.data.datasets[0].data.findIndex(progress => (progress.type === "progress" && progress.id === taskID));
+      console.log(this.data.datasets[0].data);
+      console.log(taskIndex);
+      const date = this.data.datasets[0].data[taskIndex].x[1];
+      console.log(taskIndex);
+      this.data.datasets[0].data[taskIndex].x[1] = new Date(date).setDate(new Date(date).getDate() + 1);
+      const task = this.data.datasets[0].data[taskIndex];
+      this.data.datasets[0].data[progressIndex].x = [task.x[0], this.progressCalc(task.x[0], task.x[1], task.progress)]
+      this.$refs.bar.chart.update();
+    },
+    progressCalc(beginDate, dueDate, progress) {
+      const timestamp = new Date(dueDate) - new Date(beginDate);
+      const done = timestamp * progress * 0.01;
+      return Number(new Date(beginDate)) + done;
+    },
     lastDay(year, month) {
       return new Date(year, month, 0).getDate();
     },
@@ -208,8 +297,8 @@ export default {
       this.options = Object.assign({}, this.options);
     },
     chartFilterExecutor() {
-      if(this.filterExecutors.length === 0) { this.data.datasets[0].data = this.allTasks; }
-      else { this.data.datasets[0].data = this.allTasks.filter(task => this.filterExecutors.includes(task.executorUID)); }
+      if(this.filterExecutors.length === 0) { this.data.datasets[0].data = this.chartItems; }
+      else { this.data.datasets[0].data = this.chartItems.filter(task => this.filterExecutors.includes(task.executorUID)); }
       this.options.scales.y.labels = this.data.datasets[0].data.filter(task => task.type === "task").map(task => task.y);
 
       this.dynamicHeight(this.data.datasets[0].data.length);
@@ -219,6 +308,12 @@ export default {
       let rowHeight = 50;
       const chartBox = document.querySelector('canvas');
       chartBox.parentNode.style.height = rowHeight * rowsCount + 'px';
+    },
+    showEditTask(id) {
+      const task = this.allTasks.find(task => task.id === id);
+      this.currentTask = task;
+      this.editKey++;
+      this.showEdit = true;
     },
   },
   watch: {
@@ -230,6 +325,10 @@ export default {
     },
     filterExecutors() {
       this.chartFilterExecutor();
+    },
+    allTasks() {
+      console.log("Все задачи: ");
+      console.log(this.allTasks);
     }
   },
   computed: {
@@ -264,6 +363,7 @@ export default {
 
       });
     },
+
   },
   mounted() {
     this.options.scales.x.min = this.minDate;
@@ -271,14 +371,15 @@ export default {
     this.options = Object.assign({}, this.options);
   },
   created() {
-    const tasks = store.getters['taskM/getTasksFromProjectsByProjectID'](this.$route.params.projectID);
+    this.allTasks = store.getters['taskM/getTasksFromProjectsByProjectID'](this.$route.params.projectID);
     this.allUsers = store.getters['userM/getUsers'].map(user => ({ ...user, nameWithID: `${user.name} (${user.id})` }));
-    this.options.scales.y.labels = tasks.map(task => task.title);
+    this.options.scales.y.labels = this.allTasks.map(task => task.title);
 
     const data = [];
 
-    tasks.forEach((task) => {
+    this.allTasks.forEach((task) => {
       data.push({ 
+          id: task.id,
           x: [task.beginDate, task.dueDate], 
           y: task.title, 
           executorUID: task.executor.uid,
@@ -294,6 +395,7 @@ export default {
         const done = timestamp * task.progress * 0.01;
         const doneTime = Number(beginDate) + done;
         data.push({ 
+          id: task.id,
           x: [task.beginDate, doneTime], 
           y: task.title, 
           executorUID: task.executor.uid,
@@ -304,7 +406,7 @@ export default {
           type: "progress"
         });
       });
-    this.allTasks = data;
+    this.chartItems = data;
     this.data.datasets[0].data = data;
     this.data.datasets[0].backgroundColor = (ctx) => {
       switch(ctx.raw.difficulty) {

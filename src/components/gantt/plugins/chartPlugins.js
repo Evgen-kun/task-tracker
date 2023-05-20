@@ -66,7 +66,7 @@ export const status = {
         const angle = Math.PI / 180;
         
         ctx.save();
-        ctx.font = 'bolder 12px FontAwesome';
+        ctx.font = 'bolder 15px FontAwesome';
         ctx.textBaseline = 'middle';
         ctx.textAlign = 'center';
         data.datasets[0].data.forEach((item, index) => {
@@ -134,3 +134,38 @@ export const progressBar = {
         
     }
 }
+
+// export const drag = {
+//     id: 'drag',
+//     afterDatasetsDraw(chart, args, pluginOptions) {
+//         const { ctx, data, options, chartArea: { top, bottom, left, right }, scales: { x, y } } = chart;
+    
+//         const icons = new Map();
+//         icons.set('Не выполнено', { icon: '\uf00d', color: 'rgba(255, 26, 104, 1)' });
+//         icons.set('Выполняется', { icon: '\uf110', color: 'rgba(255, 206, 86, 1)' });
+//         icons.set('Выполнено', { icon: '\uf00c', color: 'rgba(75, 192, 192, 1)' });
+
+//         const angle = Math.PI / 180;
+
+//         chart.getActiveElements().forEach((active, index) => {
+//             // console.log(active);
+//             const targetValue = data.datasets[active.datasetIndex].data[active.index];
+//             const value = data.datasets[active.datasetIndex].data.find(item => (item.type === "task" && item.id === targetValue.id));
+//             const fontSize = options.hoverRadius;
+
+//             ctx.beginPath();
+//             ctx.fillStyle = icons.get(targetValue.status).color;
+//             ctx.arc(x.getPixelForValue(new Date(value.x[0])) + 10, y.getPixelForValue(value.y), 15, 0, angle * 360, false);
+//             ctx.arc(x.getPixelForValue(new Date(value.x[1])) - 10, y.getPixelForValue(value.y), 15, 0, angle * 360, false);
+//             ctx.closePath();
+//             ctx.fill();
+//             ctx.fillStyle = 'white';
+//             ctx.font = 'bolder 18px FontAwesome';
+//             ctx.fillText('\uf104', x.getPixelForValue(new Date(value.x[0])) + 3, y.getPixelForValue(value.y));
+//             ctx.fillText('\uf105', x.getPixelForValue(new Date(value.x[1])) - 15, y.getPixelForValue(value.y));
+//             ctx.save();
+
+//         });
+//         ctx.restore();
+//     }
+// }

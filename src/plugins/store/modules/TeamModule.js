@@ -64,6 +64,7 @@ export const TeamModule = {
 
         async createTeam({ commit, rootGetters }, { title, body, usersUID }) {
             const res = await TeamsQueryAPI.createTeam(title, body, usersUID);
+            // console.log(res);
             const allUsers = rootGetters['userM/getUsers'];
             const team = new Team();
             team.id = res.data.data.id;
@@ -76,6 +77,7 @@ export const TeamModule = {
 
         async editTeam({ getters, rootGetters, commit }, { id, title, body, usersUID }) {
             const res = await TeamsQueryAPI.editTeam(id, title, body, usersUID);
+            // console.log(res);
             const allUsers = rootGetters['userM/getUsers'];
             const newUsersUID = res.data.data.relationships.field_member.data.map(user => user.id);
             const team = getters.getTeamByID(id);
@@ -88,6 +90,7 @@ export const TeamModule = {
 
         async deleteTeam({ commit }, { id }) {
             const res = await TeamsQueryAPI.deleteTeam(id);
+            // console.log(res);
             commit('deleteTeam', id);
         },
     }

@@ -55,7 +55,7 @@ export const AuthModule = {
     },
 
     actions: {
-        async onLogin({ commit, dispatch }, { login, password }) {
+        async onLogin({ commit }, { login, password }) {
             const auth = await AuthAPI.login(login, password);
             const userUID = (await AuthAPI.getUserUID()).data.meta.links.me.meta.id;
             const res = await UsersQueryAPI.getUser(userUID);
@@ -72,7 +72,7 @@ export const AuthModule = {
             user.picture = picture;
             user.roles = data.relationships.roles.data.map(role => role.meta.drupal_internal__target_id);
             const token = await AuthAPI.getToken();
-            const basicToken = btoa(dispatch('toBinary', user.name) + ":" + password);
+            const basicToken = window.btoa(unescape(encodeURIComponent(user.name + ":" + password)));
 
             commit('setUser', user);
             commit('setToken', token.data);
@@ -86,19 +86,5 @@ export const AuthModule = {
             commit('deleteToken');
             commit('deleteBasicToken');
         },
-
-        toBinary(context, string) {
-            const codeUnits = Uint16Array.from(
-              { length: string.length },
-              (element, index) => string.charCodeAt(index)
-            );
-            const charCodes = new Uint8Array(codeUnits.buffer);
-          
-            let result = "";
-            charCodes.forEach((char) => {
-              result += String.fromCharCode(char);
-            });
-            return result;
-        }
     }
 }

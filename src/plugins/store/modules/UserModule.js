@@ -51,6 +51,7 @@ export const UserModule = {
     actions: {
         async usersQuery({ commit, dispatch }) {
             const res = await UsersQueryAPI.getUsers();
+            // console.log(res);
             const pictures = res.data.included.filter(item => item.type === 'file--file');
             const users = res.data.data
                 .filter(item => (item.id !== GUEST_ID && item.id !== ADMIN_ID))
@@ -68,6 +69,7 @@ export const UserModule = {
 
         async addNewUser({ commit, dispatch }, { uid }) {
             const res = await UsersQueryAPI.getUser(uid);
+            // console.log(res);
             const userData = res.data.data;
             const user = new User({
                 uid: userData.id,
@@ -103,6 +105,7 @@ export const UserModule = {
 
         async isUserExistsOnServer(context, { uid }) {
             const res = await UsersQueryAPI.getUser(uid);
+            // console.log(res);
             const userData = res.data?.errors;
             if(userData[0].title === "Not Found") return false;
             return true;

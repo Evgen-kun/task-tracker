@@ -20,7 +20,6 @@
     "cors": "^2.8.5",
     "date-fns": "^2.29.3",
     "gantt-elastic": "^1.0.12",
-    "moment": "^2.29.4",
     "primeflex": "^3.3.0",
     "primeicons": "^6.0.1",
     "primevue": "^3.26.1",

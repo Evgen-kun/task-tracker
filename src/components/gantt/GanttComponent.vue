@@ -47,11 +47,31 @@
           :key="editKey" 
           :task="currentTask" 
           :userUID="currentTask?.executor.uid"
-          @closeEvent="showEdit = !showEdit"
+          @closeEvent="{ showEdit = !showEdit; showAlert = false; currentTask = {} }"
         ></EditTaskComponent>
       </v-col>
     </v-row>
   </v-container>
+  <v-alert
+    v-model="showAlert"
+    class="toast"
+    type="warning"
+    elevation="5"
+    max-width="600px"
+    border="start"
+    closable
+    title="Пересечение задач"
+  >
+    Задача <strong>'{{ currentTask.title }}'</strong> пользователя <strong>{{ currentTask?.executor?.name }}</strong> имеет пересечение со следующими задачами:
+    <ul>
+      <li v-for="item in taskOverlap"
+        :key="item.title"
+      >
+        <strong>'{{ item.title }}'</strong>: {{ (item.begin !== item.end)? `${item.begin} - ${item.end}` : item.begin }}
+      </li>
+    </ul>
+    По возможности старайтесь избегать наложения задач.
+  </v-alert>
 </template>
 
 <script lang="ts">
@@ -107,6 +127,7 @@ export default {
       key: 0,
       editKey: 0,
       showEdit: false,
+      showAlert:false,
       dateStart: new Date().toLocaleDateString("ru-RU", { year: 'numeric', month: '2-digit' }).toString().split('.').reverse().join('-'),
       dateEnd: new Date().toLocaleDateString("ru-RU", { year: 'numeric', month: '2-digit' }).toString().split('.').reverse().join('-'),
       filterExecutors: [],
@@ -312,6 +333,7 @@ export default {
     showEditTask(id) {
       const task = this.allTasks.find(task => task.id === id);
       this.currentTask = task;
+      this.showAlert = (this.taskOverlap.length > 0)? true : false;
       this.editKey++;
       this.showEdit = true;
     },
@@ -363,7 +385,49 @@ export default {
 
       });
     },
-
+    taskOverlap() {
+      const userTasksWithoutTargetTask = this.allTasks.filter(task => (task.executor.uid === this.currentTask?.executor.uid) 
+        && (task.id !== this.currentTask.id));
+      const overlappingTasks = userTasksWithoutTargetTask.filter(task => !(
+        (new Date(task.dueDate) <= new Date(this.currentTask.beginDate)) 
+        || (new Date(task.beginDate) >= new Date(this.currentTask.dueDate))));
+      const data = [];
+      overlappingTasks.forEach((task) => {
+        if((new Date(this.currentTask.beginDate) <= new Date(task.beginDate)) && (new Date(this.currentTask.dueDate) >= new Date(task.dueDate))) {
+          data.push({
+            title: task.title,
+            begin: new Date(task.beginDate).toLocaleDateString("ru-RU", { month: 'short', day: 'numeric' }),
+            end: new Date(task.dueDate).toLocaleDateString("ru-RU", { month: 'short', day: 'numeric' })
+          });
+          return;
+        }
+        if((new Date(this.currentTask.beginDate) > new Date(task.beginDate)) && (new Date(this.currentTask.dueDate) < new Date(task.dueDate))) {
+          data.push({
+            title: task.title,
+            begin: new Date(this.currentTask.beginDate).toLocaleDateString("ru-RU", { month: 'short', day: 'numeric' }),
+            end: new Date(this.currentTask.dueDate).toLocaleDateString("ru-RU", { month: 'short', day: 'numeric' })
+          });
+          return;
+        }
+        if((new Date(this.currentTask.beginDate) < new Date(task.beginDate)) && (new Date(this.currentTask.dueDate) > new Date(task.beginDate))) {
+          data.push({
+            title: task.title,
+            begin: new Date(task.beginDate).toLocaleDateString("ru-RU", { month: 'short', day: 'numeric' }),
+            end: new Date(this.currentTask.dueDate).toLocaleDateString("ru-RU", { month: 'short', day: 'numeric' })
+          });
+          return;
+        }
+        if((new Date(this.currentTask.beginDate) < new Date(task.dueDate)) && (new Date(this.currentTask.dueDate) > new Date(task.dueDate))) {
+          data.push({
+            title: task.title,
+            begin: new Date(this.currentTask.beginDate).toLocaleDateString("ru-RU", { month: 'short', day: 'numeric' }),
+            end: new Date(task.dueDate).toLocaleDateString("ru-RU", { month: 'short', day: 'numeric' })
+          });
+          return;
+        }
+      });
+      return data;
+    }
   },
   mounted() {
     this.options.scales.x.min = this.minDate;
@@ -422,5 +486,13 @@ export default {
 <style scoped>
   canvas { 
     height: 640px;
+  }
+
+  .toast {
+    position: fixed;
+    text-align: left;
+    z-index: 1;
+    bottom: 35px;
+    left: 80px;
   }
 </style>

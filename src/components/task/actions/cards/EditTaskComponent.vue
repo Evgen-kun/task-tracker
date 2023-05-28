@@ -70,8 +70,6 @@
                     clearable
                 ></v-autocomplete>
 
-                <small>*обязательное поле</small>
-
                 <v-card-actions class="justify-end">
                 <v-btn
                     type="submit"
@@ -133,6 +131,10 @@
             type: String,
             required: true
         },
+        type: {
+            type: String,
+            default: "fromProjects"
+        },
     },
     methods: {
       async editTask() {
@@ -147,12 +149,15 @@
             difficulty: this.selectDifficulty,
             projectID: this.selectProject,
             beginDate: new Date(this.beginDate).toISOString().slice(0, -5) + '+03:00',
-            dueDate: new Date(this.dueDate).toISOString().slice(0, -5) + '+03:00'
+            dueDate: new Date(this.dueDate).toISOString().slice(0, -5) + '+03:00',
+            type: this.type
           });
+          this.$emit('editEvent');
         }
       },
       async deleteTask() {
         await store.dispatch('taskM/deleteTask', {id: this.task.id});
+        this.$emit('deleteEvent');
       },
       emitEvent() {
         this.$emit('closeEvent');

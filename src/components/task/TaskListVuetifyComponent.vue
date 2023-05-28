@@ -215,6 +215,7 @@ export default {
     },
     async created() {
         await store.dispatch('taskM/queryTasksFromProjects');
+        await store.dispatch('taskM/queryTasksFromMe', { userUID: store.getters['authM/getUser'].uid });
         await store.dispatch('userM/usersQuery');
     }
 }

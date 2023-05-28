@@ -68,6 +68,7 @@
       },
       mounted() {
         this.allTasks = store.getters['taskM/getTasksFromProjectsByProjectID'](this.$route.params.projectID);
+        const difficulty = [...store.getters['taskM/getDifficulty'].values()];
         const allUsers = new Map();
         this.allTasks.forEach((task) => {
           allUsers.set(task.executor.uid, task.executor);
@@ -77,7 +78,15 @@
         const labels = [];
         this.allUsers.forEach((user) => {
           labels.push(`${user.name} (${user.id})`);
-          const count = this.allTasks.filter(task => task.executor.uid === user.uid).length;
+          const userTasks = this.allTasks.filter(task => task.executor.uid === user.uid);
+          const count = userTasks.reduce((acc, task) => {
+            switch (task.difficulty) {
+              case difficulty[0]: return acc + 1;
+              case difficulty[1]: return acc + 2;
+              case difficulty[2]: return acc + 3;
+              default: return acc;
+            }
+          }, 0);
           data.push(count);
         });
         this.data.datasets[0].data = data;

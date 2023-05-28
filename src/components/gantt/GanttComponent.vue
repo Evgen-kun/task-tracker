@@ -49,6 +49,8 @@
           :task="currentTask" 
           :userUID="currentTask?.executor.uid"
           @closeEvent="{ showEdit = !showEdit; showAlert = false; currentTask = {} }"
+          @editEvent="{ updateData(); updateChart() }"
+          @deleteEvent="{ initChart(); key++ }"
         ></EditTaskComponent>
       </v-col>
     </v-row>
@@ -227,15 +229,15 @@ export default {
                   if(index % 2 === 1) { return; }
                   ctx.beginPath();
                   ctx.fillStyle = icons.get(item.status).color;
-                  ctx.arc(left - 250, y.getPixelForValue(index / 2), 12, 0, angle * 360, false);
+                  ctx.arc(left - 200, y.getPixelForValue(index / 2), 12, 0, angle * 360, false);
                   ctx.closePath();
                   ctx.fill();
                   ctx.fillStyle = 'white';
-                  ctx.fillText(icons.get(item.status).icon, left - 250, y.getPixelForValue(index / 2));
+                  ctx.fillText(icons.get(item.status).icon, left - 200, y.getPixelForValue(index / 2));
               });
               ctx.font = 'bolder 12px sans-serif';
               ctx.fillStyle = 'black';
-              ctx.fillText('Статус', left - 250, top - 15);
+              ctx.fillText('Статус', left - 200, top - 15);
               ctx.restore();
           }
         },
@@ -270,12 +272,10 @@ export default {
       options: {
         onHover: (event, chartElement) => {
           event.native.target.style.cursor = chartElement[0] ? 'pointer' : 'default';
-          // console.log(chartElement[0]);
         },
         onClick: (event, chartElement) => {
           const element = chartElement[0] ? chartElement[0].element.$context.raw : null;
           this.showEditTask(element.id);
-          console.log(element);
         },
         legend: {
           display: false
@@ -387,21 +387,75 @@ export default {
     }
   },
   methods: {
-    showMonth() {
-      console.log(this.month);
+    initChart() {
+      this.allTasks = store.getters['taskM/getTasksFromProjectsByProjectID'](this.$route.params.projectID);
+      this.allUsers = store.getters['userM/getUsers'].map(user => ({ ...user, nameWithID: `${user.name} (${user.id})` }));
+      // this.options.scales.y.labels = this.allTasks.map(task => task.title);
+      this.options.scales.y.labels = this.allTasks.sort((a, b) => a.executor.name.localeCompare(b.executor.name)).map(task => task.title);
+
+      const data = [];
+
+      this.allTasks.forEach((task) => {
+        data.push({ 
+            id: task.id,
+            x: [task.beginDate, task.dueDate], 
+            y: task.title, 
+            executorUID: task.executor.uid,
+            name: task.executor.name, 
+            status: task.status, 
+            progress: task.progress,
+            difficulty: task.difficulty,
+            type: "task"
+          });
+          const beginDate = new Date(task.beginDate);
+          const dueDate = new Date(task.dueDate);
+          const timestamp = dueDate - beginDate;
+          const done = timestamp * task.progress * 0.01;
+          const doneTime = Number(beginDate) + done;
+          data.push({ 
+            id: task.id,
+            x: [task.beginDate, doneTime], 
+            y: task.title, 
+            executorUID: task.executor.uid,
+            name: task.executor.name, 
+            status: task.status, 
+            progress: task.progress,
+            difficulty: task.difficulty,
+            type: "progress"
+          });
+        });
+      const sortedData = data.sort((a, b) => a.name.localeCompare(b.name));
+      this.chartItems = sortedData;
+      this.data.datasets[0].data = sortedData;
+      this.data.datasets[0].backgroundColor = (ctx) => {
+        switch(ctx.raw.difficulty) {
+          case "Легко": return (ctx.raw.type === 'task')? this.colors[0] : this.borderColors[0];
+          case "Нормально": return (ctx.raw.type === 'task')? this.colors[1] : this.borderColors[1];
+          case "Сложно": return (ctx.raw.type === 'task')? this.colors[2] : this.borderColors[2];
+        }
+      };
     },
-    addDay(taskID = "1") {
-      console.log(this.$refs.bar.chart);
-      const taskIndex = this.data.datasets[0].data.findIndex(task => (task.type === "task" && task.id === taskID));
-      const progressIndex = this.data.datasets[0].data.findIndex(progress => (progress.type === "progress" && progress.id === taskID));
-      console.log(this.data.datasets[0].data);
-      console.log(taskIndex);
-      const date = this.data.datasets[0].data[taskIndex].x[1];
-      console.log(taskIndex);
-      this.data.datasets[0].data[taskIndex].x[1] = new Date(date).setDate(new Date(date).getDate() + 1);
+    updateData() {
+      const taskIndex = this.data.datasets[0].data.findIndex(task => (task.type === "task" && task.id === this.currentTask.id));
+      const progressIndex = this.data.datasets[0].data.findIndex(progress => (progress.type === "progress" && progress.id === this.currentTask.id));
+      
+      this.data.datasets[0].data[taskIndex].x = [new Date(this.currentTask.beginDate), new Date(this.currentTask.dueDate)];
+      this.data.datasets[0].data[taskIndex].y = this.currentTask.title;
+      this.data.datasets[0].data[taskIndex].executorUID = this.currentTask.executor.uid;
+      this.data.datasets[0].data[taskIndex].name = this.currentTask.executor.name;
+      this.data.datasets[0].data[taskIndex].status = this.currentTask.status;
+      this.data.datasets[0].data[taskIndex].progress = this.currentTask.progress;
+      this.data.datasets[0].data[taskIndex].difficulty = this.currentTask.difficulty;
+
       const task = this.data.datasets[0].data[taskIndex];
-      this.data.datasets[0].data[progressIndex].x = [task.x[0], this.progressCalc(task.x[0], task.x[1], task.progress)]
-      this.$refs.bar.chart.update();
+      this.data.datasets[0].data[progressIndex].x = [task.x[0], this.progressCalc(task.x[0], task.x[1], task.progress)];
+      this.data.datasets[0].data[progressIndex].y = this.currentTask.title;
+      this.data.datasets[0].data[progressIndex].executorUID = this.currentTask.executor.uid;
+      this.data.datasets[0].data[progressIndex].name = this.currentTask.executor.name;
+      this.data.datasets[0].data[progressIndex].status = this.currentTask.status;
+      this.data.datasets[0].data[progressIndex].progress = this.currentTask.progress;
+      this.data.datasets[0].data[progressIndex].difficulty = this.currentTask.difficulty;
+      this.updateChart();
     },
     progressCalc(beginDate, dueDate, progress) {
       const timestamp = new Date(dueDate) - new Date(beginDate);
@@ -437,6 +491,11 @@ export default {
       this.editKey++;
       this.showEdit = true;
     },
+    updateChart() {
+      this.showAlert = (this.taskOverlap.length > 0)? true : false;
+      this.$refs.bar.chart.update();
+      // this.key += 1;
+    },
   },
   watch: {
     dateStart() {
@@ -448,9 +507,10 @@ export default {
     filterExecutors() {
       this.chartFilterExecutor();
     },
-    allTasks() {
-      console.log("Все задачи: ");
-      console.log(this.allTasks);
+    allTasks(oldTasks, newTasks) {
+      console.log("Watcher все задачи: ");
+      console.log(oldTasks);
+      console.log(newTasks);
     }
   },
   computed: {
@@ -535,50 +595,7 @@ export default {
     this.options = Object.assign({}, this.options);
   },
   created() {
-    this.allTasks = store.getters['taskM/getTasksFromProjectsByProjectID'](this.$route.params.projectID);
-    this.allUsers = store.getters['userM/getUsers'].map(user => ({ ...user, nameWithID: `${user.name} (${user.id})` }));
-    this.options.scales.y.labels = this.allTasks.map(task => task.title);
-
-    const data = [];
-
-    this.allTasks.forEach((task) => {
-      data.push({ 
-          id: task.id,
-          x: [task.beginDate, task.dueDate], 
-          y: task.title, 
-          executorUID: task.executor.uid,
-          name: task.executor.name, 
-          status: task.status, 
-          progress: task.progress,
-          difficulty: task.difficulty,
-          type: "task"
-        });
-        const beginDate = new Date(task.beginDate);
-        const dueDate = new Date(task.dueDate);
-        const timestamp = dueDate - beginDate;
-        const done = timestamp * task.progress * 0.01;
-        const doneTime = Number(beginDate) + done;
-        data.push({ 
-          id: task.id,
-          x: [task.beginDate, doneTime], 
-          y: task.title, 
-          executorUID: task.executor.uid,
-          name: task.executor.name, 
-          status: task.status, 
-          progress: task.progress,
-          difficulty: task.difficulty,
-          type: "progress"
-        });
-      });
-    this.chartItems = data;
-    this.data.datasets[0].data = data;
-    this.data.datasets[0].backgroundColor = (ctx) => {
-      switch(ctx.raw.difficulty) {
-        case "Легко": return (ctx.raw.type === 'task')? this.colors[0] : this.borderColors[0];
-        case "Нормально": return (ctx.raw.type === 'task')? this.colors[1] : this.borderColors[1];
-        case "Сложно": return (ctx.raw.type === 'task')? this.colors[2] : this.borderColors[2];
-      }
-    };
+    this.initChart();
   },
 }
 </script>
@@ -592,7 +609,7 @@ export default {
     position: fixed;
     text-align: left;
     z-index: 1;
-    bottom: 35px;
+    bottom: 30px;
     left: 80px;
   }
 </style>

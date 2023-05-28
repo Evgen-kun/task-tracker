@@ -540,6 +540,8 @@ export const TaskModule = {
             task.executor.picture = picture;
             task.status = status;
             task.difficulty = difficulty;
+            task.beginDate = res.data.data.attributes.field_begin_date;
+            task.dueDate = res.data.data.attributes.field_due_date;
             task.project = (res.data.data.relationships.field_project?.data?.id)? 
                 rootGetters['projectM/getProjectByID'](res.data.data.relationships.field_project.data.id) : null;
 

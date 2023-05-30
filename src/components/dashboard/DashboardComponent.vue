@@ -47,7 +47,7 @@ export default {
             {
                 id: 2,
                 title: "Незавершённые задачи",
-                value: this.tasks.filter(task => task.status === "Не выполнено").length
+                value: this.tasks.filter(task => task.status !== "Выполнено").length
             },
             {
                 id: 3,

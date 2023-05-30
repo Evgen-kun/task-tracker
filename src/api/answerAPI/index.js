@@ -63,7 +63,7 @@ export const AnsQueryAPI = {
     },
 
     async createFile(fileName, fileBody) {
-        const url = API_LINK + `/jsonapi/file/file`;
+        const url = API_LINK + `/jsonapi/comment/answer/field_file`;
         // const data = Buffer.from(fileBody, 'binary');
         let formData = new FormData();
         formData.append(fileName, fileBody);

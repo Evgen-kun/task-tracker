@@ -9,10 +9,26 @@
                     rounded="lg"
                     mandatory
                 >
-                    <v-btn icon="mdi-view-list" value="tasklist" title="Список"></v-btn>
-                    <v-btn icon="mdi-chart-gantt" value="gantt" title="Хронология"></v-btn>
-                    <v-btn icon="mdi-view-parallel" value="kanban" title="Доска"></v-btn>
-                    <v-btn icon="mdi-view-dashboard" value="dashboard" title="Панель мониторинга"></v-btn>
+                    <v-tooltip location="bottom" text="Список">
+                        <template v-slot:activator="{ props }">
+                            <v-btn v-bind="props" icon="mdi-view-list" value="tasklist"></v-btn>
+                        </template>
+                    </v-tooltip>
+                    <v-tooltip location="bottom" text="Хронология">
+                        <template v-slot:activator="{ props }">
+                            <v-btn v-bind="props" icon="mdi-chart-gantt" value="gantt"></v-btn>
+                        </template>
+                    </v-tooltip>
+                    <v-tooltip location="bottom" text="Доска">
+                        <template v-slot:activator="{ props }">
+                            <v-btn v-bind="props" icon="mdi-view-parallel" value="kanban"></v-btn>
+                        </template>
+                    </v-tooltip>
+                    <v-tooltip location="bottom" text="Панель мониторинга">
+                        <template v-slot:activator="{ props }">
+                            <v-btn v-bind="props" icon="mdi-view-dashboard" value="dashboard"></v-btn>
+                        </template>
+                    </v-tooltip>
                 </v-btn-toggle>
             </div>
             <div class="mt-5">

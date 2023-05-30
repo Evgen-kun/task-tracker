@@ -55,24 +55,54 @@ export default {
           datasets: [
             {
               backgroundColor: ['#E46651', '#6669fa', '#41B883'],
-              data: []
+              data: [],
+              borderRadius: 20,
             },
           ],
         },
         options: {
           responsive: true,
           maintainAspectRatio: false,
+          layout: {
+            padding: {
+              right: 20,
+            },
+          },
           scales: {
             y: {
+              title: {
+                display: true,
+                text: 'Количество задач',
+                font: {
+                  size: 20,
+                }
+              },
               ticks: {
                 beginAtZero: true,
+                font: {
+                  size: 16,
+                },
                 callback: function(value) {if (value % 1 === 0) {return value;}}
               }
-            }
+            },
+            x: {
+              title: {
+                display: true,
+                text: 'Статус',
+                font: {
+                  size: 20,
+                }
+              },
+              ticks: {
+                font: {
+                  size: 16,
+                },
+              }
+            },
           },
           plugins: {
             legend: {
-              display: false
+              display: false,
             },
             plugins: [],
           },

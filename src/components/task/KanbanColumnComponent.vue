@@ -27,7 +27,7 @@
 
         <draggable v-if="this.$route.name === 'dashboard'" v-model="myList" class="list-group" group="tasks" tag="transition" item-key="id">
             <template #item="{ element: task }">
-                <v-card-item>
+                <v-card-item class="item-top">
                     <TaskComponent
                         v-bind:task="task"
                         v-bind:user="task.executor"
@@ -36,7 +36,7 @@
                 </v-card-item>
             </template>
         </draggable>
-        <v-card-item v-else>
+        <v-card-item v-else class="item-top">
             <TaskComponent
                 v-for="task in tasks"
                 v-bind:key="task.id"
@@ -106,16 +106,9 @@ export default {
 }
 </script>
   
-<style>
-.v-card {
-    background-color: rgba(220, 220, 220, 1);
-}
+<style scoped>
 
-.v-toolbar-title {
-    min-width: 200px;
-}
-
-.v-list-item__content {
-    max-width: 100px;
+.item-top {
+    padding-top: 0;
 }
 </style>

@@ -31,7 +31,9 @@
 
             <v-autocomplete
               v-model="filterExecutors"
+              class="mx-2"
               label="Фильтр по исполнителям"
+              variant="outlined"
               :items="allUsers"
               item-title="nameWithID"
               item-value="uid"
@@ -48,6 +50,7 @@
           :key="editKey" 
           :task="currentTask" 
           :userUID="currentTask?.executor.uid"
+          :style="{ rounded: 'lg', density: 'compact' }"
           @closeEvent="{ showEdit = !showEdit; showAlert = false; currentTask = {} }"
           @editEvent="{ updateData(); updateChart() }"
           @deleteEvent="{ initChart(); key++ }"
@@ -149,9 +152,9 @@ export default {
             borderRadius: 10,
             barPercentage: 0.5,
             categoryPercentage: 0.9,
-            borderWidth: 1,
-            pointHitRadius: 25,
-            dragData: true,
+            // borderWidth: 1,
+            // pointHitRadius: 25,
+            // dragData: true,
           },
         ],
       },
@@ -196,16 +199,17 @@ export default {
           afterDatasetsDraw(chart, args, pluginOptions) {
               const { ctx, data, chartArea: { top, bottom, left, right }, scales: { x, y } } = chart;
               
-              ctx.font = 'bolder 12px sans-serif';
+              ctx.font = '18px sans-serif';
               ctx.fillStyle = 'black';
               ctx.textBaseline = 'middle';
               ctx.textAlign = 'left';
               
               data.datasets[0].data.forEach((item, index) => {
                   if(index % 2 === 1) { return; }
-                  ctx.fillText(item.name, 40, y.getPixelForValue(index / 2));
+                  ctx.fillText(item.name, 30, y.getPixelForValue(index / 2));
               });
-              ctx.fillText('Исполнитель', 25, top - 15);
+              ctx.font = 'bolder 18px sans-serif';
+              ctx.fillText('Исполнитель', 15, top - 19);
               ctx.restore();
           }
         },
@@ -222,22 +226,22 @@ export default {
               const angle = Math.PI / 180;
               
               ctx.save();
-              ctx.font = 'bolder 15px FontAwesome';
+              ctx.font = 'bolder 18px FontAwesome';
               ctx.textBaseline = 'middle';
               ctx.textAlign = 'center';
               data.datasets[0].data.forEach((item, index) => {
                   if(index % 2 === 1) { return; }
                   ctx.beginPath();
                   ctx.fillStyle = icons.get(item.status).color;
-                  ctx.arc(left - 200, y.getPixelForValue(index / 2), 12, 0, angle * 360, false);
+                  ctx.arc(175, y.getPixelForValue(index / 2), 12, 0, angle * 360, false);
                   ctx.closePath();
                   ctx.fill();
                   ctx.fillStyle = 'white';
-                  ctx.fillText(icons.get(item.status).icon, left - 200, y.getPixelForValue(index / 2));
+                  ctx.fillText(icons.get(item.status).icon, 175, y.getPixelForValue(index / 2));
               });
-              ctx.font = 'bolder 12px sans-serif';
+              ctx.font = 'bolder 18px sans-serif';
               ctx.fillStyle = 'black';
-              ctx.fillText('Статус', left - 200, top - 15);
+              ctx.fillText('Статус', 175, top - 19);
               ctx.restore();
           }
         },
@@ -246,9 +250,11 @@ export default {
           beforeDatasetsDraw(chart, args, pluginOptions) {
               const { ctx, data, chartArea: { top, bottom, left, right }, scales: { x, y } } = chart;
 
-              ctx.font = 'bolder 12px sans-serif';
+              ctx.font = 'bolder 18px sans-serif';
               ctx.fillStyle = 'black';
-              ctx.fillText('Название', left - 60, top - 13);
+              ctx.textBaseline = 'middle';
+              ctx.textAlign = 'center';
+              ctx.fillText('Название', left - 100, top - 19);
               ctx.restore();
           }
         },
@@ -282,9 +288,10 @@ export default {
         },
         layout: {
           padding: {
+            top: 15,
             left: 200,
-            right: 0,
-            bottom: 20
+            right: 10,
+            bottom: 25
           },
           height: 100,
         },
@@ -314,7 +321,8 @@ export default {
             labels: [],
             ticks: {
               font: {
-                weight: 'bold'
+                weight: 'bold',
+                size: 18
               }
             },
           },
@@ -569,7 +577,7 @@ export default {
           });
           return;
         }
-        if((new Date(this.currentTask.beginDate) < new Date(task.beginDate)) && (new Date(this.currentTask.dueDate) > new Date(task.beginDate))) {
+        if((new Date(this.currentTask.beginDate) <= new Date(task.beginDate)) && (new Date(this.currentTask.dueDate) > new Date(task.beginDate))) {
           data.push({
             title: task.title,
             begin: new Date(task.beginDate).toLocaleDateString("ru-RU", { month: 'short', day: 'numeric' }),
@@ -577,7 +585,7 @@ export default {
           });
           return;
         }
-        if((new Date(this.currentTask.beginDate) < new Date(task.dueDate)) && (new Date(this.currentTask.dueDate) > new Date(task.dueDate))) {
+        if((new Date(this.currentTask.beginDate) < new Date(task.dueDate)) && (new Date(this.currentTask.dueDate) >= new Date(task.dueDate))) {
           data.push({
             title: task.title,
             begin: new Date(this.currentTask.beginDate).toLocaleDateString("ru-RU", { month: 'short', day: 'numeric' }),

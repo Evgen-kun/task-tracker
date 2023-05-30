@@ -57,10 +57,19 @@
           options: {
             responsive: true,
             maintainAspectRatio: false,
-            legend: {
-              // display: false
+            layout: {
+              padding: {
+                bottom: 30,
+              },
             },
             plugins: {
+              legend: {
+                labels: {
+                  font: {
+                    size: 18
+                  }
+                },
+              },
               plugins: [],
             },
           },

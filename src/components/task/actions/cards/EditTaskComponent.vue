@@ -1,9 +1,9 @@
 <template>
-    <v-card rounded="lg">
+    <v-card :rounded="style.rounded">
         <v-toolbar
             color="primary"
             title="Редактирование задачи"
-            density="compact"
+            :density="style.density"
         ></v-toolbar>
         <v-card-text>
             <v-form ref="editTaskForm" @submit.prevent="editTask">
@@ -135,6 +135,10 @@
             type: String,
             default: "fromProjects"
         },
+        style: {
+            type: Object,
+            default: () => ({ rounded: false, density: "default" })
+        }
     },
     methods: {
       async editTask() {

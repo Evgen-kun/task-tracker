@@ -178,7 +178,6 @@ export const TaskModule = {
     actions: {
         async queryTasksToMe({ commit, getters, rootGetters }, { userUID }) {
             const res = await QueryAPI.getTasks(userUID);
-            // console.log(res);
             const comments = await AnsQueryAPI.getMyAnswers(userUID);
             const tasks = [];
             res.data.data.forEach((item) => {
@@ -257,7 +256,6 @@ export const TaskModule = {
 
         async queryTasksFromMe({ commit, getters, rootGetters }, { userUID }) {
             const res = await QueryAPI.getMyTasks(userUID);
-            // console.log(res);
             const comments = await AnsQueryAPI.getAnswers();
             const tasks = [];
             res.data.data.forEach((item) => {
@@ -335,7 +333,6 @@ export const TaskModule = {
         async queryTasksFromProjects({ commit, getters, rootGetters }) {
             const projects = rootGetters['projectM/getProjects'];
             const res = await QueryAPI.getFilteredTasks(projects.map(pr => pr.id));
-            // console.log(res);
             const comments = await AnsQueryAPI.getAnswers();
             const tasks = [];
             res.data.data.forEach((item) => {
@@ -443,7 +440,6 @@ export const TaskModule = {
 
         async getStatuses({ commit }) {
             const res = await QueryAPI.getStatuses();
-            // console.log(res);
             const statuses = new Map();
             res.data.data.forEach((item) => {
                 statuses.set(item.id, item.attributes.name);
@@ -454,7 +450,6 @@ export const TaskModule = {
 
         async getProgress({ commit }) {
             const res = await QueryAPI.getProgress();
-            // console.log(res);
             const progress = new Map();
             res.data.data.forEach((item) => {
                 progress.set(item.id, Number(item.attributes.name.slice(0, -1)));
@@ -465,7 +460,6 @@ export const TaskModule = {
 
         async getDifficulty({ commit }) {
             const res = await QueryAPI.getDifficulty();
-            // console.log(res);
             const difficulty = new Map();
             res.data.data.forEach((item) => {
                 difficulty.set(item.id, item.attributes.name);
@@ -494,7 +488,6 @@ export const TaskModule = {
                 beginDate,
                 dueDate
             );
-            // console.log(res);
 
             const task = new Task();
             task.id = res.data.data.id;
@@ -528,7 +521,6 @@ export const TaskModule = {
                 beginDate,
                 dueDate
             );
-            // console.log(res);
 
             const task = (type === 'fromMe')? getters.getTaskFromMeByID(id) : getters.getTaskFromProjectsByID(id);
             const user = rootGetters['userM/getUserByUID'](executorUID);
@@ -551,7 +543,6 @@ export const TaskModule = {
 
         async deleteTask({ commit }, { id }) {
             const res = await QueryAPI.deleteTask(id);
-            // console.log(res);
             commit('deleteTaskFromMe', id);
         },
 
@@ -559,12 +550,15 @@ export const TaskModule = {
             const filesID = [];
             if(files.length > 0) {
                 for (const file of files) {
-                    filesID.push((await AnsQueryAPI.createFile(file.name, file.File)).data.data.id) ;
+                    const reader = new FileReader();
+                    reader.onload = async function(e) {
+                        filesID.push((await AnsQueryAPI.createFile(file.name, e.target.result)).data.data.id);
+                    };
+                    reader.readAsBinaryString(file);
                 }
             }
             const progressMap = getters.getProgress;
             const res = await AnsQueryAPI.createAnswer(title, body, [...progressMap.keys()].find((key) => progressMap.get(key) === progress), taskUID, filesID);
-            // console.log(res);
             const task = getters.getUserTaskByID(taskUID);
 
             const answer = new Answer();

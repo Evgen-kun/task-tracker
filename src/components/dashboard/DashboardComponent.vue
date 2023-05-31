@@ -52,7 +52,7 @@ export default {
             {
                 id: 3,
                 title: "Просроченные задачи",
-                value: this.tasks.filter(task => new Date(task.dueDate) < new Date()).length
+                value: this.tasks.filter(task => (new Date(task.dueDate) < new Date()) && (task.status !== "Выполнено")).length
             },
             {
                 id: 4,

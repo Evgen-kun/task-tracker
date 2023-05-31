@@ -46,7 +46,7 @@
                 </v-btn>
               </v-btn-toggle>
             </v-card-item>
-            <v-card-item>
+            <v-card-item class="overflow-y-auto" style="max-height: 600px;">
               <InboxListComponent v-if="toggleValue === 'toMe'" />
               <TasksFromMeComponent v-if="toggleValue === 'fromMe'" />
             </v-card-item>
@@ -65,7 +65,7 @@
             <v-card-title class="text-h5">
               Команды
             </v-card-title>
-            <v-card-item>
+            <v-card-item class="overflow-y-auto" style="max-height: 600px;">
               <TeamsComponent />
             </v-card-item>
           </v-card>
@@ -83,7 +83,7 @@
             <v-card-title class="text-h5">
               Проекты
             </v-card-title>
-            <v-card-item>
+            <v-card-item class="overflow-y-auto" style="max-height: 600px;">
               <ProjectsComponent />
             </v-card-item>
           </v-card>
@@ -152,7 +152,25 @@ export default {
 }
 
 .bg-blur {
+  backdrop-filter: blur(10px);
+}
 
-        backdrop-filter: blur(10px);
-    }
+::-webkit-scrollbar {
+  width: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #6daafa;
+  border: 5px solid transparent;
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #651fff;
+}
 </style>

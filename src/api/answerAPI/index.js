@@ -64,14 +64,11 @@ export const AnsQueryAPI = {
 
     async createFile(fileName, fileBody) {
         const url = API_LINK + `/jsonapi/comment/answer/field_file`;
-        // const data = Buffer.from(fileBody, 'binary');
-        let formData = new FormData();
-        formData.append(fileName, fileBody);
         PostQueryAPIInstance.defaults.headers['Accept'] = 'application/vnd.api+json';
         PostQueryAPIInstance.defaults.headers['Content-Type'] = 'application/octet-stream';
         PostQueryAPIInstance.defaults.headers['Content-Disposition'] = 'file; filename="' + fileName + '"';
         PostQueryAPIInstance.defaults.headers['Authorization'] = `Basic ${await store.getters['authM/getBasicToken']}`;
         PostQueryAPIInstance.defaults.headers['X-CSRF-Token'] = await store.getters['authM/getToken'];
-        return PostQueryAPIInstance.post(url, formData);
+        return PostQueryAPIInstance.post(url, fileBody);
     },
 }

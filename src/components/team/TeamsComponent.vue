@@ -1,7 +1,7 @@
 <template>
     <v-container>
         <v-row>
-            <v-col v-for="team in teams" :key="team.id">
+            <v-col v-for="team in teams" :key="team.id" :cols="(path === '/')? 6 : 3">
                 <TeamComponent
                     v-bind:team="team"
                     v-bind:allUsers="users"
@@ -9,7 +9,7 @@
                 </TeamComponent>
             </v-col>
 
-            <v-col v-if="currentUser.roles.includes('administrator') || currentUser.roles.includes('manager')">
+            <v-col v-if="currentUser.roles.includes('administrator') || currentUser.roles.includes('manager')" :cols="(path === '/')? 6 : 3">
                 <CreateTeamComponent :allUsers="users"/>
             </v-col>
 
@@ -32,6 +32,9 @@ export default {
             teams: 'teamM/getTeams',
             users: 'userM/getUsers',
         }),
+        path() {
+            return this.$route.path;
+        },
         currentUser() {
             return store.getters['authM/getUser'];
         }

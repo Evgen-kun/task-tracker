@@ -93,11 +93,12 @@
             class="open-task-user-avatar"
             :image=user.picture.url
           ></v-avatar>
+
+          <div>
+            <v-list-item-title class="open-task-user-name">{{ user.name }}</v-list-item-title>
+            <v-list-item-subtitle class="open-task-subtitle">{{ subtitle }}</v-list-item-subtitle>
+          </div>
         </template>
-
-        <v-list-item-title class="open-task-user-name">{{ user.name }}</v-list-item-title>
-
-        <v-list-item-subtitle class="open-task-subtitle">{{ subtitle }}</v-list-item-subtitle>
 
         <template v-slot:append>
           <div>
@@ -217,5 +218,9 @@ export default {
 
 .v-card-text {
   line-height: 1.5rem;
+}
+
+.open-task-title {
+  line-height: 2rem;
 }
 </style>

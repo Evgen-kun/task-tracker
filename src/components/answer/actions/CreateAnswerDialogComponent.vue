@@ -58,7 +58,7 @@
                                     variant="outlined"
                                     size="small"
                                     label
-                                    color="white"
+                                    color="black"
                                     text-color="black"
                                     class="me-2"
                                 >
@@ -133,7 +133,7 @@ import LastAnswerDialogComponent from '../LastAnswerDialogComponent.vue';
                 await store.dispatch('taskM/createAnswer', {
                     title: this.ansTitle, 
                     body: this.ansText, 
-                    taskUID: this.taskID, 
+                    taskUID: this.task.id, 
                     progress: this.select, 
                     files: this.files
                 });

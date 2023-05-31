@@ -50,7 +50,7 @@
           :key="editKey" 
           :task="currentTask" 
           :userUID="currentTask?.executor.uid"
-          :style="{ rounded: 'lg', density: 'compact' }"
+          :style="{ rounded: 'lg', density: 'comfortable' }"
           @closeEvent="{ showEdit = !showEdit; showAlert = false; currentTask = {} }"
           @editEvent="{ updateData(); updateChart() }"
           @deleteEvent="{ initChart(); key++ }"
@@ -93,7 +93,6 @@ import {
 } from 'chart.js';
 import { Bar } from 'vue-chartjs';
 import 'chartjs-adapter-date-fns';
-// import ChartJSdragDataPlugin from 'chartjs-plugin-dragdata';
 
 ChartJS.register(
   CategoryScale,
@@ -152,16 +151,13 @@ export default {
             borderRadius: 10,
             barPercentage: 0.5,
             categoryPercentage: 0.9,
-            // borderWidth: 1,
-            // pointHitRadius: 25,
-            // dragData: true,
           },
         ],
       },
       plugins: [
         {
           id: 'todayLine',
-          beforeDatasetsDraw(chart, args, pluginOptions) {
+          afterDatasetsDraw(chart, args, pluginOptions) {
               const { ctx, data, chartArea: { top, bottom, left, right }, scales: { x, y } } = chart;
               ctx.save();
               ctx.beginPath();
@@ -328,42 +324,6 @@ export default {
           },
         },
         plugins: {
-          // dragData: {
-          //   round: 0,
-          //   onDragStart: function (e, datasetIndex) {
-          //     console.log("drag start!");
-
-          //     // chart
-          //     // this.$refs.bar.chart.data.datasets[datasetIndex].data[index].x = [new Date(), new Date().setDate(new Date().getDate() + 8)];
-          //     // this.$refs.bar.chart.update();
-          //     console.log({event: e});
-          //   },
-          //   onDrag: function (e, datasetIndex, index, value) {
-          //     console.log("drag!");
-          //     e.target.style.cursor = 'grabbing';
-
-          //     // this.$refs.bar.chart.data.datasets[datasetIndex].data[index].x = [new Date(), new Date().setDate(new Date().getDate() + 8)];
-          //     // this.$refs.bar.chart.update();
-          //     console.log({event: e, index: index, value: value});
-          //   },
-          //   onDragEnd: function (e, datasetIndex, index, value) {
-          //     console.log("drag end!");
-          //     e.target.style.cursor = 'default';
-
-          //     console.log({event: e, index: index, value: value});
-          //     // const xScale = chart.scales["x-axis-1"];
-          //     // const xValue = xScale.getValueForPixel(value.x);
-
-          //     // if (isNaN(xValue) || !isFinite(xValue)) {
-          //     //   console.error("Ошибка значения времени: ", xValue);
-          //     //   return;
-          //     // }
-
-          //     // chart.data.datasets[datasetIndex].data[index].x = [new Date(), new Date().setDate(new Date().getDate() + 8)];
-          //     // chart.update();
-          //   },
-          // },
-          // plugins: [todayLine, assignedTasks, status, weekend],
           weekend: {
             weekendColor: 'rgba(102, 102, 102, 0.2)'
           },
@@ -398,7 +358,6 @@ export default {
     initChart() {
       this.allTasks = store.getters['taskM/getTasksFromProjectsByProjectID'](this.$route.params.projectID);
       this.allUsers = store.getters['userM/getUsers'].map(user => ({ ...user, nameWithID: `${user.name} (${user.id})` }));
-      // this.options.scales.y.labels = this.allTasks.map(task => task.title);
       this.options.scales.y.labels = this.allTasks.sort((a, b) => a.executor.name.localeCompare(b.executor.name)).map(task => task.title);
 
       const data = [];
@@ -493,6 +452,7 @@ export default {
       chartBox.parentNode.style.height = rowHeight * rowsCount + 'px';
     },
     showEditTask(id) {
+      if (!this.isManagerOrAdmin) return;
       const task = this.allTasks.find(task => task.id === id);
       this.currentTask = task;
       this.showAlert = (this.taskOverlap.length > 0)? true : false;
@@ -502,7 +462,6 @@ export default {
     updateChart() {
       this.showAlert = (this.taskOverlap.length > 0)? true : false;
       this.$refs.bar.chart.update();
-      // this.key += 1;
     },
   },
   watch: {
@@ -515,11 +474,6 @@ export default {
     filterExecutors() {
       this.chartFilterExecutor();
     },
-    allTasks(oldTasks, newTasks) {
-      console.log("Watcher все задачи: ");
-      console.log(oldTasks);
-      console.log(newTasks);
-    }
   },
   computed: {
     chartData() {
@@ -595,6 +549,10 @@ export default {
         }
       });
       return data;
+    },
+    isManagerOrAdmin() {
+      const currentUser = store.getters['authM/getUser'];
+      return currentUser.roles.includes('administrator') || currentUser.roles.includes('manager');
     }
   },
   mounted() {

@@ -1,7 +1,7 @@
 <template>
     <v-container>
         <v-row>
-            <v-col v-for="project in getFilteredProjects" :key="project.id">
+            <v-col v-for="project in getFilteredProjects" :key="project.id" :cols="(path === '/')? 6 : 3">
                 <ProjectComponent
                     v-bind:project="project"
                     v-bind:allTeams="teams"
@@ -9,7 +9,7 @@
                 </ProjectComponent>
             </v-col>
 
-            <v-col v-if="currentUser.roles.includes('administrator') || currentUser.roles.includes('manager')">
+            <v-col v-if="currentUser.roles.includes('administrator') || currentUser.roles.includes('manager')" :cols="(path === '/')? 6 : 3">
                 <CreateProjectComponent :allTeams="teams"/>
             </v-col>
 
@@ -36,6 +36,9 @@ export default {
         getFilteredProjects() {
             if(this.$route.path === '/') return store.getters['projectM/getProjects'];
             else return store.getters['projectM/getProjectsByTeamID'](this.$route.params.teamID);
+        },
+        path() {
+            return this.$route.path;
         },
         currentUser() {
             return store.getters['authM/getUser'];
